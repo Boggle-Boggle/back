@@ -49,6 +49,14 @@ jobs:
         push: true
         tags: ${{ steps.prep.outputs.IMAGE_TAG }}
 
+    - name: Print SSH details for debugging
+      run: |
+        echo "Host: ${{ secrets.PI_HOST }}"
+        echo "Port: ${{ secrets.PI_PORT }}"
+        echo "Username: ${{ secrets.PI_USERNAME }}"
+        echo "Username: ${{ secrets.PI_PASSWORD }}"
+
+
     - name: Test SSH connection  #SSH서버 연결 테스트
       uses: appleboy/ssh-action@master
       with:
