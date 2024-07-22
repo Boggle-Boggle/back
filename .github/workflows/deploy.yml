@@ -20,7 +20,8 @@ jobs:
     
     - name: Build with Gradle  #프로젝트를 빌드하여 jar파일을 생성한다
       run: |
-        cd back
+        pwd
+        ls -la
         ./gradlew build
     
     - name: Set up Docker Buildx
