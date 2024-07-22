@@ -49,7 +49,7 @@ jobs:
         push: true
         tags: ${{ steps.prep.outputs.IMAGE_TAG }}
 
-    - name: Test SSH connection # SSH서버 연결 테스트
+    - name: Test SSH connection  #SSH서버 연결 테스트
       uses: appleboy/ssh-action@master
       with:
         host: ${{ secrets.PI_HOST }}
@@ -68,7 +68,7 @@ jobs:
         password: ${{ secrets.PI_PASSWORD }}
         source: "./docker-compose.yml,./nginx.conf"
         target: "/home/${{ secrets.PI_USERNAME }}/Project/bbegok"
-        timeout: 120s  # 타임아웃을 120초로 증가
+        timeout: 180s
     
     - name: Deploy to Raspberry Pi  #라즈베리파이에서 Docker image를 받아 배포작업을 한다
       uses: appleboy/ssh-action@master
