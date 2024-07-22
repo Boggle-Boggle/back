@@ -42,7 +42,7 @@ jobs:
       with:
         context: ./back
         push: true
-        tags: ghcr.io/${{ github.repository_owner }}/bbegok:${{ github.sha }}
+        tags: ghcr.io/${{ github.repository_owner | lower }}/bbegok:latest
 
     - name: Copy docker-compose and nginx config to Raspberry Pi  #도커컴포즈와 NginX설정을 라즈베리파이에 복사한다
       uses: appleboy/scp-action@master
