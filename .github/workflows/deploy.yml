@@ -36,13 +36,18 @@ jobs:
         registry: ghcr.io
         username: ${{ github.repository_owner }}
         password: ${{ secrets.GITHUB_TOKEN }}
-    
+
+    - name: Prepare Docker image tag
+      id: prep
+      run: |
+        echo "IMAGE_TAG=$(echo ghcr.io/${{ github.repository_owner }}/bbegok:latest | tr '[:upper:]' '[:lower:]')" >> $GITHUB_OUTPUT
+            
     - name: Build and push Docker image  #도커이미지를 생성하여 GRCR에 push한다
       uses: docker/build-push-action@v2
       with:
         context: ./back
         push: true
-        tags: ghcr.io/${{ toLowerCase(github.repository_owner) }}/bbegok:latest
+        tags: ${{ steps.prep.outputs.IMAGE_TAG }}
 
     - name: Copy docker-compose and nginx config to Raspberry Pi  #도커컴포즈와 NginX설정을 라즈베리파이에 복사한다
       uses: appleboy/scp-action@master
