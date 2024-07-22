@@ -25,7 +25,7 @@ jobs:
         
     - name: Find Docker
       run: |
-        find / -name docker 2>/dev/null
+        which docker || echo "Docker not found in PATH"
     
     - name: Check Docker symlinks
       run: |
