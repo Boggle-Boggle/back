@@ -49,6 +49,16 @@ jobs:
         push: true
         tags: ${{ steps.prep.outputs.IMAGE_TAG }}
 
+    - name: Test SSH connection # SSH서버 연결 테스트
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.PI_HOST }}
+        port: ${{ secrets.PI_PORT }}
+        username: ${{ secrets.PI_USERNAME }}
+        password: ${{ secrets.PI_PASSWORD }}
+        script: echo "SSH connection successful"
+    
+
     - name: Copy docker-compose and nginx config to Raspberry Pi  #도커컴포즈와 NginX설정을 라즈베리파이에 복사한다
       uses: appleboy/scp-action@master
       with:
