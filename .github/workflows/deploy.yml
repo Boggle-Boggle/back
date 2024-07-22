@@ -1,11 +1,12 @@
 name: Deploy to RaspberryPi Server
 on:
   push:
-    branches: [ main ]  #main브랜치 변화를 감지한다
+    branches: [ main ]
+
 jobs:
   build-and-deploy:
-    runs-on: self-hosted #Runner 사용
-    
+    runs-on: self-hosted
+
     steps:
     - uses: actions/checkout@v2
     
@@ -15,80 +16,33 @@ jobs:
         java-version: '17'
         distribution: 'adopt'
     
-    - name: Debug and set permissions  #빌드 전 권한부여
-      run: |
-        echo "Current directory:"
-        pwd
-        echo "Directory contents:"
-        ls -la
-        echo "Setting execute permission on gradlew"
-        chmod +x ./gradlew
-
     - name: Build with Gradle  #프로젝트 빌드
-      run: ./gradlew build
-    
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v1
-    
-    - name: Login to GitHub Container Registry
-      uses: docker/login-action@v1
-      with:
-        registry: ghcr.io
-        username: ${{ github.repository_owner }}
-        password: ${{ secrets.CR_PAT }}
-
-    - name: Prepare Docker image tag
-      id: prep
       run: |
-        echo "IMAGE_TAG=$(echo ghcr.io/${{ github.repository_owner }}/bbegok:latest | tr '[:upper:]' '[:lower:]')" >> $GITHUB_OUTPUT
-            
-    - name: Build and push Docker image  #도커이미지를 생성하여 GRCR에 push한다
-      uses: docker/build-push-action@v2
-      with:
-        context: .
-        push: true
-        tags: ${{ steps.prep.outputs.IMAGE_TAG }}
+        chmod +x ./gradlew
+        ./gradlew build
 
-    - name: Print SSH details for debugging
+    - name: Build Docker image  #도커이미지 빌드
       run: |
-        echo "Host: ${{ secrets.PI_HOST }}"
-        echo "Port: ${{ secrets.PI_PORT }}"
-        echo "Username: ${{ secrets.PI_USERNAME }}"
-        echo "Username: ${{ secrets.PI_PASSWORD }}"
+        docker build -t bbegok:latest .
 
+    - name: Update docker-compose.yml  #새이미지로 업데이트
+      run: |
+        sed -i 's|image: .*|image: bbegok:latest|' docker-compose.yml
 
-    - name: Test SSH connection  #SSH서버 연결 테스트
-      uses: appleboy/ssh-action@master
-      with:
-        host: ${{ secrets.PI_HOST }}
-        port: ${{ secrets.PI_PORT }}
-        username: ${{ secrets.PI_USERNAME }}
-        password: ${{ secrets.PI_PASSWORD }}
-        script: echo "SSH connection successful"
-    
+    - name: Deploy with Docker Compose ##배포
+      env:
+        MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
+        MYSQL_USER: ${{ secrets.MYSQL_USER }}
+        MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
+      run: |
+        echo "MYSQL_ROOT_PASSWORD=$MYSQL_ROOT_PASSWORD" > .env
+        echo "MYSQL_USER=$MYSQL_USER" >> .env
+        echo "MYSQL_PASSWORD=$MYSQL_PASSWORD" >> .env
+        docker-compose down
+        docker-compose up -d
 
-    - name: Copy docker-compose and nginx config to Raspberry Pi  #도커컴포즈와 NginX설정을 라즈베리파이에 복사한다
-      uses: appleboy/scp-action@master
-      with:
-        host: ${{ secrets.PI_HOST }}
-        port: ${{ secrets.PI_PORT }}
-        username: ${{ secrets.PI_USERNAME }}
-        password: ${{ secrets.PI_PASSWORD }}
-        source: "./docker-compose.yml,./nginx.conf"
-        target: "/home/${{ secrets.PI_USERNAME }}/Project/bbegok"
-        timeout: 180s
-    
-    - name: Deploy to Raspberry Pi  #라즈베리파이에서 Docker image를 받아 배포작업을 한다
-      uses: appleboy/ssh-action@master
-      with:
-        host: ${{ secrets.PI_HOST }}
-        username: ${{ secrets.PI_USERNAME }}
-        password: ${{ secrets.PI_PASSWORD }}
-        script: |
-          cd /home/${{ secrets.PI_USERNAME }}/Project/bbegok
-          echo "BBEGOK_IMAGE=ghcr.io/${{ github.repository_owner }}/bbegok:latest" > .env
-          echo "MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }}" >> .env
-          echo "MYSQL_USER=${{ secrets.MYSQL_USER }}" >> .env
-          echo "MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }}" >> .env
-          docker-compose pull
-          docker-compose up -d
+    - name: Reload Nginx ##Nginx 재로드
+      run: |
+        sudo cp nginx.conf /etc/nginx/sites-available/bbegok
+        sudo ln -sf /etc/nginx/sites-available/bbegok /etc/nginx/sites-enabled/
+        sudo nginx -t && sudo systemctl reload nginx
