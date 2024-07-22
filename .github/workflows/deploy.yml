@@ -44,7 +44,7 @@ jobs:
         username: ${{ secrets.PI_USERNAME }}
         password: ${{ secrets.PI_PASSWORD }}
         source: "back/docker-compose.yml,back/nginx.conf"
-        target: "/home/${{ secrets.PI_USERNAME }}/bbegok"
+        target: "/home/${{ secrets.PI_USERNAME }}/Project/bbegok"
     
     - name: Deploy to Raspberry Pi  #라즈베리파이에서 Docker image를 받아 배포작업을 한다
       uses: appleboy/ssh-action@master
@@ -53,7 +53,7 @@ jobs:
         username: ${{ secrets.PI_USERNAME }}
         password: ${{ secrets.PI_PASSWORD }}
         script: |
-          cd /home/${{ secrets.PI_USERNAME }}/bbegok
+          cd /home/${{ secrets.PI_USERNAME }}/Project/bbegok
           echo "BBEGOK_IMAGE=ghcr.io/${{ github.repository_owner }}/bbegok:latest" > .env
           echo "MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }}" >> .env
           echo "MYSQL_USER=${{ secrets.MYSQL_USER }}" >> .env
