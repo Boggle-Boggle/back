@@ -54,7 +54,7 @@ jobs:
         password: ${{ secrets.PI_PASSWORD }}
         script: |
           cd /home/${{ secrets.PI_USERNAME }}/bbegok
-          echo "BBEGOK_IMAGE=ghcr.io/${{ github.repository_owner }}/bbegok:${{ github.sha }}" > .env
+          echo "BBEGOK_IMAGE=ghcr.io/${{ github.repository_owner }}/bbegok:latest" > .env
           echo "MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }}" >> .env
           echo "MYSQL_USER=${{ secrets.MYSQL_USER }}" >> .env
           echo "MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }}" >> .env
