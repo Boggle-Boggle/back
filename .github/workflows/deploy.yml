@@ -55,7 +55,7 @@ jobs:
         host: ${{ secrets.PI_HOST }}
         username: ${{ secrets.PI_USERNAME }}
         password: ${{ secrets.PI_PASSWORD }}
-        source: "back/docker-compose.yml,back/nginx.conf"
+        source: "./docker-compose.yml,./nginx.conf"
         target: "/home/${{ secrets.PI_USERNAME }}/Project/bbegok"
     
     - name: Deploy to Raspberry Pi  #라즈베리파이에서 Docker image를 받아 배포작업을 한다
