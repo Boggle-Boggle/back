@@ -24,7 +24,7 @@ jobs:
 
     - name: Build Docker image  #도커이미지 빌드
       run: |
-        docker build -t bbegok:latest .
+        sudo /usr/bin/docker build -t bbegok:latest .
 
     - name: Update docker-compose.yml  #새이미지로 업데이트
       run: |
