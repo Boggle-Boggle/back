@@ -22,6 +22,25 @@ jobs:
         $JAVA_HOME/bin/java -version
         ./gradlew build
 
+        
+    - name: Find Docker
+      run: |
+        sudo find / -name docker 2>/dev/null
+    
+    - name: Check Docker symlinks
+      run: |
+        ls -l /usr/bin/docker
+        ls -l /usr/local/bin/docker
+
+    - name: Check environment
+      run: |
+        echo $PATH
+        env
+
+    - name: Check Docker service
+      run: |
+        sudo systemctl status docker
+        
     - name: Build Docker image  #도커이미지 빌드
       run: |
         sudo /usr/bin/docker build -t bbegok:latest .
