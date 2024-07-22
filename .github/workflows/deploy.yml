@@ -53,6 +53,7 @@ jobs:
       uses: appleboy/scp-action@master
       with:
         host: ${{ secrets.PI_HOST }}
+        port: ${{ secrets.PI_PORT }}
         username: ${{ secrets.PI_USERNAME }}
         password: ${{ secrets.PI_PASSWORD }}
         source: "./docker-compose.yml,./nginx.conf"
