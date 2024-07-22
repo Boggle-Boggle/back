@@ -45,7 +45,7 @@ jobs:
     - name: Build and push Docker image  #도커이미지를 생성하여 GRCR에 push한다
       uses: docker/build-push-action@v2
       with:
-        context: ./back
+        context: .
         push: true
         tags: ${{ steps.prep.outputs.IMAGE_TAG }}
 
