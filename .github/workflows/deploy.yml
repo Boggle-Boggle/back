@@ -22,6 +22,11 @@ jobs:
         $JAVA_HOME/bin/java -version
         ./gradlew build
 
+    - name: Ensure Docker daemon is running
+      run: |
+        sudo systemctl start docker
+        sudo systemctl enable docker
+
     - name: Set up QEMU
       uses: docker/setup-qemu-action@v2
 
