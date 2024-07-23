@@ -37,7 +37,7 @@ jobs:
 
     - name: Build Docker image  #도커이미지 빌드
       run: |
-        sudo /usr/bin/docker build -t bbegok:latest .
+        /usr/bin/docker build -t bbegok:latest .
 
     - name: Update docker-compose.yml  #새이미지로 업데이트
       run: |
@@ -57,6 +57,6 @@ jobs:
 
     - name: Reload Nginx ##Nginx 재로드
       run: |
-        sudo cp nginx.conf /etc/nginx/sites-available/bbegok
-        sudo ln -sf /etc/nginx/sites-available/bbegok /etc/nginx/sites-enabled/
-        sudo nginx -t && sudo systemctl reload nginx
+        cp nginx.conf /etc/nginx/sites-available/bbegok
+        ln -sf /etc/nginx/sites-available/bbegok /etc/nginx/sites-enabled/
+        nginx -t && sudo systemctl reload nginx
