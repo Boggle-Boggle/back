@@ -48,7 +48,7 @@ jobs:
       run: |
         sed -i 's|image: .*|image: bbegok:latest|' docker-compose.yml
 
-    - name: Deploy with Docker Compose ##배포
+    - name: Deploy with Docker Compose #배포
       env:
         MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
         MYSQL_USER: ${{ secrets.MYSQL_USER }}
