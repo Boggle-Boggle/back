@@ -35,10 +35,6 @@ jobs:
         echo $PATH
         env
 
-    - name: Check Docker service
-      run: |
-        systemctl status docker
-        
     - name: Build Docker image  #도커이미지 빌드
       run: |
         sudo /usr/bin/docker build -t bbegok:latest .
