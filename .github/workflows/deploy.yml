@@ -21,11 +21,14 @@ jobs:
         chmod +x ./gradlew
         $JAVA_HOME/bin/java -version
         ./gradlew build
-
+        
     - name: Ensure Docker daemon is running
       run: |
-        sudo systemctl start docker
-        sudo systemctl enable docker
+        if ! pgrep -x "dockerd" > /dev/null
+        then
+          sudo dockerd &
+          sleep 10
+        fi
 
     - name: Set up QEMU
       uses: docker/setup-qemu-action@v2
