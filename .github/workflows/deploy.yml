@@ -35,9 +35,12 @@ jobs:
         echo $PATH
         env
 
-    - name: Build Docker image  #도커이미지 빌드
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v1
+    
+    - name: Build Docker image
       run: |
-        /usr/bin/docker build -t bbegok:latest .
+        docker buildx build --platform linux/arm64 -t bbegok:latest .
 
     - name: Update docker-compose.yml  #새이미지로 업데이트
       run: |
