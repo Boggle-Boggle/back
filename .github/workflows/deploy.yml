@@ -22,27 +22,17 @@ jobs:
         $JAVA_HOME/bin/java -version
         ./gradlew build
 
-    - name: Find Docker
-      run: |
-        which docker || echo "Docker not found in PATH"
-    
-    - name: Check Docker symlinks
-      run: |
-        ls -l /usr/bin/docker
-
-    - name: Check environment
-      run: |
-        echo $PATH
-        env
+    - name: Set up QEMU
+      uses: docker/setup-qemu-action@v2
 
     - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v1
-    
+      uses: docker/setup-buildx-action@v2
+
     - name: Build Docker image
       run: |
         docker buildx build --platform linux/arm64 -t bbegok:latest .
 
-    - name: Update docker-compose.yml  #새이미지로 업데이트
+    - name: Update docker-compose.yml
       run: |
         sed -i 's|image: .*|image: bbegok:latest|' docker-compose.yml
 
