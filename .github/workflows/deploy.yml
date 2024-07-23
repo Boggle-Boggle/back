@@ -29,7 +29,6 @@ jobs:
     - name: Check Docker symlinks
       run: |
         ls -l /usr/bin/docker
-        ls -l /usr/local/bin/docker
 
     - name: Check environment
       run: |
