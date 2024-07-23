@@ -22,7 +22,6 @@ jobs:
         $JAVA_HOME/bin/java -version
         ./gradlew build
 
-        
     - name: Find Docker
       run: |
         which docker || echo "Docker not found in PATH"
