@@ -39,11 +39,11 @@ jobs:
 
     - name: Create .env file
       run: |
-        echo "DOCKERHUB_USERNAME=${{ secrets.DOCKERHUB_USERNAME }}" >> .env
-        echo "DOCKERHUB_TOKEN=${{ secrets.DOCKERHUB_TOKEN }}" >> .env
+        echo "DOCKERHUB_USERNAME=${{ secrets.DOCKERHUB_USERNAME }}" >> ./configuration/.env
+        echo "DOCKERHUB_TOKEN=${{ secrets.DOCKERHUB_TOKEN }}" >> ./configuration/.env
         echo "MYSQL_USER=${{ secrets.MYSQL_USER }}" >> .env
-        echo "MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }}" >> .env
-        echo "MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }}" >> .env
+        echo "MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }}" >> ./configuration/.env
+        echo "MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }}" >> ./configuration/.env
 
     #docker-compose 및 nginx.conf파일을 서버로 복사
     - name: Copy files to Raspberry Pi
@@ -53,7 +53,7 @@ jobs:
         port: ${{ secrets.PI_PORT }}
         username: ${{ secrets.PI_USERNAME }}
         password: ${{ secrets.PI_PASSWORD }}
-        source: "./configuration/docker-compose.yml,./configuration/nginx.conf, .env"
+        source: "./configuration/*"
         target: "Project/bbegok/"
         strip_components: 1
         
