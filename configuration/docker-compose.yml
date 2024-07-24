@@ -1,7 +1,7 @@
 services:
   app:
     image: ${DOCKERHUB_USERNAME}/bbegok:latest
-    platform: linux/arm64/v8
+    platform: linux/arm64
     ports:
       - "8080:8080"
     depends_on:
