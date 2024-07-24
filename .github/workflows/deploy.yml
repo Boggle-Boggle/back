@@ -57,6 +57,7 @@ jobs:
         sshpass -p "$PI_PASSWORD" ssh -v -o StrictHostKeyChecking=no -p $PI_PORT $PI_USERNAME@$PI_HOST << EOF
         echo "$DOCKERHUB_TOKEN" | docker login -u $DOCKERHUB_USERNAME --password-stdin
         docker pull $DOCKERHUB_USERNAME/bbegok:latest
+        cd Project/bbegok
         docker-compose down
         sed -i 's|image: .*|image: $DOCKERHUB_USERNAME/bbegok:latest|' docker-compose.yml
         echo "MYSQL_ROOT_PASSWORD=$MYSQL_ROOT_PASSWORD" > .env
