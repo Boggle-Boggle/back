@@ -37,6 +37,14 @@ jobs:
         push : true
         tags: ${{ secrets.DOCKERHUB_USERNAME }}/bbegok:latest
 
+    - name: Create .env file
+      run: |
+        echo "DOCKERHUB_USERNAME=${{ secrets.DOCKERHUB_USERNAME }}" >> .env
+        echo "DOCKERHUB_TOKEN=${{ secrets.DOCKERHUB_TOKEN }}" >> .env
+        echo "MYSQL_USER=${{ secrets.MYSQL_USER }}" >> .env
+        echo "MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }}" >> .env
+        echo "MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }}" >> .env
+
     #docker-compose 및 nginx.conf파일을 서버로 복사
     - name: Copy files to Raspberry Pi
       uses: appleboy/scp-action@master
@@ -45,23 +53,23 @@ jobs:
         port: ${{ secrets.PI_PORT }}
         username: ${{ secrets.PI_USERNAME }}
         password: ${{ secrets.PI_PASSWORD }}
-        source: "./docker/docker-compose.yml,./docker/nginx.conf"
-        target: "Project/bbegok"
+        source: "./docker/docker-compose.yml,./docker/nginx.conf, .env"
+        target: "Project/bbegok/"
+        strip_components: 1
         
 
     #라즈베리파이 서버에 배포
-    - name: Deploy to Home Server
-      env:
-        PI_HOST: ${{ secrets.PI_HOST }}
-        PI_PORT: ${{ secrets.PI_PORT }}
-        PI_USERNAME: ${{ secrets.PI_USERNAME }}
-        PI_PASSWORD: ${{ secrets.PI_PASSWORD }}
-      run: |
-        sshpass -p "$PI_PASSWORD" ssh -v -o StrictHostKeyChecking=no -p $PI_PORT $PI_USERNAME@$PI_HOST << EOF
-        cd Project/bbegok
-        docker-compose pull
-        docker-compose down
-        docker-compose up -d
-        docker image prune -f
-        docker-compose exec -T nginx nginx -s reload || docker-compose restart nginx
-        EOF
+    - name: Deploy to Raspberry Pi
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.PI_HOST }}
+        port: ${{ secrets.PI_PORT }}
+        username: ${{ secrets.PI_USERNAME }}
+        password: ${{ secrets.PI_PASSWORD }}
+        script: |
+          cd Project/bbegok/
+          docker-compose pull
+          docker-compose down
+          docker-compose up -d
+          docker image prune -f
+          docker-compose --env-file .env exec -T nginx nginx -s reload || docker-compose --env-file .env restart nginx
