@@ -47,22 +47,22 @@ jobs:
         PI_USERNAME: ${{ secrets.PI_USERNAME }}
         PI_PASSWORD: ${{ secrets.PI_PASSWORD }}
         DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+        DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
         MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
         MYSQL_USER: ${{ secrets.MYSQL_USER }}
         MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
       run: |
-        mkdir -p ~/.ssh
-        echo "$PI_SSH_KEY" > ~/.ssh/id_rsa
-        chmod 600 ~/.ssh/id_rsa
-        ssh -o StrictHostKeyChecking=no $PI_USERNAME@$PI_HOST << EOF
-          docker login -u $DOCKERHUB_USERNAME -p ${{ secrets.DOCKERHUB_TOKEN }}
-          docker pull $DOCKERHUB_USERNAME/bbegok:latest
-          docker-compose down
-          sed -i 's|image: .*|image: $DOCKERHUB_USERNAME/bbegok:latest|' docker-compose.yml
-          echo "MYSQL_ROOT_PASSWORD=$MYSQL_ROOT_PASSWORD" > .env
-          echo "MYSQL_USER=$MYSQL_USER" >> .env
-          echo "MYSQL_PASSWORD=$MYSQL_PASSWORD" >> .env
-          docker-compose up -d
-          docker image prune -f
-          sudo systemctl reload nginx
+        sudo apt-get install -y sshpass
+        sshpass -p "$PI_PASSWORD" ssh -o StrictHostKeyChecking=no -p $PI_PORT $PI_USERNAME@$PI_HOST << EOF
+        echo "$DOCKERHUB_TOKEN" | docker login -u $DOCKERHUB_USERNAME --password-stdin
+        docker pull $DOCKERHUB_USERNAME/bbegok:latest
+        docker-compose down
+        sed -i 's|image: .*|image: $DOCKERHUB_USERNAME/bbegok:latest|' docker-compose.yml
+        echo "MYSQL_ROOT_PASSWORD=$MYSQL_ROOT_PASSWORD" > .env
+        echo "MYSQL_USER=$MYSQL_USER" >> .env
+        echo "MYSQL_PASSWORD=$MYSQL_PASSWORD" >> .env
+        echo "DOCKERHUB_USERNAME=$DOCKERHUB_USERNAME" >> .env
+        docker-compose up -d
+        docker image prune -f
+        sudo systemctl reload nginx
         EOF
