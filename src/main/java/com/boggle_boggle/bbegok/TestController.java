@@ -10,4 +10,10 @@ public class TestController {
     public String initPage(){
         return "test";
     }
+
+    @GetMapping("/test")
+    public String test(HttpServletRequest request) {
+        logger.info("Received request: " + request.getRequestURL());
+        return "Hello, World!";
+    }
 }
