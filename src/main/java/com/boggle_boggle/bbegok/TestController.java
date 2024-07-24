@@ -12,8 +12,7 @@ public class TestController {
     }
 
     @GetMapping("/test")
-    public String test(HttpServletRequest request) {
-        //logger.info("Received request: " + request.getRequestURL());
+    public String test() {
         return "Hello, World!";
     }
 }
