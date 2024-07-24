@@ -53,8 +53,8 @@ jobs:
         port: ${{ secrets.PI_PORT }}
         username: ${{ secrets.PI_USERNAME }}
         password: ${{ secrets.PI_PASSWORD }}
-        source: "./docker/docker-compose.yml,./docker/nginx.conf, .env"
-        target: "./Project/bbegok/"
+        source: "./configuration/docker-compose.yml,./configuration/nginx.conf, .env"
+        target: "Project/bbegok/"
         strip_components: 1
         
 
@@ -68,7 +68,7 @@ jobs:
         password: ${{ secrets.PI_PASSWORD }}
         debug: true 
         script: |
-          cd ./Project/bbegok/
+          cd Project/bbegok/
           docker-compose pull
           docker-compose down
           docker-compose up -d
