@@ -26,7 +26,7 @@ services:
     ports:
       - "80:80"
     volumes:
-      - ./configuration/nginx.conf:/etc/nginx/nginx.conf
+      - Project/bbegok/nginx.conf:/etc/nginx/nginx.conf
     depends_on:
       - app
 
