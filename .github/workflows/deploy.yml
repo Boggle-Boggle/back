@@ -29,16 +29,13 @@ jobs:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-    #도커이미지 빌드
+    #도커이미지 빌드&푸쉬
     - name: Build and push Docker image
       uses: docker/build-push-action@v2
       with:
-        host: ${{ secrets.RASPBERRY_PI_HOST }}
-        username: ${{ secrets.RASPBERRY_PI_USERNAME }}
-        key: ${{ secrets.RASPBERRY_PI_SSH_KEY }}
-        source: "docker/docker-compose.yml,docker/nginx.conf"
-        target: "/path/on/raspberry/pi/"
-        strip_components: 1
+        context: .
+        push : true
+        tags: ${{ secrets.DOCKERHUB_USERNAME }}/bbegok:latest
 
     #docker-compose 및 nginx.conf파일을 서버로 복사
     - name: Copy files to Raspberry Pi
