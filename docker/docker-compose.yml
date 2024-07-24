@@ -1,7 +1,7 @@
 version: '3'
 services:
   app:
-    image: ${BBEGOK_IMAGE}
+    image: ${DOCKERHUB_USERNAME}/bbegok:latest
     ports:
       - "8080:8080"
     depends_on:
@@ -32,3 +32,6 @@ services:
 
 volumes:
   mysql-data:
+x-dockerhub-auth: &dockerhub-auth
+  username: ${DOCKERHUB_USERNAME}
+  password: ${DOCKERHUB_TOKEN}
