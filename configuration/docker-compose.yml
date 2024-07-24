@@ -11,6 +11,12 @@ services:
       SPRING_DATASOURCE_USERNAME: ${MYSQL_USER}
       SPRING_DATASOURCE_PASSWORD: ${MYSQL_PASSWORD}
 
+  portainer:
+    image: portainer/portainer-ce
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer_data:/data
+
   db:
     image: mysql:8.0
     environment:
@@ -32,6 +38,8 @@ services:
 
 volumes:
   mysql-data:
+  portainer_data:
+  
 x-dockerhub-auth: &dockerhub-auth
   username: ${DOCKERHUB_USERNAME}
   password: ${DOCKERHUB_TOKEN}
