@@ -66,5 +66,5 @@ jobs:
         echo "DOCKERHUB_USERNAME=$DOCKERHUB_USERNAME" >> .env
         docker-compose up -d
         docker image prune -f
-        sudo systemctl reload nginx
+        docker-compose exec -T nginx nginx -s reload || docker-compose restart nginx
         EOF
