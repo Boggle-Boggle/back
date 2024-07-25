@@ -10,13 +10,17 @@ services:
       SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/bbegok?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
       SPRING_DATASOURCE_USERNAME: ${MYSQL_USER}
       SPRING_DATASOURCE_PASSWORD: ${MYSQL_PASSWORD}
+    networks:
+      - bbegok-network
 
   portainer:
     image: portainer/portainer-ce
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - portainer_data:/data
-
+    networks:
+      - bbegok-network
+      
   db:
     image: mysql:8.0
     environment:
@@ -26,6 +30,8 @@ services:
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     volumes:
       - mysql-data:/var/lib/mysql
+    networks:
+      - bbegok-network
 
   nginx:
     image: nginx:latest
@@ -35,7 +41,9 @@ services:
       - ./nginx.conf:/etc/nginx/nginx.conf
     depends_on:
       - app
-
+    networks:
+      - bbegok-network
+      
 volumes:
   mysql-data:
   portainer_data:
@@ -43,3 +51,6 @@ volumes:
 x-dockerhub-auth: &dockerhub-auth
   username: ${DOCKERHUB_USERNAME}
   password: ${DOCKERHUB_TOKEN}
+
+networks:
+  bbegok-network:
