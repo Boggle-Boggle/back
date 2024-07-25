@@ -1,7 +1,7 @@
 ---
-name: API 구현
+name: OO API 구현
 about: API 구현시 사용
-title: ''
+title: OO API 구현
 labels: "⚫ back, ✨ feat"
 assignees: cheshireHYUN
 
