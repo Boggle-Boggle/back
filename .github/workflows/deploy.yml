@@ -84,7 +84,7 @@ jobs:
       uses: Ilshidur/action-discord@master
       with:
         args: |
-          :tada: 빼곡서버 배포 SUCCESS!
+          ## **:tada: 빼곡서버 배포 SUCCESS!**
 
     - name: Discord Webhook when fail
       if: failure()
@@ -93,7 +93,7 @@ jobs:
       uses: Ilshidur/action-discord@master
       with:
         args: |
-          :fire: 빼곡서버 배포 FAIL!
+          ## **:fire: 빼곡서버 배포 FAIL!**
           **message**  |   ${{ github.event.head_commit.message }}
           **commit**   |  ${{ github.sha }}
           **go to log** |  ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
