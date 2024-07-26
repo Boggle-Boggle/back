@@ -76,3 +76,15 @@ jobs:
           docker-compose up -d
           docker image prune -f
           docker-compose --env-file .env exec -T nginx nginx -s reload || docker-compose --env-file .env restart nginx
+
+    - name: Discord Webhook
+      env:
+        DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+      uses: Ilshidur/action-discord@master
+      if: always()
+      with:
+        args: |
+          라즈베리파이 서버 배포 결과:
+          상태: ${{ job.status }}
+          커밋: ${{ github.sha }}
+          브랜치: ${{ github.ref }}
