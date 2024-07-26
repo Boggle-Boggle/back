@@ -77,14 +77,23 @@ jobs:
           docker image prune -f
           docker-compose --env-file .env exec -T nginx nginx -s reload || docker-compose --env-file .env restart nginx
 
-    - name: Discord Webhook
+    - name: Discord Webhook when success
+      if: success()
       env:
         DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
       uses: Ilshidur/action-discord@master
-      if: always()
       with:
         args: |
-          라즈베리파이 서버 배포 결과:
-          상태: ${{ job.status }}
-          커밋: ${{ github.sha }}
-          브랜치: ${{ github.ref }}
+          :tada: 빼곡서버 배포 SUCCESS!
+
+    - name: Discord Webhook when fail
+      if: failure()
+      env:
+        DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+      uses: Ilshidur/action-discord@master
+      with:
+        args: |
+          :fire: 빼곡서버 배포 FAIL!
+          **message**  |   ${{ github.event.head_commit.message }}
+          **commit**   |  ${{ github.sha }}
+          **go to log** |  ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
