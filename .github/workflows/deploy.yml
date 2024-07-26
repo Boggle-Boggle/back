@@ -69,7 +69,6 @@ jobs:
         port: ${{ secrets.PI_PORT }}
         username: ${{ secrets.PI_USERNAME }}
         password: ${{ secrets.PI_PASSWORD }}
-        debug: true 
         script: |
           cd Project/bbegok/
           docker-compose pull
