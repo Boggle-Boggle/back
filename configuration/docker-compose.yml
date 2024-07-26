@@ -33,8 +33,13 @@ services:
     image: nginx:latest
     ports:
       - "80:80"
+      - "443:443"
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf
+      - ./default.conf:/etc/nginx/conf.d/default.conf
+    environment:
+      - DOMAIN_NAME=${DOMAIN_NAME}
+      - BACKEND_SERVICE=app:8080
     depends_on:
       - app
       
