@@ -2,6 +2,11 @@ server {
     listen 80;
     server_name ${DOMAIN_NAME};
 
+     location /.well-known/acme-challenge/ {
+             allow all;
+             root /var/www/certbot;
+     } 
+
     # HTTP를 HTTPS로 리다이렉트
     location / {
         return 301 https://$host$request_uri;
@@ -12,8 +17,12 @@ server {
     listen 443 ssl;
     server_name ${DOMAIN_NAME};
 
-    ssl_certificate /etc/letsencrypt/live/${DOMAIN_NAME}/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/${DOMAIN_NAME}/privkey.pem;
+    //  ======== SSL 인증 관련 nginx config ========
+    ssl_certificate /etc/letsencrypt/live/rgback.duckdns.org-0001/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/rgback.duckdns.org-0001/privkey.pem;
+    include /etc/letsencrypt/options-ssl-nginx.conf;
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
+    //  ===========================================
 
     ssl_protocols TLSv1.2 TLSv1.3;
     ssl_prefer_server_ciphers on;
