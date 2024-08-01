@@ -53,14 +53,6 @@ jobs:
         SSL_CERTIFICATE: ${{ secrets.SSL_CERTIFICATE }}
         SSL_CERTIFICATE_KEY: ${{ secrets.SSL_CERTIFICATE_KEY }}
 
-    #nginx.config 셋팅
-    - name: Create nginx.conf from template
-      run: |
-        envsubst < ./configuration/nginx.conf.template > ./configuration/nginx.conf
-      env:
-        DOMAIN_NAME: ${{ secrets.DOMAIN_NAME }}
-        SSL_CERTIFICATE: ${{ secrets.SSL_CERTIFICATE }}
-        SSL_CERTIFICATE_KEY: ${{ secrets.SSL_CERTIFICATE_KEY }}
 
     #configuration/이하의 파일을 서버로 복사
     - name: Copy files to Raspberry Pi
