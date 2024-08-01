@@ -37,9 +37,11 @@ services:
       - ./nginx.conf:/etc/nginx/nginx.conf
       - ${SSL_CERT_PATH}:/etc/nginx/ssl
     environment:
-      - DOMAIN_NAME: ${DOMAIN_NAME}
-      - SSL_CERTIFICATE: ${SSL_CERTIFICATE}
-      - SSL_CERTIFICATE_KEY: ${SSL_CERTIFICATE_KEY}
+      - DOMAIN_NAME=${DOMAIN_NAME}
+      - SSL_CERTIFICATE=${SSL_CERTIFICATE}
+      - SSL_CERTIFICATE_KEY=${SSL_CERTIFICATE_KEY}
+    command: >
+      /bin/bash -c "envsubst '$$DOMAIN_NAME $$SSL_CERTIFICATE $$SSL_CERTIFICATE_KEY' < /etc/nginx/nginx.conf.template > /etc/nginx/nginx.conf && nginx -g 'daemon off;'"
     depends_on:
       - app
       - portainer
