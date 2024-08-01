@@ -49,13 +49,6 @@ jobs:
         MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
         DOMAIN_NAME: ${{ secrets.DOMAIN_NAME }}
 
-    #default.conf 셋팅
-    - name: Create default.conf file
-      run: |
-        envsubst < ./configuration/default.conf.template > ./configuration/default.conf
-      env:
-        DOMAIN_NAME: ${{ secrets.DOMAIN_NAME }}
-
     #configuration/이하의 파일을 서버로 복사
     - name: Copy files to Raspberry Pi
       uses: appleboy/scp-action@master
@@ -83,7 +76,6 @@ jobs:
           docker-compose down
           docker-compose up -d
           docker image prune -f
-          docker-compose --env-file .env exec -T nginx nginx -s reload || docker-compose --env-file .env restart nginx
 
     - name: Discord Webhook when success
       if: success()
