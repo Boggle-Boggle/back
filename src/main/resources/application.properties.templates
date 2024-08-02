@@ -41,5 +41,6 @@ spring.security.oauth2.client.registration.kakao.clientId=${KAKAO_CLIENT}
 spring.security.oauth2.client.registration.kakao.clientSecret=${KAKAO_SECRET}
 spring.security.oauth2.client.registration.kakao.client-authentication-method=client_secret_post
 spring.security.oauth2.client.registration.kakao.authorizationGrantType=authorization_code
-spring.security.oauth2.client.registration.kakao.redirectUri={baseUrl}/{action}/oauth2/code/{registrationId}
+spring.security.oauth2.client.registration.kakao.redirectUri=https://bbaegok.duckdns.org:50443/{action}/oauth2/code/{registrationId}
+#spring.security.oauth2.client.registration.kakao.redirectUri={baseUrl}/{action}/oauth2/code/{registrationId}
 spring.security.oauth2.client.registration.kakao.clientName=Kakao
