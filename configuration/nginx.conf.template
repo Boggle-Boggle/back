@@ -20,8 +20,8 @@ http {
         ssl_certificate ${SSL_CERTIFICATE};
         ssl_certificate_key ${SSL_CERTIFICATE_KEY};
 
-        location /bbegok/ { #모든 요청을 Spring으로 프록시
-            rewrite ^/bbegok/(.*) /$1 break;
+        location /backend/ { #모든 요청을 Spring으로 프록시
+            rewrite ^/backend/(.*) /$1 break;
             proxy_pass http://spring_app/;
             proxy_set_header Host $host;
             proxy_set_header X-Real-IP $remote_addr;
