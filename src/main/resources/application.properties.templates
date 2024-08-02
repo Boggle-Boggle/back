@@ -19,6 +19,7 @@ cors.allowed-methods=GET,POST,PUT,DELETE,OPTIONS
 cors.allowed-headers=*
 
 # jwt secret key
+jwt.secret=${JWT_SECRET}
 app.auth.tokenSecret=${JWT_SECRET}
 
 #30 min
