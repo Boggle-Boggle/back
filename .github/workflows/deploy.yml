@@ -19,8 +19,7 @@ jobs:
     # application.properties 생성
     - name: Generate application.properties
       run: |
-        cd back
-        envsubst < ./src/main/resources/application.properties.template > ./src/main/resources/application.properties
+        envsubst < ./src/main/resources/application.properties.templates > ./src/main/resources/application.properties
       env:
         MYSQL_URL: ${{ secrets.MYSQL_URL }}
         MYSQL_USER: ${{ secrets.MYSQL_USER }}
