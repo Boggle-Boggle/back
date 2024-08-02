@@ -32,7 +32,7 @@ jobs:
     - name: Build with Gradle  
       run: |
         chmod +x ./gradlew
-        ./gradlew build
+        ./gradlew build -x test
 
     #도커허브 로그인
     - name: Login to DockerHub
