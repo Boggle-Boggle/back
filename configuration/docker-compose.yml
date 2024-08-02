@@ -9,7 +9,7 @@ services:
     environment:
       SPRING_DATASOURCE_URL: ${MYSQL_URL}
       SPRING_DATASOURCE_USERNAME: ${MYSQL_USER}
-      SPRING_DATASOURCE_PASSWORD: ${MYSQL_PASSWORD}
+      SPRING_DATASOURCE_PASSWORD: ${MYSQL_ROOT_PASSWORD}
 
   portainer:
     image: portainer/portainer-ce
