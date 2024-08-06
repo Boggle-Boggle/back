@@ -1,7 +1,6 @@
-package com.boggle_boggle.bbegok;
+package com.boggle_boggle.bbegok.controller;
 
 import com.boggle_boggle.bbegok.dto.base.DataResponseDto;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;

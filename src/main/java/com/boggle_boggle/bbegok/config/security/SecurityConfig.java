@@ -62,8 +62,8 @@ public class SecurityConfig {
                 //url 접근권한처리
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
-                        .requestMatchers("/guest/**").permitAll()
-                        .requestMatchers("/api/**").hasAnyAuthority(RoleType.USER.getCode())
+                        .requestMatchers("/guest/**","/auth/**").permitAll()
+                        .requestMatchers("/user/**").hasAnyAuthority(RoleType.USER.getCode())
                         .anyRequest().authenticated())
                 
                 //OAuth2 로그인 요청 처리

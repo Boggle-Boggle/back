@@ -1,14 +1,12 @@
-package com.boggle_boggle.bbegok.controller.auth;
+package com.boggle_boggle.bbegok.controller;
 
 import com.boggle_boggle.bbegok.config.properties.AppProperties;
 import com.boggle_boggle.bbegok.dto.base.DataResponseDto;
 import com.boggle_boggle.bbegok.dto.base.ErrorResponseDto;
 import com.boggle_boggle.bbegok.dto.base.ResponseDto;
-import com.boggle_boggle.bbegok.entity.auth.AuthReqModel;
 import com.boggle_boggle.bbegok.entity.user.UserRefreshToken;
 import com.boggle_boggle.bbegok.exception.Code;
 import com.boggle_boggle.bbegok.oauth.entity.RoleType;
-import com.boggle_boggle.bbegok.oauth.entity.UserPrincipal;
 import com.boggle_boggle.bbegok.oauth.token.AuthToken;
 import com.boggle_boggle.bbegok.oauth.token.AuthTokenProvider;
 import com.boggle_boggle.bbegok.repository.user.UserRefreshTokenRepository;
@@ -25,7 +23,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Date;
 
 @RestController
-@RequestMapping("/api/v1/auth")
+@RequestMapping("/auth")
 @RequiredArgsConstructor
 public class AuthController {
 
