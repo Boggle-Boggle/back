@@ -111,6 +111,7 @@ public class AuthController {
         String refreshToken = CookieUtil.getCookie(request, REFRESH_TOKEN)
                 .map(Cookie::getValue)
                 .orElse(null);
+        System.out.println("refreshToken ? "+refreshToken);
 
         if (refreshToken != null) {
             System.out.println("refresh 토큰으로 userId 찾기");
