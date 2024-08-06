@@ -6,6 +6,7 @@ import com.boggle_boggle.bbegok.dto.base.ErrorResponseDto;
 import com.boggle_boggle.bbegok.dto.base.ResponseDto;
 import com.boggle_boggle.bbegok.entity.user.UserRefreshToken;
 import com.boggle_boggle.bbegok.exception.Code;
+import com.boggle_boggle.bbegok.exception.exception.GeneralException;
 import com.boggle_boggle.bbegok.oauth.entity.RoleType;
 import com.boggle_boggle.bbegok.oauth.repository.OAuth2AuthorizationRequestBasedOnCookieRepository;
 import com.boggle_boggle.bbegok.oauth.token.AuthToken;
@@ -23,6 +24,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
+
+import static com.boggle_boggle.bbegok.exception.Code.EMPTY_ACCESS_TOKEN;
+import static com.boggle_boggle.bbegok.exception.Code.INVALID_ACCESS_TOKEN;
 
 @RestController
 @RequestMapping("/auth")
@@ -107,18 +111,19 @@ public class AuthController {
     @PostMapping("/logout")
     public ResponseDto logout(HttpServletRequest request, HttpServletResponse response) {
         System.out.println("logout 진입");
-        // 1. 쿠키에서 리프레시 토큰 가져오기
-        String refreshToken = CookieUtil.getCookie(request, REFRESH_TOKEN)
-                .map(Cookie::getValue)
-                .orElse(null);
-        System.out.println("refreshToken ? "+refreshToken);
+        // 1. 헤더에서 액세스 토큰 가져오기
+        String accessToken = request.getHeader("Authorization");
+        if (accessToken != null && accessToken.startsWith("Bearer ")) {
+            accessToken = accessToken.substring(7);
+        }
 
-        if (refreshToken != null) {
-            System.out.println("refresh 토큰으로 userId 찾기");
-            AuthToken authToken = tokenProvider.convertAuthToken(refreshToken);
+        System.out.println("액세스 토큰으로 userId 찾기");
+        if (accessToken != null) {
+            System.out.println("userId 찾기");
+            AuthToken authToken = tokenProvider.convertAuthToken(accessToken);
             Claims claims = null;
 
-            System.out.println("refresh가 유효한가?" +authToken.validate());
+            System.out.println("유효한가?" +authToken.validate());
             if (authToken.validate()) claims = authToken.getTokenClaims();
             else claims = authToken.getExpiredTokenClaims();
 
@@ -126,13 +131,16 @@ public class AuthController {
                 String userId = claims.getSubject();
                 System.out.println("userId = "+userId);
                 clearRefreshToken.deleteRefreshTokenByUserId(userId);
+
+                // 리프레시 토큰 삭제
+                clearRefreshToken.deleteRefreshTokenByUserId(userId);
             }
+
         }
 
-       // 5. 쿠키에서 리프레시 토큰 제거
+        // 쿠키에서 리프레시 토큰 제거
         CookieUtil.deleteCookie(request, response, REFRESH_TOKEN);
 
-        // 액세스 토큰의 유효성과 관계없이 로그아웃 성공으로 처리. 액세스토큰은 프론트엔드에서 삭제처리
         return DataResponseDto.of(null, "Logout successful.");
     }
 }
