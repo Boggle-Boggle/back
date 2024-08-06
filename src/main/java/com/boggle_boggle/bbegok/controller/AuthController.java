@@ -104,9 +104,10 @@ public class AuthController {
 
     @PostMapping("/logout")
     public ResponseDto logout(HttpServletRequest request, HttpServletResponse response) {
+        System.out.println("logout 진입");
         // 1. 액세스 토큰 가져오기
         String accessToken = HeaderUtil.getAccessToken(request);
-
+        System.out.println("액세스 토큰 검증");
         // 2. 액세스 토큰 검증
         if (accessToken != null) {
             AuthToken authToken = tokenProvider.convertAuthToken(accessToken);
@@ -119,10 +120,10 @@ public class AuthController {
                 clearRefreshToken.deleteRefreshTokenByUserId(userId);
             }
         }
-
+        System.out.println("항상 쿠키에서 리프레시 토큰 제거");
         // 항상 쿠키에서 리프레시 토큰 제거
         CookieUtil.deleteCookie(request, response, REFRESH_TOKEN);
-
+        System.out.println("성공으로 처리");
         // 액세스 토큰의 유효성과 관계없이 로그아웃 성공으로 처리. 액세스토큰은 프론트엔드에서 삭제처리
         return DataResponseDto.of(null, "Logout successful.");
     }

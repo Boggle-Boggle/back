@@ -42,6 +42,7 @@ public class SecurityConfig {
     private final CustomOAuth2UserService oAuth2UserService;
     private final TokenAccessDeniedHandler tokenAccessDeniedHandler;
     private final UserRefreshTokenRepository userRefreshTokenRepository;
+    private final TokenAuthenticationFilter tokenAuthenticationFilter;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -63,9 +64,9 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
                         .requestMatchers("/guest/**","/auth/**").permitAll()
-                        .requestMatchers("/user/**").hasAnyAuthority(RoleType.USER.getCode())
+                        //.requestMatchers("/user/**").hasAnyAuthority(RoleType.USER.getCode())
                         .anyRequest().authenticated())
-                
+
                 //OAuth2 로그인 요청 처리
                 .oauth2Login(oauth2 -> oauth2
                         .authorizationEndpoint(authorization -> authorization
