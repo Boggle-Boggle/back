@@ -45,7 +45,6 @@ public class CookieUtil {
                 .path("/")
                 .sameSite("None")  // SameSite 속성 추가
                 .httpOnly(true)
-                .domain("localhost:5173")
                 .maxAge(maxAge)
                 .secure(true)      // Secure 속성 추가 (HTTPS 필요)
                 .build();
