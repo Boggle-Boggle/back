@@ -63,8 +63,8 @@ public enum Code {
     TOKEN_NOT_EXPIRED(50006, HttpStatus.UNPROCESSABLE_ENTITY ,"Access token is not expired yet" ),
     REFRESH_TOKEN_NOT_FOUND(50007, HttpStatus.UNAUTHORIZED, "Refresh token not found"),
     INVALID_REFRESH_TOKEN(50008,HttpStatus.UNAUTHORIZED ,  "Invalid refresh token"),
-    INVALID_ACCESS_TOKEN(50008,HttpStatus.UNAUTHORIZED ,  "Invalid refresh token");
-
+    INVALID_ACCESS_TOKEN(50008,HttpStatus.UNAUTHORIZED ,  "Invalid refresh token"),
+    EMPTY_COOKIE(50009,HttpStatus.UNAUTHORIZED, "RefreshToken Empty");
 
     private final Integer code;
     private final HttpStatus httpStatus;
