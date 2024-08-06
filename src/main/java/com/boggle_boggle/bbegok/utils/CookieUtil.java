@@ -24,12 +24,20 @@ public class CookieUtil {
     }
 
     public static void addCookie(HttpServletResponse response, String name, String value, int maxAge) {
-        Cookie cookie = new Cookie(name, value);
-        cookie.setPath("/");
-        cookie.setHttpOnly(true);
-        cookie.setMaxAge(maxAge);
+        // Cookie 객체 생성은 필요 없음
+        String path = "/";
+        boolean httpOnly = true;
+        boolean secure = true; // HTTPS를 사용하는 경우
 
-        response.addCookie(cookie);
+        String sameSite = "None";
+        String headerValue = String.format("%s=%s; Path=%s; HttpOnly; Secure; SameSite=%s",
+                name, value, path, sameSite);
+
+        if (maxAge > 0) {
+            headerValue += "; Max-Age=" + maxAge;
+        }
+
+        response.setHeader("Set-Cookie", headerValue);
     }
 
     public static void deleteCookie(HttpServletRequest request, HttpServletResponse response, String name) {

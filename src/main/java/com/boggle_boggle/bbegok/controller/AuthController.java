@@ -117,12 +117,13 @@ public class AuthController {
             AuthToken authToken = tokenProvider.convertAuthToken(refreshToken);
             Claims claims = null;
 
+            System.out.println("refresh가 유효한가?" +authToken.validate());
             if (authToken.validate()) claims = authToken.getTokenClaims();
             else claims = authToken.getExpiredTokenClaims();
 
             if (claims != null) {
                 String userId = claims.getSubject();
-                System.out.println("refresh 토큰으로 userId 찾기 "+userId);
+                System.out.println("userId = "+userId);
                 clearRefreshToken.deleteRefreshTokenByUserId(userId);
             }
         }
