@@ -26,6 +26,13 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
             HttpServletResponse response,
             FilterChain filterChain)  throws ServletException, IOException {
 
+        // 특정 경로에서 필터 적용 제외
+        String requestURI = request.getRequestURI();
+        if (requestURI.startsWith("/guest/") || requestURI.startsWith("/auth/")) {
+            filterChain.doFilter(request, response); // 필터 스킵하고 체인 계속 진행
+            return;
+        }
+
         String tokenStr = HeaderUtil.getAccessToken(request);
         AuthToken token = tokenProvider.convertAuthToken(tokenStr);
 
