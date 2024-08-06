@@ -35,14 +35,9 @@ public class CookieUtil {
     }
 
     public static void addCookie(HttpServletResponse response, String name, String value, int maxAge) {
-//        Cookie cookie = new Cookie(name, value);
-//        cookie.setPath("/");
-//        cookie.setHttpOnly(true);
-//        cookie.setMaxAge(maxAge);
-        //response.addCookie(cookie);
-
         ResponseCookie cookie = ResponseCookie.from(name, value)
                 .path("/")
+                .domain("bbaegok.duckdns.org") // 도메인 설정
                 .sameSite("None")  // SameSite 속성 추가
                 .httpOnly(true)
                 .maxAge(maxAge)
@@ -54,7 +49,6 @@ public class CookieUtil {
 
     public static void deleteCookie(HttpServletRequest request, HttpServletResponse response, String name) {
         Cookie[] cookies = request.getCookies();
-
         if (cookies != null && cookies.length > 0) {
             for (Cookie cookie : cookies) {
                 if (name.equals(cookie.getName())) {
