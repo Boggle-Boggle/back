@@ -65,10 +65,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         LocalDateTime now = LocalDateTime.now();
         User user = new User(
                 userId,
-                "익명의 독서가",
-                null,
                 "Y",
-                "/default.jpg",
                 providerType,
                 RoleType.USER,
                 now,
