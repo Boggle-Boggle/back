@@ -1,6 +1,7 @@
 package com.boggle_boggle.bbegok.oauth.handler;
 
 import com.boggle_boggle.bbegok.config.properties.AppProperties;
+import com.boggle_boggle.bbegok.entity.user.User;
 import com.boggle_boggle.bbegok.entity.user.UserRefreshToken;
 import com.boggle_boggle.bbegok.oauth.entity.ProviderType;
 import com.boggle_boggle.bbegok.oauth.entity.RoleType;
@@ -10,6 +11,7 @@ import com.boggle_boggle.bbegok.oauth.repository.OAuth2AuthorizationRequestBased
 import com.boggle_boggle.bbegok.oauth.token.AuthToken;
 import com.boggle_boggle.bbegok.oauth.token.AuthTokenProvider;
 import com.boggle_boggle.bbegok.repository.user.UserRefreshTokenRepository;
+import com.boggle_boggle.bbegok.repository.user.UserRepository;
 import com.boggle_boggle.bbegok.utils.CookieUtil;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
@@ -41,6 +43,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
     private final AppProperties appProperties;
     private final UserRefreshTokenRepository userRefreshTokenRepository;
     private final OAuth2AuthorizationRequestBasedOnCookieRepository authorizationRequestRepository;
+    private final UserRepository userRepository;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
@@ -97,7 +100,8 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         if (userRefreshToken != null) {
             userRefreshToken.setRefreshToken(refreshToken.getToken());
         } else {
-            userRefreshToken = new UserRefreshToken(userInfo.getId(), refreshToken.getToken());
+            User userEntity = userRepository.findByUserId(userInfo.getId());
+            userRefreshToken = new UserRefreshToken(userEntity, refreshToken.getToken());
             userRefreshTokenRepository.saveAndFlush(userRefreshToken);
         }
 

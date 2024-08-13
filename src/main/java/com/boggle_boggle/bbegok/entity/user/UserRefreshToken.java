@@ -22,10 +22,9 @@ public class UserRefreshToken {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long refreshTokenSeq;
 
-    @Column(name = "USER_ID", length = 64, unique = true)
-    @NotNull
-    @Size(max = 64)
-    private String userId;
+    @OneToOne
+    @JoinColumn(name = "USER_SEQ")
+    private User user;
 
     @Column(name = "REFRESH_TOKEN", length = 256)
     @NotNull
@@ -33,10 +32,10 @@ public class UserRefreshToken {
     private String refreshToken;
 
     public UserRefreshToken(
-            @NotNull @Size(max = 64) String userId,
+            User user,
             @NotNull @Size(max = 256) String refreshToken
     ) {
-        this.userId = userId;
+        this.user = user;
         this.refreshToken = refreshToken;
     }
 }
