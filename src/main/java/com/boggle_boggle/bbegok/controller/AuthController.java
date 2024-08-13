@@ -110,27 +110,21 @@ public class AuthController {
 
     @PostMapping("/logout")
     public ResponseDto logout(HttpServletRequest request, HttpServletResponse response) {
-        System.out.println("logout 진입");
         // 1. 헤더에서 액세스 토큰 가져오기
         String accessToken = request.getHeader("Authorization");
-        System.out.println("받은거 그대로 찍기 "+accessToken);
         if (accessToken != null && accessToken.startsWith("Bearer ")) {
             accessToken = accessToken.substring(7);
         }
 
-        System.out.println("찾아봐 "+accessToken);
         if (accessToken != null) {
-            System.out.println("userId 찾기");
             AuthToken authToken = tokenProvider.convertAuthToken(accessToken);
             Claims claims = null;
 
-            System.out.println("유효한가?" +authToken.validate());
             if (authToken.validate()) claims = authToken.getTokenClaims();
             else claims = authToken.getExpiredTokenClaims();
 
             if (claims != null) {
                 String userId = claims.getSubject();
-                System.out.println("userId = "+userId);
                 clearRefreshToken.deleteRefreshTokenByUserId(userId);
 
                 // 리프레시 토큰 삭제
