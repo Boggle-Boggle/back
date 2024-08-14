@@ -27,8 +27,8 @@ jobs:
         JWT_SECRET: ${{ secrets.JWT_SECRET }}
         KAKAO_CLIENT: ${{ secrets.KAKAO_CLIENT }}
         KAKAO_SECRET: ${{ secrets.KAKAO_SECRET }}
-        ALADIN_TTB_KEY : ${ALADIN_TTB_KEY}
-        ALADIN_SERVER_URL : ${ALADIN_SERVER_URL}
+        ALADIN_TTB_KEY: ${{ALADIN_TTB_KEY}}
+        ALADIN_SERVER_URL: ${{ALADIN_SERVER_URL}}
 
     #프로젝트 빌드
     - name: Build with Gradle  
