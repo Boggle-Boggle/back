@@ -35,11 +35,10 @@ public class User {
     @Column(name = "USERNAME", length = 100)
     @NotNull
     @Size(max = 100)
-    private String username;
+    private String username = "익명의 독서가";
 
     @JsonIgnore
     @Column(name = "PASSWORD", length = 128)
-    @NotNull
     @Size(max = 128)
     private String password;
 
@@ -54,7 +53,7 @@ public class User {
     @Column(name = "PROFILE_IMAGE_URL", length = 512, nullable = true)
     @NotNull
     @Size(max = 512)
-    private String profileImageUrl;
+    private String profileImageUrl = "/default_profile.jpg";
 
     @Column(name = "PROVIDER_TYPE", length = 20)
     @Enumerated(EnumType.STRING)
@@ -76,21 +75,14 @@ public class User {
 
     public User(
             @NotNull @Size(max = 64) String userId,
-            @NotNull @Size(max = 100) String username,
-            @Size(max = 512) String email,
             @NotNull @Size(max = 1) String emailVerifiedYn,
-            @NotNull @Size(max = 512) String profileImageUrl,
             @NotNull ProviderType providerType,
             @NotNull RoleType roleType,
             @NotNull LocalDateTime createdAt,
             @NotNull LocalDateTime modifiedAt
     ) {
         this.userId = userId;
-        this.username = username;
-        this.password = "NO_PASS";
-        this.email = email != null ? email : "NO_EMAIL";
         this.emailVerifiedYn = emailVerifiedYn;
-        this.profileImageUrl = profileImageUrl != null ? profileImageUrl : "";
         this.providerType = providerType;
         this.roleType = roleType;
         this.createdAt = createdAt;
