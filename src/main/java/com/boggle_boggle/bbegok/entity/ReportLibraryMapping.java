@@ -21,4 +21,10 @@ public class ReportLibraryMapping {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "report_library_mapping")
     private ReportLibraryMapping reportLibraryMapping;
+
+    protected ReportLibraryMapping(){}
+
+    public static ReportLibraryMapping createReportLibraryMapping(){
+        return new ReportLibraryMapping();
+    }
 }

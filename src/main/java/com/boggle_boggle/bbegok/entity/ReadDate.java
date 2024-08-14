@@ -22,4 +22,10 @@ public class ReadDate {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "report_seq")
     private Report report;
+
+    protected ReadDate(){}
+
+    public static ReadDate createReadDate(){
+        return new ReadDate();
+    }
 }

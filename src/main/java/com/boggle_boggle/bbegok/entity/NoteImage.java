@@ -21,4 +21,10 @@ public class NoteImage {
 
     @Column(name = "image_url", length = 255, nullable = false)
     private String imageUrl;
+
+    protected NoteImage(){}
+
+    public static NoteImage createNoteImage(){
+        return new NoteImage();
+    }
 }

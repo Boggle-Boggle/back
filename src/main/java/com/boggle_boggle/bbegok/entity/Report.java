@@ -43,4 +43,10 @@ public class Report {
 
     @Column(name = "status", length = 255, nullable = false)
     private ReadStatus status;
+
+    protected Report(){}
+
+    public static Report createReport(){
+        return new Report();
+    }
 }

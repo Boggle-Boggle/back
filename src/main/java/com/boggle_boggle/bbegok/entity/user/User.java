@@ -15,77 +15,87 @@ import java.time.LocalDateTime;
 
 @Getter
 @Setter
-@NoArgsConstructor
-@AllArgsConstructor
 @Entity
-@Table(name = "USER")
 public class User {
 
     @JsonIgnore
     @Id
-    @Column(name = "USER_SEQ")
+    @Column(name = "user_seq")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userSeq;
 
-    @Column(name = "USER_ID", length = 64, unique = true)
+    @Column(name = "user_id", length = 64, unique = true)
     @NotNull
     @Size(max = 64)
     private String userId;
 
-    @Column(name = "USERNAME", length = 100)
+    @Column(name = "user_name", length = 100)
     @NotNull
     @Size(max = 100)
-    private String username = "익명의 독서가";
+    private String userName = "익명의 독서가";
 
     @JsonIgnore
-    @Column(name = "PASSWORD", length = 128)
+    @Column(name = "password", length = 128)
     @Size(max = 128)
     private String password;
 
-    @Column(name = "EMAIL", length = 512, unique = true, nullable = true)
+    @Column(name = "email", length = 512, unique = true, nullable = true)
     @Size(max = 512)
     private String email;
 
-    @Column(name = "EMAIL_VERIFIED_YN", length = 1)
+    @Column(name = "email_verified_yn", length = 1)
     @Size(min = 1, max = 1)
     private String emailVerifiedYn;
 
-    @Column(name = "PROFILE_IMAGE_URL", length = 512, nullable = true)
+    @Column(name = "profile_image_url", length = 512, nullable = true)
     @NotNull
     @Size(max = 512)
     private String profileImageUrl = "/default_profile.jpg";
 
-    @Column(name = "PROVIDER_TYPE", length = 20)
+    @Column(name = "provider_type", length = 20)
     @Enumerated(EnumType.STRING)
     @NotNull
     private ProviderType providerType;
 
-    @Column(name = "ROLE_TYPE", length = 20)
+    @Column(name = "role_type", length = 20)
     @Enumerated(EnumType.STRING)
     @NotNull
     private RoleType roleType;
 
-    @Column(name = "CREATED_AT")
+    @Column(name = "created_at")
     @NotNull
     private LocalDateTime createdAt;
 
-    @Column(name = "MODIFIED_AT")
+    @Column(name = "modified_at")
     @NotNull
     private LocalDateTime modifiedAt;
 
-    public User(
-            @NotNull @Size(max = 64) String userId,
-            @NotNull @Size(max = 1) String emailVerifiedYn,
-            @NotNull ProviderType providerType,
-            @NotNull RoleType roleType,
-            @NotNull LocalDateTime createdAt,
-            @NotNull LocalDateTime modifiedAt
-    ) {
+
+    protected User(){}
+
+    protected User(
+            String userId,
+            String emailVerifiedYn,
+            ProviderType providerType,
+            RoleType roleType,
+            LocalDateTime createdAt,
+            LocalDateTime modifiedAt) {
         this.userId = userId;
         this.emailVerifiedYn = emailVerifiedYn;
         this.providerType = providerType;
         this.roleType = roleType;
         this.createdAt = createdAt;
         this.modifiedAt = modifiedAt;
+    }
+
+
+    public static User createUser(
+            @NotNull @Size(max = 64) String userId,
+            @NotNull @Size(max = 1) String emailVerifiedYn,
+            @NotNull ProviderType providerType,
+            @NotNull RoleType roleType,
+            @NotNull LocalDateTime createdAt,
+            @NotNull LocalDateTime modifiedAt){
+        return new User(userId, emailVerifiedYn, providerType, roleType, createdAt, modifiedAt);
     }
 }

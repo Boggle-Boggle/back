@@ -11,31 +11,37 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@NoArgsConstructor
-@AllArgsConstructor
 @Entity
-@Table(name = "USER_REFRESH_TOKEN")
 public class UserRefreshToken {
     @JsonIgnore
     @Id
-    @Column(name = "REFRESH_TOKEN_SEQ")
+    @Column(name = "refresh_token_seq")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long refreshTokenSeq;
 
     @OneToOne
-    @JoinColumn(name = "USER_SEQ")
+    @JoinColumn(name = "user_seq")
     private User user;
 
-    @Column(name = "REFRESH_TOKEN", length = 256)
-    @NotNull
-    @Size(max = 256)
+    @Column(name = "user_id", length = 64)
+    private String userId;
+
+    @Column(name = "refresh_token", length = 256)
     private String refreshToken;
 
-    public UserRefreshToken(
+    protected UserRefreshToken(){}
+
+    protected UserRefreshToken(
             User user,
-            @NotNull @Size(max = 256) String refreshToken
-    ) {
+            String refreshToken ) {
         this.user = user;
+        this.userId = user.getUserId();
         this.refreshToken = refreshToken;
+    }
+
+    public static UserRefreshToken createUserRefreshToken(
+            User user,
+            @NotNull @Size(max = 256) String refreshToken){
+        return new UserRefreshToken(user, refreshToken);
     }
 }

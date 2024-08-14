@@ -63,7 +63,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
     private User createUser(String userId, ProviderType providerType) {
         LocalDateTime now = LocalDateTime.now();
-        User user = new User(
+        User user = User.createUser(
                 userId,
                 "Y",
                 providerType,

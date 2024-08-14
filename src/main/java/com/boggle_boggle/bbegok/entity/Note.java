@@ -34,4 +34,10 @@ public class Note {
 
     @OneToMany(mappedBy = "note", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<NoteImage> imageUrlList = new ArrayList<>();
+
+    protected Note(){}
+
+    public static Note createNote(){
+        return new Note();
+    }
 }

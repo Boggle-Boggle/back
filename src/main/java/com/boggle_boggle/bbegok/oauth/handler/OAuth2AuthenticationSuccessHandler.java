@@ -101,7 +101,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
             userRefreshToken.setRefreshToken(refreshToken.getToken());
         } else {
             User userEntity = userRepository.findByUserId(userInfo.getId());
-            userRefreshToken = new UserRefreshToken(userEntity, refreshToken.getToken());
+            userRefreshToken = UserRefreshToken.createUserRefreshToken(userEntity, refreshToken.getToken());
             userRefreshTokenRepository.saveAndFlush(userRefreshToken);
         }
 
