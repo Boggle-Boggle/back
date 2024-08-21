@@ -59,18 +59,23 @@ public class SecurityConfig {
                 .formLogin(form -> form.disable())
                 .httpBasic(httpBasic -> httpBasic.disable())
 
-                //인증되지 않은 요청이 보호된 리소스에 접근할때
+                
                 .exceptionHandling(exceptions -> exceptions
-                        .authenticationEntryPoint(new RestAuthenticationEntryPoint())
-                        .accessDeniedHandler(customAccessDeniedHandler))
-                
-                
+                        .authenticationEntryPoint(new RestAuthenticationEntryPoint()) //인증되지 않은 요청이 보호된 리소스에 접근할때
+                        .accessDeniedHandler(customAccessDeniedHandler)) //인증된 사용자가 접근권한이 없을때
+
                 //url 접근권한처리
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
-                        .requestMatchers("/guest/**","/auth/**","/books/**").permitAll()
-                        //.requestMatchers("/user/**").hasAnyAuthority(RoleType.USER.getCode())
-                        .anyRequest().authenticated())
+                        //인증 관련 API는 모든 요청이 허용
+                        .requestMatchers("/auth/**").permitAll()
+
+                        //guest : 약관동의, 닉네임 수정 API에만 접근 가능
+                        .requestMatchers("/user/**").hasAnyAuthority(RoleType.GUEST.getCode(),RoleType.USER.getCode())
+
+                        //user : 빼곡의 모든 API에 접근가능
+                        .requestMatchers("/books/**").hasAnyAuthority(RoleType.USER.getCode())
+                        .anyRequest().hasAuthority(RoleType.USER.getCode()))
 
                 //OAuth2 로그인 요청 처리
                 .oauth2Login(oauth2 -> oauth2

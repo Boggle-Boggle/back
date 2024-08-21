@@ -1,27 +1,32 @@
 package com.boggle_boggle.bbegok.oauth.handler;
 
+import com.boggle_boggle.bbegok.dto.base.ErrorResponseDto;
 import com.boggle_boggle.bbegok.exception.Code;
 import com.boggle_boggle.bbegok.exception.exception.GeneralException;
-import com.boggle_boggle.bbegok.oauth.entity.RoleType;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.stereotype.Component;
+import org.springframework.web.servlet.HandlerExceptionResolver;
 
 import java.io.IOException;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class CustomAccessDeniedHandler implements AccessDeniedHandler {
 
-    private final TokenAccessDeniedHandler tokenAccessDeniedHandler;
+    //private final HandlerExceptionResolver handlerExceptionResolver;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
-    /** 모든 자원은 USER에게만 열려있으므로, 인증객체가 Guest일땐 에러 발생
+    /** 권한이 없는 자원에 접근할때 실행됨
      * @param request
      * @param response
      * @param accessDeniedException
@@ -30,11 +35,10 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
      */
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException) throws IOException, ServletException {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth != null && auth.getAuthorities().stream()
-                .anyMatch(a -> a.getAuthority().equals(RoleType.GUEST.getCode()))) {
-            throw new GeneralException(Code.GUEST_DENIED_ACCESS);
-        }
-        tokenAccessDeniedHandler.handle(request, response, accessDeniedException);
+        log.info("Responding with FORBIDDEN error. Message := {}", accessDeniedException.getMessage());
+        ErrorResponseDto errorResponse = ErrorResponseDto.of(Code.GUEST_DENIED_ACCESS);
+        response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        response.getWriter().write(objectMapper.writeValueAsString(errorResponse));
     }
 }
