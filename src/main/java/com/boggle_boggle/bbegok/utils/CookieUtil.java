@@ -5,6 +5,7 @@ import com.boggle_boggle.bbegok.exception.exception.GeneralException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.util.SerializationUtils;
@@ -13,12 +14,11 @@ import java.util.Base64;
 import java.util.Optional;
 
 public class CookieUtil {
+    @Value("${bbaegok.domain}")
+    private static String domain;
 
     public static Optional<Cookie> getCookie(HttpServletRequest request, String name) {
         Cookie[] cookies = request.getCookies();
-
-        if (cookies == null) throw new GeneralException(Code.EMPTY_COOKIE);
-
         if (cookies != null && cookies.length > 0) {
             for (Cookie cookie : cookies) {
                 if (name.equals(cookie.getName()))  return Optional.of(cookie);
@@ -30,7 +30,7 @@ public class CookieUtil {
     public static void addCookie(HttpServletResponse response, String name, String value, int maxAge) {
         ResponseCookie cookie = ResponseCookie.from(name, value)
                 .path("/")
-                .domain("bbaegok.duckdns.org") // 도메인 설정
+                .domain(domain) // 도메인 설정
                 .sameSite("None")  // SameSite 속성 추가
                 .httpOnly(true)
                 .maxAge(maxAge)

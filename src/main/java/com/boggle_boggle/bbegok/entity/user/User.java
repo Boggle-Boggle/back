@@ -29,10 +29,8 @@ public class User {
     @Size(max = 64)
     private String userId;
 
-    @Column(name = "user_name", length = 100)
-    @NotNull
-    @Size(max = 100)
-    private String userName = "익명의 독서가";
+    @Column(name = "user_name", unique = true, length = 20)
+    private String userName = null;
 
     @JsonIgnore
     @Column(name = "password", length = 128)
@@ -48,9 +46,7 @@ public class User {
     private String emailVerifiedYn;
 
     @Column(name = "profile_image_url", length = 512, nullable = true)
-    @NotNull
-    @Size(max = 512)
-    private String profileImageUrl = "/default_profile.jpg";
+    private String profileImageUrl = null;
 
     @Column(name = "provider_type", length = 20)
     @Enumerated(EnumType.STRING)

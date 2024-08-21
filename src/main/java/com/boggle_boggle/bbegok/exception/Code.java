@@ -50,7 +50,7 @@ public enum Code {
     // 권한 관련 예외
     ACCESS_DENIED(16000, HttpStatus.FORBIDDEN, "Access denied to requested resource"),
     INSUFFICIENT_PERMISSIONS(16001, HttpStatus.FORBIDDEN, "Insufficient permissions for this action"),
-
+    GUEST_DENIED_ACCESS(16003, HttpStatus.FORBIDDEN, "Guest denied acess user's resource"),
 
     // JWT 관련 예외
     JWT_INVALID_SIGNATURE(40001, HttpStatus.UNAUTHORIZED, "Invalid JWT signature"),
@@ -64,7 +64,7 @@ public enum Code {
     REFRESH_TOKEN_NOT_FOUND(50007, HttpStatus.UNAUTHORIZED, "Refresh token not found"),
     INVALID_REFRESH_TOKEN(50008,HttpStatus.UNAUTHORIZED ,  "Invalid refresh token"),
     INVALID_ACCESS_TOKEN(50008,HttpStatus.UNAUTHORIZED ,  "Invalid refresh token"),
-    EMPTY_COOKIE(50009,HttpStatus.UNAUTHORIZED, "Refresh token Empty"),
+    EMPTY_COOKIE(50009,HttpStatus.UNAUTHORIZED, "Empty COOKIE"),
     EMPTY_ACCESS_TOKEN(50010,HttpStatus.UNAUTHORIZED, "Access token Empty");
 
     private final Integer code;

@@ -67,7 +67,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                 userId,
                 "Y",
                 providerType,
-                RoleType.USER,
+                RoleType.GUEST,
                 now,
                 now
         );
