@@ -64,7 +64,7 @@ public enum Code {
     REFRESH_TOKEN_NOT_FOUND(50007, HttpStatus.UNAUTHORIZED, "Refresh token not found"),
     INVALID_REFRESH_TOKEN(50008,HttpStatus.UNAUTHORIZED ,  "Invalid refresh token"),
     INVALID_ACCESS_TOKEN(50008,HttpStatus.UNAUTHORIZED ,  "Invalid refresh token"),
-    EMPTY_COOKIE(50009,HttpStatus.UNAUTHORIZED, "Refresh token Empty"),
+    EMPTY_COOKIE(50009,HttpStatus.UNAUTHORIZED, "Empty COOKIE"),
     EMPTY_ACCESS_TOKEN(50010,HttpStatus.UNAUTHORIZED, "Access token Empty");
 
     private final Integer code;
