@@ -5,6 +5,7 @@ import com.boggle_boggle.bbegok.config.properties.CorsProperties;
 import com.boggle_boggle.bbegok.oauth.entity.RoleType;
 import com.boggle_boggle.bbegok.oauth.exception.RestAuthenticationEntryPoint;
 import com.boggle_boggle.bbegok.oauth.filter.TokenAuthenticationFilter;
+import com.boggle_boggle.bbegok.oauth.handler.CustomAccessDeniedHandler;
 import com.boggle_boggle.bbegok.oauth.handler.OAuth2AuthenticationFailureHandler;
 import com.boggle_boggle.bbegok.oauth.handler.OAuth2AuthenticationSuccessHandler;
 import com.boggle_boggle.bbegok.oauth.handler.TokenAccessDeniedHandler;
@@ -42,7 +43,8 @@ public class SecurityConfig {
     private final AuthTokenProvider tokenProvider;
     private final CustomUserDetailsService userDetailsService;
     private final CustomOAuth2UserService oAuth2UserService;
-    private final TokenAccessDeniedHandler tokenAccessDeniedHandler;
+    //private final TokenAccessDeniedHandler tokenAccessDeniedHandler; //CustomAccessDeniedHandler로 통합됨
+    private final CustomAccessDeniedHandler customAccessDeniedHandler;
     private final UserRefreshTokenRepository userRefreshTokenRepository;
     private final UserRepository userRepository;
 
@@ -59,8 +61,8 @@ public class SecurityConfig {
 
                 //인증되지 않은 요청이 보호된 리소스에 접근할때
                 .exceptionHandling(exceptions -> exceptions
-                        .authenticationEntryPoint(new RestAuthenticationEntryPoint()) 
-                        .accessDeniedHandler(tokenAccessDeniedHandler))
+                        .authenticationEntryPoint(new RestAuthenticationEntryPoint())
+                        .accessDeniedHandler(customAccessDeniedHandler))
                 
                 
                 //url 접근권한처리

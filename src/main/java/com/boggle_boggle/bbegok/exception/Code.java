@@ -50,7 +50,7 @@ public enum Code {
     // 권한 관련 예외
     ACCESS_DENIED(16000, HttpStatus.FORBIDDEN, "Access denied to requested resource"),
     INSUFFICIENT_PERMISSIONS(16001, HttpStatus.FORBIDDEN, "Insufficient permissions for this action"),
-
+    GUEST_DENIED_ACCESS(16003, HttpStatus.FORBIDDEN, "Guest denied acess user's resource"),
 
     // JWT 관련 예외
     JWT_INVALID_SIGNATURE(40001, HttpStatus.UNAUTHORIZED, "Invalid JWT signature"),
