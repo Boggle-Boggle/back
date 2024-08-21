@@ -17,10 +17,12 @@ public class ExceptionHandler extends ResponseEntityExceptionHandler {
 
     /** 유효성 검사 실패 처리
      */
-    @org.springframework.web.bind.annotation.ExceptionHandler
+    @org.springframework.web.bind.annotation.ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<Object> validation(ConstraintViolationException e, WebRequest request) {
+        System.out.println("유효성1 ");
         return handleExceptionInternal(e, Code.VALIDATION_ERROR, request);
     }
+
     /** 사용자 정의 예외 실패 처리
      */
     @org.springframework.web.bind.annotation.ExceptionHandler
@@ -33,6 +35,7 @@ public class ExceptionHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity<Object> exception(Exception e, WebRequest request) {
         return handleExceptionInternal(e, Code.INTERNAL_ERROR, request);
     }
+
 
     protected ResponseEntity<Object> handleExceptionInternal(Exception ex, Object body,
                                                              HttpHeaders headers, HttpStatus status, WebRequest request) {

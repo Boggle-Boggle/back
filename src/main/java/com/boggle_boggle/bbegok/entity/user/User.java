@@ -94,4 +94,8 @@ public class User {
             @NotNull LocalDateTime modifiedAt){
         return new User(userId, emailVerifiedYn, providerType, roleType, createdAt, modifiedAt);
     }
+
+    public void updateNickName(String nickName){
+        this.userName = nickName;
+    }
 }
