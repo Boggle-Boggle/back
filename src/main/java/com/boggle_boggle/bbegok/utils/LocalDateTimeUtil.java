@@ -9,4 +9,7 @@ public class LocalDateTimeUtil {
         LocalDate localDate = LocalDate.parse(date, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
         return localDate.atStartOfDay();
     }
+    public static LocalDateTime StringToLocalDate(String date){
+        return LocalDateTime.parse(date, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"));
+    }
 }
