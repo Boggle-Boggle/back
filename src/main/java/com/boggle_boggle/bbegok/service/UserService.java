@@ -6,14 +6,24 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 @Transactional
-
 public class UserService {
     private final UserRepository userRepository;
 
     public User getUser(String userId) {
         return userRepository.findByUserId(userId);
+    }
+
+    public void updateNicName(String userId, String name) {
+        User user = getUser(userId);
+        user.updateNickName(name);
+    }
+
+    public boolean isNicknameAvailable(String nickname) {
+        return userRepository.findByUserName(nickname).isEmpty();
     }
 }

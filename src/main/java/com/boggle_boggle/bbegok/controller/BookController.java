@@ -22,7 +22,6 @@ public class BookController {
 
     @GetMapping("/{isbn}")
     public DataResponseDto<BookDetailResponse> getBook(@PathVariable String isbn) {
-        System.out.println("인!");
         return DataResponseDto.of(bookService.getBook(isbn));
     }
 

@@ -21,6 +21,7 @@ public enum Code {
     INTERNAL_ERROR(20000, HttpStatus.INTERNAL_SERVER_ERROR, "Internal error"),
     DATA_ACCESS_ERROR(20001, HttpStatus.INTERNAL_SERVER_ERROR, "Data access error"),
     UNAUTHORIZED(40000, HttpStatus.UNAUTHORIZED, "User unauthorized"),
+    METHOD_NOT_ALLOWED(60000, HttpStatus.METHOD_NOT_ALLOWED, "Method Not Allowed"),
 
     // 책 관련 예외
     BOOK_NOT_FOUND(11000, HttpStatus.NOT_FOUND, "Book not found"),
