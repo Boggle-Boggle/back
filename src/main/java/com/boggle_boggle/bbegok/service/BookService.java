@@ -38,7 +38,7 @@ public class BookService {
                 aladinClient.getItem(
                         openFeignConfig.getTtbKey(),
                         isbn,
-                        "ISBN13",
+                        "ISBN",
                         "Big",
                         "JS",
                         "20131101"

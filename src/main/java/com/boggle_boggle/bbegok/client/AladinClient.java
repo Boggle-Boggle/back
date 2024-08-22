@@ -41,7 +41,7 @@ public interface AladinClient {
     OriginDetailBook getItem(
             @RequestParam("ttbkey") String ttbkey,
             @RequestParam("ItemId") String itemId,
-            @RequestParam("ItemIdType") String itemIdType, //ISBN13
+            @RequestParam("ItemIdType") String itemIdType, //ISBN13을 권장하나 세트의 경우 ISBN13이 존재X여서 그냥 ISBN사용
             @RequestParam("Cover") String cover,
             @RequestParam("Output") String output,
             @RequestParam("Version") String version

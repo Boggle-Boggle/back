@@ -1,9 +1,12 @@
 package com.boggle_boggle.bbegok.dto.response;
 
 import com.boggle_boggle.bbegok.dto.OriginBookData;
+import com.boggle_boggle.bbegok.utils.LocalDateTimeUtil;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
+
+import java.time.LocalDateTime;
 
 @Getter
 @ToString
@@ -12,7 +15,7 @@ public class BookDetailResponse {
     private String title;
     private String isbn;
     private String author;
-    private String pubDate;
+    private LocalDateTime pubDate;
     private String cover;
     private String publisher;
     private String jenre;
@@ -21,9 +24,9 @@ public class BookDetailResponse {
     public static BookDetailResponse fromOriginBookData(OriginBookData origin) {
         return BookDetailResponse.builder()
                 .title(origin.getTitle())
-                .isbn(origin.getIsbn13())
+                .isbn(origin.getIsbn())
                 .author(origin.getAuthor())
-                .pubDate(origin.getPubDate())
+                .pubDate(LocalDateTimeUtil.StringToLocalDateAndAddTime(origin.getPubDate()))
                 .cover(origin.getCover())
                 .publisher(origin.getPublisher())
                 .jenre(origin.getCategoryName())
