@@ -18,7 +18,8 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 
-/** 인증 완료 후 회원정보를 DB에 저장
+/** 사용자가 로그인을 시도할때 loadUser를 사용
+ * 즉, Provider가 인증정보를 반환하면 스프링 시큐리티는 이 클래스를 사용하여 반환
  */
 @Service
 @RequiredArgsConstructor
@@ -57,7 +58,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
 
 
-        //이미 가입한 유저라면 가입한 유저, 회원가입했다면 회원가입한 유저의 정보를 리턴
+        //이미 가입한 유저라면 가입한 유저, 회원가입했다면 회원가입할 유저의 정보를 리턴
         return UserPrincipal.create(savedUser, user.getAttributes());
     }
 

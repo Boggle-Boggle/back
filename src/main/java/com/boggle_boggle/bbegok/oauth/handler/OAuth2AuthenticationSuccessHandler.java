@@ -80,6 +80,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 
         RoleType roleType = hasAuthority(authorities, RoleType.GUEST.getCode()) ? RoleType.GUEST : RoleType.USER;
 
+        // access 토큰 설정
         Date now = new Date();
         AuthToken accessToken = tokenProvider.createAuthToken(
                 userInfo.getId(),
