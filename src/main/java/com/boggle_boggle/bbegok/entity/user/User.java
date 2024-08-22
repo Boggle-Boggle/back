@@ -58,6 +58,10 @@ public class User {
     @NotNull
     private RoleType roleType;
 
+    @Column(name = "is_agree_to_terms")
+    @NotNull
+    private Boolean isAgreeToTerms = false;
+
     @Column(name = "created_at")
     @NotNull
     private LocalDateTime createdAt;
@@ -97,5 +101,10 @@ public class User {
 
     public void updateNickName(String nickName){
         this.userName = nickName;
+    }
+
+    public void agreeToTerms(){
+        this.isAgreeToTerms = true;
+        this.roleType = RoleType.USER;
     }
 }

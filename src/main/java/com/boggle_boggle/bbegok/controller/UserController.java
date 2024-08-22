@@ -27,10 +27,16 @@ public class UserController {
         return DataResponseDto.empty();
     }
 
-
     //닉네임 중복확인
     @GetMapping("/nickname")
     public DataResponseDto<Boolean> isNicknameAvailable(@Valid @RequestBody NickNameRequest request) {
         return DataResponseDto.of(userService.isNicknameAvailable(request.getNickname()));
+    }
+
+    //약관동의
+    @PatchMapping("/terms")
+    public DataResponseDto<Null> agreeToTerms(@AuthenticationPrincipal UserDetails userDetails) {
+        userService.agreeToTerms(userDetails.getUsername());
+        return DataResponseDto.empty();
     }
 }

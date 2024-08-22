@@ -6,8 +6,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
-
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -25,5 +23,11 @@ public class UserService {
 
     public boolean isNicknameAvailable(String nickname) {
         return userRepository.findByUserName(nickname).isEmpty();
+    }
+
+    public void agreeToTerms(String userId) {
+        //약관동의 및 권한 업데이트
+        User user = getUser(userId);
+        user.agreeToTerms();
     }
 }
