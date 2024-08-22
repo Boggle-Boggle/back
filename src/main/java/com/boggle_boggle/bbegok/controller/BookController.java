@@ -21,7 +21,7 @@ public class BookController {
     }
 
     @GetMapping("/{isbn}")
-    public DataResponseDto<BookDetailResponse> getBook(@PathVariable String isbn) {
+    public DataResponseDto<BookDetailResponse> getBook(@PathVariable(name = "isbn") String isbn) {
         return DataResponseDto.of(bookService.getBook(isbn));
     }
 
