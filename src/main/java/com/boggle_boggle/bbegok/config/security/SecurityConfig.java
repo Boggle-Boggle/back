@@ -71,6 +71,7 @@ public class SecurityConfig {
                         //guest : 약관동의, 닉네임 수정 API에만 접근 가능
                         .requestMatchers("/user/**").hasAnyAuthority(RoleType.GUEST.getCode(),RoleType.USER.getCode())
                         .requestMatchers("/books/**").hasAnyAuthority(RoleType.GUEST.getCode(),RoleType.USER.getCode())
+                        .requestMatchers("/recent-searches/**").hasAnyAuthority(RoleType.GUEST.getCode(),RoleType.USER.getCode())
 
                         //user : 빼곡의 모든 API에 접근가능
                         //.requestMatchers("/books/**").hasAnyAuthority(RoleType.USER.getCode())

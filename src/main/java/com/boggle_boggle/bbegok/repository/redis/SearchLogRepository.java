@@ -26,8 +26,7 @@ public class SearchLogRepository {
 
     public void saveRecentSearchLog(String userId, String keyword){
         String createdAt = LocalDateTime.now().toString();
-        SearchLogRedis searchLog = SearchLogRedis.builder()
-                .keyword(keyword).createdAt(createdAt).build();
+        SearchLogRedis searchLog = new SearchLogRedis(keyword,createdAt);
 
         String key = KEY_PREFIX + userId;
         if ((redisTemplate.opsForList().size(key) != null) &&
@@ -45,12 +44,9 @@ public class SearchLogRepository {
 
     public void deleteRecentSearchLog(String userId, String keyword, String createdAt) {
         String key = KEY_PREFIX + userId;
-        SearchLogRedis value = SearchLogRedis.builder()
-                .keyword(keyword)
-                .createdAt(createdAt)
-                .build();
+        SearchLogRedis searchLog = new SearchLogRedis(keyword,createdAt);
 
-        long count = redisTemplate.opsForList().remove(key, 1, value);
+        long count = redisTemplate.opsForList().remove(key, 1, searchLog);
 
         if (count == 0) {
             throw new GeneralException(Code.SEARCH_LOG_NOT_EXIST);

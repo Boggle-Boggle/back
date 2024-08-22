@@ -17,4 +17,8 @@ public class SearchLogService {
     public SearchLogListResponse getRecentSearchLogs(String userId) {
         return SearchLogListResponse.from(searchLogRepository.getRecentSearchLogs(userId));
     }
+
+    public void saveRecentSearchLogs(String userId, String keyword) {
+        searchLogRepository.saveRecentSearchLog(userId, keyword);
+    }
 }
