@@ -23,7 +23,7 @@ public class SearchBookListResponse {
     public static SearchBookListResponse fromOriginData(OriginSearchBookList originList){
         return SearchBookListResponse.builder()
                 .pageNum(originList.getStartIndex())
-                .totalResultCnt(originList.getTotalResults())
+                .totalResultCnt(Math.min(originList.getTotalResults(), 200))
                 .itemsPerPage(originList.getItemsPerPage())
                 .bookList(
                         originList.getItem().stream()
