@@ -1,9 +1,7 @@
 package com.boggle_boggle.bbegok.service;
 
-import com.boggle_boggle.bbegok.dto.base.DataResponseDto;
 import com.boggle_boggle.bbegok.dto.response.SearchLogListResponse;
 import com.boggle_boggle.bbegok.repository.redis.SearchLogRepository;
-import com.boggle_boggle.bbegok.repository.user.UserRefreshTokenRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,5 +18,9 @@ public class SearchLogService {
 
     public void saveRecentSearchLogs(String userId, String keyword) {
         searchLogRepository.saveRecentSearchLog(userId, keyword);
+    }
+
+    public void deleteRecentSearchLog(String userId, String keyword, String createdAt) {
+        searchLogRepository.deleteRecentSearchLog(userId, keyword, createdAt);
     }
 }

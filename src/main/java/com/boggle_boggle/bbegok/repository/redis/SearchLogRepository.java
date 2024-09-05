@@ -6,6 +6,7 @@ import com.boggle_boggle.bbegok.dto.response.SearchLogListResponse;
 import com.boggle_boggle.bbegok.exception.Code;
 import com.boggle_boggle.bbegok.exception.exception.GeneralException;
 import com.boggle_boggle.bbegok.redis.SearchLogRedis;
+import com.boggle_boggle.bbegok.utils.LocalDateTimeUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -25,7 +26,7 @@ public class SearchLogRepository {
     private final RedisTemplate<String, SearchLogRedis> redisTemplate;
 
     public void saveRecentSearchLog(String userId, String keyword){
-        String createdAt = LocalDateTime.now().toString();
+        String createdAt = LocalDateTimeUtil.getCurrentTimeAsString();
         SearchLogRedis searchLog = new SearchLogRedis(keyword,createdAt);
 
         String key = KEY_PREFIX + userId;

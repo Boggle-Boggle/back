@@ -23,7 +23,7 @@ public class SearchLogListResponse {
                         recentSearchLogs.stream().map(
                                 log -> SearchLogs.builder()
                                         .keyword(log.getKeyword())
-                                        .createdAt(LocalDateTimeUtil.millisecondSStringToLocalDateTime(log.getCreatedAt()))
+                                        .createdAt(LocalDateTimeUtil.StringToLocalDate(log.getCreatedAt()))
                                         .build()
                         ).collect(Collectors.toList())
                 )

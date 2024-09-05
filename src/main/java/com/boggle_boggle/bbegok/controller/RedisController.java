@@ -31,11 +31,11 @@ public class RedisController {
         return DataResponseDto.empty();
     }
 
-    //최근검색어 저장
+    //최근검색어 삭제
     @DeleteMapping
     public DataResponseDto<Void> deleteRecentSearchLogs(@AuthenticationPrincipal UserDetails userDetails,
                                                       @RequestBody DeleteRecentSearchRequest request) {
-        SearchLogService.saveRecentSearchLogs(userDetails.getUsername(), request.getKeyword());
+        SearchLogService.deleteRecentSearchLog(userDetails.getUsername(), request.getKeyword(), request.getCreatedAt());
         return DataResponseDto.empty();
     }
 }
