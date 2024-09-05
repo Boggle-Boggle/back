@@ -45,7 +45,7 @@ services:
       - portainer
 
   redis:
-    image: redis.alpine
+    image: redis:alpine
     ports:
       - "6379:6379"
     volumes:
@@ -55,6 +55,7 @@ services:
 volumes:
   mysql-data:
   portainer_data:
+  redis-data:
   
 x-dockerhub-auth: &dockerhub-auth
   username: ${DOCKERHUB_USERNAME}
