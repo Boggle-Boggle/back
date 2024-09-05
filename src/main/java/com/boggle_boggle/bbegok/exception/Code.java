@@ -23,6 +23,9 @@ public enum Code {
     UNAUTHORIZED(40000, HttpStatus.UNAUTHORIZED, "User unauthorized"),
     METHOD_NOT_ALLOWED(60000, HttpStatus.METHOD_NOT_ALLOWED, "Method Not Allowed"),
 
+    //Redis 예외
+    SEARCH_LOG_NOT_EXIST(20002, HttpStatus.INTERNAL_SERVER_ERROR, "Search log not exist"),
+
     // 책 관련 예외
     BOOK_NOT_FOUND(11000, HttpStatus.NOT_FOUND, "Book not found"),
     INVALID_ISBN(11001, HttpStatus.BAD_REQUEST, "Invalid ISBN"),
