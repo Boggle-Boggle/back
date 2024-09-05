@@ -36,7 +36,7 @@ app.oauth2.authorizedRedirectUris[1]=http://localhost:5173/oauth/redirect
 spring.data.redis.host=redis
 spring.data.redis.port=${REDIS_PORT}
 redis.size=10
-redis.prefix=SearchLog
+redis.prefix=${REDIS_PREFIX}
 
 #aladin
 aladin.server.url=${ALADIN_SERVER_URL}
