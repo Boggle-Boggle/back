@@ -13,10 +13,10 @@ import java.util.List;
 @Entity
 @Getter
 @ToString
-public class Report {
+public class ReadingRecord {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long reportSeq;
+    private Long readingRecordSeq;
 
     @Embedded
     private CrudDate crudDate = new CrudDate();
@@ -29,10 +29,10 @@ public class Report {
     @JoinColumn(name = "book_seq", nullable = false)
     private Book book;
 
-    @OneToMany(mappedBy = "report", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "readingRecord", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ReadDate> readDateList = new ArrayList<>();
 
-    @OneToMany(mappedBy = "report", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "readingRecord", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Note> noteList = new ArrayList<>();
 
     @Column(name = "is_book_visible", length = 255, nullable = false)
@@ -44,9 +44,9 @@ public class Report {
     @Column(name = "status", length = 255, nullable = false)
     private ReadStatus status;
 
-    protected Report(){}
+    protected ReadingRecord(){}
 
-    public static Report createReport(){
-        return new Report();
+    public static ReadingRecord createReadingRecord(){
+        return new ReadingRecord();
     }
 }

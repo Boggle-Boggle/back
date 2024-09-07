@@ -70,7 +70,10 @@ public class SecurityConfig {
 
                         //guest : 약관동의, 닉네임 수정 API에만 접근 가능
                         .requestMatchers("/user/**").hasAnyAuthority(RoleType.GUEST.getCode(),RoleType.USER.getCode())
+                        
+                        //임시로 게스트에게 허용
                         .requestMatchers("/books/**").hasAnyAuthority(RoleType.GUEST.getCode(),RoleType.USER.getCode())
+                        .requestMatchers("/libraries/**").hasAnyAuthority(RoleType.GUEST.getCode(),RoleType.USER.getCode())
                         .requestMatchers("/recent-searches/**").hasAnyAuthority(RoleType.GUEST.getCode(),RoleType.USER.getCode())
 
                         //user : 빼곡의 모든 API에 접근가능
