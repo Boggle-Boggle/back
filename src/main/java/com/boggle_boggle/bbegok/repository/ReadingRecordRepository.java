@@ -9,5 +9,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 
 public interface ReadingRecordRepository extends JpaRepository<ReadingRecord, Long> {
-    Optional<ReadingRecord> findByUserAndBook(User user, Book book);
+    ReadingRecord findByUserAndBook(User user, Book book);
 }
