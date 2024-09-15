@@ -78,7 +78,8 @@ public class SecurityConfig {
 
                         //user : 빼곡의 모든 API에 접근가능
                         //.requestMatchers("/books/**").hasAnyAuthority(RoleType.USER.getCode())
-                        .anyRequest().hasAuthority(RoleType.USER.getCode()))
+                        //.anyRequest().hasAuthority(RoleType.USER.getCode()))
+                        .anyRequest().hasAuthority(RoleType.GUEST.getCode()))
 
                 //OAuth2 로그인 요청 처리
                 .oauth2Login(oauth2 -> oauth2
