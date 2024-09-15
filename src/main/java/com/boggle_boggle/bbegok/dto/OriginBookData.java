@@ -22,4 +22,5 @@ public class OriginBookData {
     private String categoryName;
     private String publisher;
     private int customerReviewRank;
+    private SubInfo subInfo;
 }

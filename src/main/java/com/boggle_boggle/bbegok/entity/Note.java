@@ -23,6 +23,9 @@ public class Note {
     @JoinColumn(name = "reding_record_seq", nullable = false)
     private ReadingRecord readingRecord;
 
+    @Column(name = "title", length = 255, nullable = false)
+    private String title;
+
     @Column(name = "content", length = 255, nullable = false)
     private String content;
 

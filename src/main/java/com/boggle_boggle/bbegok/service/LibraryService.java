@@ -45,10 +45,9 @@ public class LibraryService {
 
 
     public void deleteLibrary(String libraryName, String userId) {
-        Library library = libraryRepository.findByUserAndLibraryName(getUser(userId), libraryName);
-        if (library == null) {
-            throw new GeneralException(Code.LIBRARY_NOT_FOUND);
-        }
+        Library library = libraryRepository.findByUserAndLibraryName(getUser(userId), libraryName)
+                .orElseThrow(() -> new GeneralException(Code.LIBRARY_NOT_FOUND));
+
         libraryRepository.delete(library);
     }
 }

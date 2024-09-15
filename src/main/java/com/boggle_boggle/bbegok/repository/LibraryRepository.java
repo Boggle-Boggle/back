@@ -5,9 +5,11 @@ import com.boggle_boggle.bbegok.dto.LibraryDto;
 import com.boggle_boggle.bbegok.entity.Library;
 import com.boggle_boggle.bbegok.entity.user.User;
 import feign.Param;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import javax.swing.text.html.Option;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,6 +24,6 @@ public interface LibraryRepository extends JpaRepository<Library, Long> {
     boolean existsByLibraryName(String libraryName);
 
     //유저의 특정 서재 조회
-    Library findByUserAndLibraryName(User user, String libraryName);
+    Optional<Library> findByUserAndLibraryName(User user, String libraryName);
 
 }
