@@ -7,6 +7,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.ToString;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,21 +50,20 @@ public class ReadingRecord {
 
     protected ReadingRecord(){}
 
-    private ReadingRecord(User user, Book book, ReadDate readDate, List<Library> libraries,
-                         double rating, boolean visible, ReadStatus readStatus) {
+    private ReadingRecord(User user, Book book, LocalDateTime readStartDate, LocalDateTime readEndDate,
+                          List<Library> libraries, double rating, boolean visible, ReadStatus readStatus) {
         this.user = user;
         this.book = book;
-        this.readDateList.add(readDate);
         this.rating = rating;
         this.isBooksVisible = visible;
         this.status = readStatus;
-        System.out.println("사이즈 "+libraries.size());
+        addReadDateList(readStartDate, readEndDate);
         addLibraries(libraries);
     }
 
-    public static ReadingRecord createReadingRecord(User user, Book book, ReadDate readDate,
+    public static ReadingRecord createReadingRecord(User user, Book book, LocalDateTime readStartDate, LocalDateTime readEndDate,
                                                     List<Library> libraries, double rating, boolean visible, ReadStatus readStatus) {
-        return new ReadingRecord(user, book, readDate, libraries, rating, visible, readStatus);
+        return new ReadingRecord(user, book, readStartDate, readEndDate, libraries, rating, visible, readStatus);
     }
 
     //==연관관계 편의 메소드
@@ -75,6 +75,10 @@ public class ReadingRecord {
     public void addLibrary(Library library) {
         ReadingRecordLibraryMapping mapping = ReadingRecordLibraryMapping.createReadingRecordLibraryMapping(this, library);
         this.mappingList.add(mapping);
+    }
+    public void addReadDateList(LocalDateTime readStartDate, LocalDateTime readEndDate) {
+        ReadDate readDate = ReadDate.createReadDate(this, readStartDate, readEndDate);
+        this.readDateList.add(readDate);
     }
 
 }

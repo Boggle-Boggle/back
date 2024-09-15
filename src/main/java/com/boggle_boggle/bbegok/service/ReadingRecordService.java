@@ -59,7 +59,8 @@ public class ReadingRecordService {
         ReadingRecord readingRecord = ReadingRecord.createReadingRecord(
                 user,
                 book,
-                ReadDate.createReadDate(request.getStartReadDate(), request.getEndReadDate()),
+                request.getStartReadDate(),
+                request.getEndReadDate(),
                 libraries,
                 request.getRating(),
                 request.isVisible(),
