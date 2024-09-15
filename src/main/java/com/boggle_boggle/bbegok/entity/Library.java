@@ -21,7 +21,12 @@ public class Library {
 
     protected Library(){}
 
-    public static Library createLibrary(){
-        return new Library();
+    private Library(User user, String libraryName) {
+        this.user = user;
+        this.libraryName = libraryName;
+    }
+
+    public static Library createLibrary(User user, String libraryName){
+        return new Library(user, libraryName);
     }
 }

@@ -20,8 +20,8 @@ public class Note {
     private CrudDate crudDate = new CrudDate();
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "report_seq", nullable = false)
-    private Report report;
+    @JoinColumn(name = "reding_record_seq", nullable = false)
+    private ReadingRecord readingRecord;
 
     @Column(name = "content", length = 255, nullable = false)
     private String content;

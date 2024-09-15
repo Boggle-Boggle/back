@@ -20,8 +20,8 @@ public class ReadDate {
     private LocalDateTime endReadDate;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "report_seq")
-    private Report report;
+    @JoinColumn(name = "reading_record_seq")
+    private ReadingRecord readingRecord;
 
     protected ReadDate(){}
 
