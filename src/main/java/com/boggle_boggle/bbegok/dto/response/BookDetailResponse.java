@@ -18,8 +18,9 @@ public class BookDetailResponse {
     private LocalDateTime pubDate;
     private String cover;
     private String publisher;
-    private String jenre;
+    private String genre;
     private String plot;
+    private int page;
 
     public static BookDetailResponse fromOriginBookData(OriginBookData origin) {
         return BookDetailResponse.builder()
@@ -29,8 +30,9 @@ public class BookDetailResponse {
                 .pubDate(LocalDateTimeUtil.StringToLocalDateAndAddTime(origin.getPubDate()))
                 .cover(origin.getCover())
                 .publisher(origin.getPublisher())
-                .jenre(origin.getCategoryName())
+                .genre(origin.getCategoryName())
                 .plot(origin.getDescription())
+                .page(origin.getSubInfo().getItemPage())
                 .build();
     }
 }
