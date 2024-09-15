@@ -2,6 +2,7 @@ package com.boggle_boggle.bbegok.service;
 
 import com.boggle_boggle.bbegok.dto.request.NewReadingRecordRequest;
 import com.boggle_boggle.bbegok.dto.response.BookDetailResponse;
+import com.boggle_boggle.bbegok.dto.response.ReadingRecordResponse;
 import com.boggle_boggle.bbegok.entity.Book;
 import com.boggle_boggle.bbegok.entity.Library;
 import com.boggle_boggle.bbegok.entity.ReadDate;
@@ -66,5 +67,11 @@ public class ReadingRecordService {
         );
 
         readingRecordRepository.save(readingRecord);
+    }
+
+    public ReadingRecordResponse getReadingRecord(String isbn, String userId) {
+        Book book = bookRepository.findByIsbn(isbn);
+        User user = getUser(userId);
+        return ReadingRecordResponse.fromReadingRecord(readingRecordRepository.findByUserAndBook(user, book));
     }
 }
