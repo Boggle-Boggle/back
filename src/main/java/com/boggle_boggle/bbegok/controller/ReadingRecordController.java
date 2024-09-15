@@ -23,10 +23,17 @@ public class ReadingRecordController {
     private final ReadingRecordService readingRecordService;
 
     //독서기록 조회
-    @GetMapping("/{isbn}")
-    public DataResponseDto<ReadingRecordResponse> getReadingRecord(@PathVariable(name = "isbn") String isbn,
+    @GetMapping("/{id}")
+    public DataResponseDto<ReadingRecordResponse> getReadingRecord(@PathVariable(name = "id") Long id,
                                                                    @AuthenticationPrincipal UserDetails userDetails) {
-        return DataResponseDto.of(readingRecordService.getReadingRecord(isbn, userDetails.getUsername()));
+        return DataResponseDto.of(readingRecordService.getReadingRecord(id));
+    }
+
+    //독서기록 있는지 조회
+    @GetMapping("/isbn/{isbn}")
+    public DataResponseDto<Long> getReadingRecordId(@PathVariable(name = "isbn") String isbn,
+                                                                   @AuthenticationPrincipal UserDetails userDetails) {
+        return DataResponseDto.of(readingRecordService.getReadingRecordId(isbn, userDetails.getUsername()));
     }
 
     //새로운 독서기록 등록
@@ -39,11 +46,11 @@ public class ReadingRecordController {
     }
 
     //독서기록 수정
-    @PatchMapping
-    public DataResponseDto<Void> updateReadingRecord(
-            @RequestBody UpdateReadingRecordRequest request,
-            @AuthenticationPrincipal UserDetails userDetails) {
-        readingRecordService.updateReadingRecord(request, userDetails.getUsername());
+    @PatchMapping("/{id}")
+    public DataResponseDto<Void> updateReadingRecord(@PathVariable(name = "id") Long id,
+                                                        @RequestBody UpdateReadingRecordRequest request,
+                                                        @AuthenticationPrincipal UserDetails userDetails) {
+        readingRecordService.updateReadingRecord(id, request, userDetails.getUsername());
         return DataResponseDto.empty();
     }
 

@@ -66,13 +66,19 @@ public class ReadingRecordService {
         readingRecordRepository.save(readingRecord);
     }
 
-    public ReadingRecordResponse getReadingRecord(String isbn, String userId) {
-        ReadingRecord readingRecord = findReadingRecord(isbn, userId);
+    public ReadingRecordResponse getReadingRecord(Long id) {
+        ReadingRecord readingRecord = findReadingRecord(id);
         return ReadingRecordResponse.fromReadingRecord(readingRecord);
     }
 
-    public void updateReadingRecord(UpdateReadingRecordRequest request, String userId) {
-        ReadingRecord readingRecord = findReadingRecord(request.getIsbn(), userId);
+    public Long getReadingRecordId(String isbn, String userId) {
+        ReadingRecord readingRecord = findReadingRecord(isbn, userId);
+        if(readingRecord == null) return null;
+        return readingRecord.getReadingRecordSeq();
+    }
+
+    public void updateReadingRecord(Long id, UpdateReadingRecordRequest request, String userId) {
+        ReadingRecord readingRecord = findReadingRecord(id);
 
         //==날짜가 바뀌었다면 기존날짜 삭제후 업데이트
         if((request.getReadDateList() != null)) {
@@ -96,7 +102,11 @@ public class ReadingRecordService {
     private ReadingRecord findReadingRecord(String isbn, String userId){
         Book book = bookRepository.findByIsbn(isbn);
         User user = getUser(userId);
-        return readingRecordRepository.findByUserAndBook(user, book)
+        return readingRecordRepository.findByUserAndBook(user, book);
+    }
+
+    private ReadingRecord findReadingRecord(Long id){
+        return readingRecordRepository.findById(id)
                 .orElseThrow(() -> new GeneralException(Code.READING_RECORD_NOT_FOUND));
     }
 
