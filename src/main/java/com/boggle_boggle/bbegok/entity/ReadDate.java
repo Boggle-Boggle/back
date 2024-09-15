@@ -25,7 +25,12 @@ public class ReadDate {
 
     protected ReadDate(){}
 
-    public static ReadDate createReadDate(){
-        return new ReadDate();
+    public ReadDate(LocalDateTime startReadDate, LocalDateTime endReadDate) {
+        this.startReadDate = startReadDate;
+        this.endReadDate = endReadDate;
+    }
+
+    public static ReadDate createReadDate(LocalDateTime startReadDate, LocalDateTime endReadDate){
+        return new ReadDate(startReadDate, endReadDate);
     }
 }

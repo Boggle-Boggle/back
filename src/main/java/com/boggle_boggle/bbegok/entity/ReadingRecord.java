@@ -69,7 +69,6 @@ public class ReadingRecord {
     //==연관관계 편의 메소드
     public void addLibraries(List<Library> libraries) {
         for (Library library : libraries) {
-            System.out.println("이름 "+library.getLibraryName());
             addLibrary(library);
         }
     }
