@@ -69,7 +69,12 @@ public enum Code {
     INVALID_REFRESH_TOKEN(50008,HttpStatus.UNAUTHORIZED ,  "Invalid refresh token"),
     INVALID_ACCESS_TOKEN(50008,HttpStatus.UNAUTHORIZED ,  "Invalid refresh token"),
     EMPTY_COOKIE(50009,HttpStatus.UNAUTHORIZED, "Empty COOKIE"),
-    EMPTY_ACCESS_TOKEN(50010,HttpStatus.UNAUTHORIZED, "Access token Empty");
+    EMPTY_ACCESS_TOKEN(50010,HttpStatus.UNAUTHORIZED, "Access token Empty"),
+
+    //서재 예외
+    DUPLICATE_LIBRARY_NAME(600000, HttpStatus.CONFLICT, "library name already exists"),
+    LIBRARY_NOT_FOUND(600001, HttpStatus.NOT_FOUND, "library not found");
+
 
     private final Integer code;
     private final HttpStatus httpStatus;

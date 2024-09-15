@@ -13,10 +13,15 @@ import java.util.Optional;
 
 public interface LibraryRepository extends JpaRepository<Library, Long> {
     // 서재 목록 및 해당 서재의 책 갯수 조회
-    @Query("SELECT l, COUNT(rlm) FROM Library l LEFT JOIN ReadingRecordLibraryMapping rlm ON l.librarySeq = rlm.library.librarySeq WHERE l.user = :user GROUP BY l")
+    @Query("SELECT new com.boggle_boggle.bbegok.dto.LibrariesDto(l, COUNT(rlm))" +
+            " FROM Library l LEFT JOIN ReadingRecordLibraryMapping rlm ON l.librarySeq = rlm.library.librarySeq " +
+            "WHERE l.user = :user GROUP BY l")
     List<LibrariesDto> findAllByUserWithBookCount(@Param("user") User user);
 
-    // 서재의 책들 조회
+    //해당 서재가 있는지 조회
+    boolean existsByLibraryName(String libraryName);
 
-    //서재 삭제
+    //유저의 특정 서재 조회
+    Library findByUserAndLibraryName(User user, String libraryName);
+
 }
