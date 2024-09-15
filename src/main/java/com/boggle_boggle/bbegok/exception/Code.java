@@ -32,7 +32,7 @@ public enum Code {
     BOOK_ALREADY_EXISTS(11002, HttpStatus.CONFLICT, "Book already exists in the reading list"),
 
     // 독서록 관련 예외
-    READING_LOG_NOT_FOUND(12000, HttpStatus.NOT_FOUND, "Reading log not found"),
+    READING_RECORD_NOT_FOUND(12000, HttpStatus.NOT_FOUND, "Reading log not found"),
     INVALID_READING_DATE(12001, HttpStatus.BAD_REQUEST, "Invalid reading date"),
     READING_LOG_ALREADY_EXISTS(12002, HttpStatus.CONFLICT, "Reading log already exists for this date"),
 

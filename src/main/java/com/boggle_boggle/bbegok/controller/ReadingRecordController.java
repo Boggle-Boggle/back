@@ -2,6 +2,7 @@ package com.boggle_boggle.bbegok.controller;
 
 import com.boggle_boggle.bbegok.dto.base.DataResponseDto;
 import com.boggle_boggle.bbegok.dto.request.NewReadingRecordRequest;
+import com.boggle_boggle.bbegok.dto.request.UpdateReadingRecordRequest;
 import com.boggle_boggle.bbegok.dto.response.BookDetailResponse;
 import com.boggle_boggle.bbegok.dto.response.LibraryResponse;
 import com.boggle_boggle.bbegok.dto.response.ReadingRecordResponse;
@@ -17,7 +18,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/reading-reocrd")
+@RequestMapping("/reading-record")
 public class ReadingRecordController {
     private final ReadingRecordService readingRecordService;
 
@@ -38,6 +39,13 @@ public class ReadingRecordController {
     }
 
     //독서기록 수정
-    
+    @PatchMapping
+    public DataResponseDto<Void> updateReadingRecord(
+            @RequestBody UpdateReadingRecordRequest request,
+            @AuthenticationPrincipal UserDetails userDetails) {
+        readingRecordService.updateReadingRecord(request, userDetails.getUsername());
+        return DataResponseDto.empty();
+    }
+
     //독서노트
 }

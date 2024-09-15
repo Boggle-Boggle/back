@@ -1,5 +1,6 @@
 package com.boggle_boggle.bbegok.entity;
 
+import com.boggle_boggle.bbegok.dto.ReadDateDto;
 import com.boggle_boggle.bbegok.entity.embed.CrudDate;
 import com.boggle_boggle.bbegok.entity.user.User;
 import com.boggle_boggle.bbegok.enums.ReadStatus;
@@ -45,6 +46,7 @@ public class ReadingRecord {
     @Column(name = "rating", nullable = false)
     private Double rating;
 
+    @Enumerated(EnumType.STRING)  // ENUM을 스트링으로 저장
     @Column(name = "status", length = 255, nullable = false)
     private ReadStatus status;
 
@@ -66,6 +68,21 @@ public class ReadingRecord {
         return new ReadingRecord(user, book, readStartDate, readEndDate, libraries, rating, visible, readStatus);
     }
 
+    //==수정
+    public void update(ReadStatus readStatus,  Double rating, List<ReadDateDto> readDateList,
+                       Boolean visible, List<Library> libraries) {
+        if(readStatus != null) this.status = readStatus;
+        if(rating != null) this.rating = rating;
+        if(visible != null) this.isBooksVisible = visible;
+
+        if(readDateList != null) {
+            for(ReadDateDto dto : readDateList) addReadDateList(dto.getStartReadDate(), dto.getEndReadDate());
+        }
+
+        if(!libraries.isEmpty()) addLibraries(libraries);
+    }
+
+
     //==연관관계 편의 메소드
     public void addLibraries(List<Library> libraries) {
         for (Library library : libraries) {
@@ -80,5 +97,4 @@ public class ReadingRecord {
         ReadDate readDate = ReadDate.createReadDate(this, readStartDate, readEndDate);
         this.readDateList.add(readDate);
     }
-
 }
