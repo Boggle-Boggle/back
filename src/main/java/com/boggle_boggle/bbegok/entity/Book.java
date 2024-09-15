@@ -1,8 +1,7 @@
 package com.boggle_boggle.bbegok.entity;
 
+import com.boggle_boggle.bbegok.dto.response.BookDetailResponse;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.ToString;
 
@@ -27,7 +26,7 @@ public class Book {
     @Column(name = "isbn", length = 20, nullable = false)
     private String isbn;
 
-    @Column(name = "genre", length = 30)
+    @Column(name = "genre", length = 100)
     private String genre;
 
     @Column(name = "plot", length = 255, nullable = false)
@@ -44,7 +43,30 @@ public class Book {
 
     protected Book(){}
 
-    public static Book createBook(){
-        return new Book();
+    public Book(String isbn, String title, String author, String publisher,
+                String cover, String genre, String plot, LocalDateTime pubDate, int page) {
+        this.isbn = isbn;
+        this.title = title;
+        this.author = author;
+        this.publisher = publisher;
+        this.imageUrl = cover;
+        this.genre = genre;
+        this.plot = plot;
+        this.publishDate = pubDate;
+        this.page = page;
+    }
+
+    public static Book createBook(BookDetailResponse bookData){
+        return new Book(
+                bookData.getIsbn(),
+                bookData.getTitle(),
+                bookData.getAuthor(),
+                bookData.getPublisher(),
+                bookData.getCover(),
+                bookData.getGenre(),
+                bookData.getPlot(),
+                bookData.getPubDate(),
+                bookData.getPage()
+        );
     }
 }

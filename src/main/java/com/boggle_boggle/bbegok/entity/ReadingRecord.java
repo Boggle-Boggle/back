@@ -35,6 +35,9 @@ public class ReadingRecord {
     @OneToMany(mappedBy = "readingRecord", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Note> noteList = new ArrayList<>();
 
+    @OneToMany(mappedBy = "readingRecord", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ReadingRecordLibraryMapping> mappingList = new ArrayList<>();
+
     @Column(name = "is_book_visible", length = 255, nullable = false)
     private Boolean isBooksVisible;
 
@@ -46,7 +49,33 @@ public class ReadingRecord {
 
     protected ReadingRecord(){}
 
-    public static ReadingRecord createReadingRecord(){
-        return new ReadingRecord();
+    private ReadingRecord(User user, Book book, ReadDate readDate, List<Library> libraries,
+                         double rating, boolean visible, ReadStatus readStatus) {
+        this.user = user;
+        this.book = book;
+        this.readDateList.add(readDate);
+        this.rating = rating;
+        this.isBooksVisible = visible;
+        this.status = readStatus;
+        System.out.println("사이즈 "+libraries.size());
+        addLibraries(libraries);
     }
+
+    public static ReadingRecord createReadingRecord(User user, Book book, ReadDate readDate,
+                                                    List<Library> libraries, double rating, boolean visible, ReadStatus readStatus) {
+        return new ReadingRecord(user, book, readDate, libraries, rating, visible, readStatus);
+    }
+
+    //==연관관계 편의 메소드
+    public void addLibraries(List<Library> libraries) {
+        for (Library library : libraries) {
+            System.out.println("이름 "+library.getLibraryName());
+            addLibrary(library);
+        }
+    }
+    public void addLibrary(Library library) {
+        ReadingRecordLibraryMapping mapping = ReadingRecordLibraryMapping.createReadingRecordLibraryMapping(this, library);
+        this.mappingList.add(mapping);
+    }
+
 }

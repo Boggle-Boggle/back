@@ -24,7 +24,13 @@ public class ReadingRecordLibraryMapping {
 
     protected ReadingRecordLibraryMapping(){}
 
-    public static ReadingRecordLibraryMapping createReadingRecordLibraryMapping(){
-        return new ReadingRecordLibraryMapping();
+    public ReadingRecordLibraryMapping(ReadingRecord readingRecord, Library library) {
+        this.readingRecord = readingRecord;
+        this.library = library;
+    }
+
+    public static ReadingRecordLibraryMapping createReadingRecordLibraryMapping(ReadingRecord readingRecord, Library library) {
+        ReadingRecordLibraryMapping mapping = new ReadingRecordLibraryMapping(readingRecord, library);
+        return mapping;
     }
 }
