@@ -14,7 +14,7 @@ logging.level.com.boggle_boggle.bbegok=DEBUG
 
 
 # cors
-cors.allowed-origins=http://localhost:5173
+cors.allowed-origins=http://localhost:5500,https://bbaegok.netlify.app
 cors.allowed-methods=GET,POST,PUT,DELETE,OPTIONS
 cors.allowed-headers=*
 cors.allow-credentials=true
