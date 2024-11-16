@@ -23,16 +23,16 @@ public class Note {
     @JoinColumn(name = "reding_record_seq", nullable = false)
     private ReadingRecord readingRecord;
 
-    @Column(name = "title", length = 255, nullable = false)
+    @Column(name = "title", length = 30, nullable = false)
     private String title;
 
     @Column(name = "content", length = 255, nullable = false)
     private String content;
 
-    @Column(name = "page", nullable = false)
+    @Column(name = "page", nullable = true)
     private Integer page;
 
-    @Column(name = "tags", length = 255, nullable = false)
+    @Column(name = "tags", length = 255, nullable = true)
     private String tags;
 
     @OneToMany(mappedBy = "note", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -40,7 +40,18 @@ public class Note {
 
     protected Note(){}
 
-    public static Note createNote(){
-        return new Note();
+    private Note(ReadingRecord readingRecord, String title, String content){
+        this.readingRecord = readingRecord;
+        this.title = title;
+        this.content = content;
+    }
+
+    public static Note createNote(ReadingRecord readingRecord, String title, String content){
+        return new Note(readingRecord, title, content);
+    }
+
+    public void updateNote(String title, String content) {
+        this.title = title;
+        this.content = content;
     }
 }

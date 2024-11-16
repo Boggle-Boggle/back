@@ -12,4 +12,5 @@ public interface ReadingRecordRepository extends JpaRepository<ReadingRecord, Lo
     ReadingRecord findByUserAndBook(User user, Book book);
 
     Optional<ReadingRecord> findByreadingRecordSeqAndUser(Long id, User user);
+
 }
