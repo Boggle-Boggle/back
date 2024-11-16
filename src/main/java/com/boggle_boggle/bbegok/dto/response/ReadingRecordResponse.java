@@ -40,7 +40,7 @@ public class ReadingRecordResponse {
         response.libraries = entity.getMappingList().stream()
                 .map(mapping -> mapping.getLibrary().getLibraryName()).toList();
         response.notes = entity.getNoteList().stream()
-                .map(note -> new NoteDto(note.getTitle(), note.getContent())).toList();
+                .map(note -> new NoteDto(note.getNoteSeq(), note.getTitle(), note.getContent())).toList();
         return response;
     }
 }

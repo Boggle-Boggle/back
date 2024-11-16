@@ -6,6 +6,7 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class NoteDto {
+    private Long noteId;
     private String title;
     private String content;
 }
