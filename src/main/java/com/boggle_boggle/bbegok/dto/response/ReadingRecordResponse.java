@@ -1,5 +1,6 @@
 package com.boggle_boggle.bbegok.dto.response;
 
+import com.boggle_boggle.bbegok.dto.LibraryListDto;
 import com.boggle_boggle.bbegok.dto.NoteDto;
 import com.boggle_boggle.bbegok.dto.ReadDateDto;
 import com.boggle_boggle.bbegok.entity.ReadingRecord;
@@ -21,7 +22,7 @@ public class ReadingRecordResponse {
     private Double rating;
     private ReadStatus status;
     private List<ReadDateDto> readDateList;
-    private List<String> libraries;
+    private List<LibraryListDto> libraries;
     private List<NoteDto> notes;
 
     private ReadingRecordResponse(){}
@@ -38,7 +39,7 @@ public class ReadingRecordResponse {
         response.readDateList = entity.getReadDateList().stream()
                 .map(readDate -> new ReadDateDto(readDate.getStartReadDate(), readDate.getEndReadDate())).toList();
         response.libraries = entity.getMappingList().stream()
-                .map(mapping -> mapping.getLibrary().getLibraryName()).toList();
+                .map(library -> new LibraryListDto(library.getLibrary().getLibrarySeq(), library.getLibrary().getLibraryName())).toList();
         response.notes = entity.getNoteList().stream()
                 .map(note -> new NoteDto(note.getNoteSeq(), note.getTitle(), note.getContent())).toList();
         return response;
