@@ -47,12 +47,18 @@ public class ReadingRecordController {
 
     //독서기록 수정
     @PatchMapping("/{id}")
-    public DataResponseDto<Void> updateReadingRecord(@PathVariable(name = "id") Long LibraryId,
+    public DataResponseDto<Void> updateReadingRecord(@PathVariable(name = "id") Long readingRecordId,
                                                         @RequestBody UpdateReadingRecordRequest request,
                                                         @AuthenticationPrincipal UserDetails userDetails) {
-        readingRecordService.updateReadingRecord(LibraryId, request, userDetails.getUsername());
+        readingRecordService.updateReadingRecord(readingRecordId, request, userDetails.getUsername());
         return DataResponseDto.empty();
     }
 
-    //독서노트
+    //독서 기록 삭제
+    @DeleteMapping("/{id}")
+    public DataResponseDto<Void> deleteReadingRecord(@PathVariable(name="id") Long readingRecordId,
+                                                     @AuthenticationPrincipal UserDetails userDetails) {
+        readingRecordService.deleteReadingRecord(readingRecordId, userDetails.getUsername());
+        return DataResponseDto.empty();
+    }
 }
