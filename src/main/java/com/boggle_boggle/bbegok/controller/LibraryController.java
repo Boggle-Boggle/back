@@ -53,6 +53,6 @@ public class LibraryController {
                                                                  @AuthenticationPrincipal UserDetails userDetails) {
         if (libraryId != null) return DataResponseDto.of(libraryService.findByLibraryId(libraryId, pageNum, userDetails.getUsername()));
         else if (status != null) return DataResponseDto.of(libraryService.findByStatus(status, pageNum, userDetails.getUsername()));
-        else throw new GeneralException(Code.BAD_REQUEST);
+        else return DataResponseDto.of(libraryService.findAll(pageNum, userDetails.getUsername()));
     }
 }

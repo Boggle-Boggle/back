@@ -41,4 +41,13 @@ public interface ReadingRecordLibraryMappingRepository extends JpaRepository<Rea
     );
 
 
+    @Query("""
+    SELECT r.readingRecord.book
+    FROM ReadingRecordLibraryMapping r
+    WHERE r.readingRecord.user = :user
+    """)
+    Page<Book> findBooksByUser(
+            @Param("user") User user,
+            Pageable pageable
+    );
 }
