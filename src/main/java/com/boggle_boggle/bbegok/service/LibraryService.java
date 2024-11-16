@@ -3,6 +3,7 @@ package com.boggle_boggle.bbegok.service;
 import com.boggle_boggle.bbegok.dto.LibrariesDto;
 import com.boggle_boggle.bbegok.dto.LibraryBook;
 import com.boggle_boggle.bbegok.dto.request.LibraryRequest;
+import com.boggle_boggle.bbegok.dto.response.BookShelfResponse;
 import com.boggle_boggle.bbegok.dto.response.LibraryBookListResponse;
 import com.boggle_boggle.bbegok.dto.response.LibraryResponse;
 import com.boggle_boggle.bbegok.entity.Book;
@@ -84,5 +85,12 @@ public class LibraryService {
         Pageable pageable = PageRequest.of(pageNum-1, PAGE_SIZE);
         Page<LibraryBook> booksPage = readingRecordLibraryMappingRepository.findBooksWithReadingRecordIdByUser(user, pageable);
         return LibraryBookListResponse.fromPage(booksPage);
+    }
+
+
+    public BookShelfResponse findBookshelfByEndDate(Integer year, Integer month, String userId) {
+        User user = getUser(userId);
+        List<LibraryBook> books = readingRecordLibraryMappingRepository.findBooksByUserAndReadDate(user, year, month);
+        return BookShelfResponse.fromDTO(books);
     }
 }
