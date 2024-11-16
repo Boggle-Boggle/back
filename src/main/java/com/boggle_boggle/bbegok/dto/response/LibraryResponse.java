@@ -8,10 +8,11 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class LibraryResponse {
+    private Long libraryId;
     private String libraryName;
     private Long bookCount;
 
     public static LibraryResponse ofLibrariesDto(LibrariesDto dto){
-        return new LibraryResponse(dto.getLibrary().getLibraryName(), dto.getBookCount());
+        return new LibraryResponse(dto.getLibrary().getLibrarySeq(), dto.getLibrary().getLibraryName(), dto.getBookCount());
     }
 }
