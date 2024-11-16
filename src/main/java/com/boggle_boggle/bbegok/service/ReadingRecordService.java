@@ -98,6 +98,11 @@ public class ReadingRecordService {
                 request.getIsVisible(), libraries);
     }
 
+    public void deleteReadingRecord(Long id, String username) {
+        readingRecordRepository.delete(findReadingRecord(id, username));
+    }
+
+
     private ReadingRecord findReadingRecord(String isbn, String userId){
         Book book = bookRepository.findByIsbn(isbn);
         User user = getUser(userId);
@@ -115,4 +120,5 @@ public class ReadingRecordService {
         return libraryRepository.findByUserAndLibrarySeq(user, libraryId)
                 .orElseThrow(() -> new GeneralException(Code.LIBRARY_NOT_FOUND));
     }
+
 }
