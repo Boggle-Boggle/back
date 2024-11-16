@@ -66,8 +66,8 @@ public class ReadingRecordService {
         readingRecordRepository.save(readingRecord);
     }
 
-    public ReadingRecordResponse getReadingRecord(Long id) {
-        ReadingRecord readingRecord = findReadingRecord(id);
+    public ReadingRecordResponse getReadingRecord(Long id, String userId) {
+        ReadingRecord readingRecord = findReadingRecord(id, userId);
         return ReadingRecordResponse.fromReadingRecord(readingRecord);
     }
 
@@ -78,7 +78,7 @@ public class ReadingRecordService {
     }
 
     public void updateReadingRecord(Long id, UpdateReadingRecordRequest request, String userId) {
-        ReadingRecord readingRecord = findReadingRecord(id);
+        ReadingRecord readingRecord = findReadingRecord(id, userId);
 
         //==날짜가 바뀌었다면 기존날짜 삭제후 업데이트
         if((request.getReadDateList() != null)) {
@@ -91,7 +91,6 @@ public class ReadingRecordService {
         if(request.getLibraryIdList() != null) {
             readingRecord.getMappingList().clear();
             mappingRepository.deleteAll(readingRecord.getMappingList());
-
             for(Long libraryId : request.getLibraryIdList()) libraries.add(findLibrary(userId, libraryId));
         }
 
@@ -105,8 +104,9 @@ public class ReadingRecordService {
         return readingRecordRepository.findByUserAndBook(user, book);
     }
 
-    private ReadingRecord findReadingRecord(Long id){
-        return readingRecordRepository.findById(id)
+    private ReadingRecord findReadingRecord(Long id, String userId){
+        User user = getUser(userId);
+        return readingRecordRepository.findByreadingRecordSeqAndUser(id, user)
                 .orElseThrow(() -> new GeneralException(Code.READING_RECORD_NOT_FOUND));
     }
 
