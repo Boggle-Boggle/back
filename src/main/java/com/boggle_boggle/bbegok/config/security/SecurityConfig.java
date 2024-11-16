@@ -76,6 +76,7 @@ public class SecurityConfig {
                         .requestMatchers("/libraries/**").hasAnyAuthority(RoleType.GUEST.getCode(),RoleType.USER.getCode())
                         .requestMatchers("/recent-searches/**").hasAnyAuthority(RoleType.GUEST.getCode(),RoleType.USER.getCode())
                         .requestMatchers("/reading-record/**").hasAnyAuthority(RoleType.GUEST.getCode(),RoleType.USER.getCode())
+                        .requestMatchers("/library/**").hasAnyAuthority(RoleType.GUEST.getCode(),RoleType.USER.getCode())
 
                         //user : 빼곡의 모든 API에 접근가능
                         //.requestMatchers("/books/**").hasAnyAuthority(RoleType.USER.getCode())

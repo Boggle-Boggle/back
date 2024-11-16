@@ -4,7 +4,11 @@ import com.boggle_boggle.bbegok.dto.LibrariesDto;
 import com.boggle_boggle.bbegok.dto.base.DataResponseDto;
 import com.boggle_boggle.bbegok.dto.request.LibraryRequest;
 import com.boggle_boggle.bbegok.dto.response.BookDetailResponse;
+import com.boggle_boggle.bbegok.dto.response.LibraryBookListResponse;
 import com.boggle_boggle.bbegok.dto.response.LibraryResponse;
+import com.boggle_boggle.bbegok.enums.ReadStatus;
+import com.boggle_boggle.bbegok.exception.Code;
+import com.boggle_boggle.bbegok.exception.exception.GeneralException;
 import com.boggle_boggle.bbegok.service.LibraryService;
 import com.boggle_boggle.bbegok.service.SearchLogService;
 import lombok.RequiredArgsConstructor;
@@ -39,5 +43,16 @@ public class LibraryController {
                                                @AuthenticationPrincipal UserDetails userDetails) {
         libraryService.deleteLibrary(libraryId, userDetails.getUsername());
         return DataResponseDto.empty();
+    }
+
+    //서재의 독서기록을 조회
+    @GetMapping("/library")
+    public DataResponseDto<LibraryBookListResponse>searchLibrary(@RequestParam(required = false) Long libraryId,
+                                                                 @RequestParam(required = false) ReadStatus status,
+                                                                 @RequestParam(defaultValue = "1") int pageNum,
+                                                                 @AuthenticationPrincipal UserDetails userDetails) {
+        if (libraryId != null) return DataResponseDto.of(libraryService.findByLibraryId(libraryId, pageNum, userDetails.getUsername()));
+        else if (status != null) return DataResponseDto.of(libraryService.findByStatus(status, pageNum, userDetails.getUsername()));
+        else return DataResponseDto.of(libraryService.findAll(pageNum, userDetails.getUsername()));
     }
 }
