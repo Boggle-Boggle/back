@@ -22,9 +22,9 @@ public interface LibraryRepository extends JpaRepository<Library, Long> {
     List<LibrariesDto> findAllByUserWithBookCount(@Param("user") User user);
 
     //해당 서재가 있는지 조회
-    boolean existsByLibraryName(String libraryName);
+    boolean existsByLibraryNameAndUser(String libraryName,User user);
 
     //유저의 특정 서재 조회
-    Optional<Library> findByUserAndLibraryName(User user, String libraryName);
+    Optional<Library> findByUserAndLibrarySeq(User user, Long libraryId);
 
 }

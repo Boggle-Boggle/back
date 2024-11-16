@@ -19,6 +19,6 @@ public class NewReadingRecordRequest {
     private double rating;
     private LocalDateTime startReadDate;
     private LocalDateTime endReadDate;
-    private List<String> libraryNameList;
+    private List<Long> libraryIdList;
     private boolean isVisible;
 }
