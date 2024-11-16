@@ -36,16 +36,17 @@ public class LibraryService {
 
     public void saveNewLibrary(LibraryRequest request, String userId) {
         // 중복 체크
-        if (libraryRepository.existsByLibraryName(request.getLibraryName())) {
+        if (libraryRepository.existsByLibraryNameAndUser(request.getLibraryName(),getUser(userId))) {
             throw new GeneralException(Code.DUPLICATE_LIBRARY_NAME);
         }
+
         Library newLibrary = Library.createLibrary(getUser(userId), request.getLibraryName());
         libraryRepository.save(newLibrary);
     }
 
 
-    public void deleteLibrary(String libraryName, String userId) {
-        Library library = libraryRepository.findByUserAndLibraryName(getUser(userId), libraryName)
+    public void deleteLibrary(Long libraryId, String userId) {
+        Library library = libraryRepository.findByUserAndLibrarySeq(getUser(userId), libraryId)
                 .orElseThrow(() -> new GeneralException(Code.LIBRARY_NOT_FOUND));
 
         libraryRepository.delete(library);

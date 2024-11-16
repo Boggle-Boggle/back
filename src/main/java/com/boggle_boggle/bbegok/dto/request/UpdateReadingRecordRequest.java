@@ -13,10 +13,9 @@ import java.util.List;
 @NoArgsConstructor
 @ToString
 public class UpdateReadingRecordRequest {
-    private String isbn;
     private ReadStatus readStatus;
     private Double rating;
     List<ReadDateDto> readDateList;
-    private List<String> libraryNameList;
+    private List<Long> libraryIdList;
     private Boolean isVisible;
 }

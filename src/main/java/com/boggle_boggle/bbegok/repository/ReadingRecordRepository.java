@@ -10,4 +10,6 @@ import java.util.Optional;
 
 public interface ReadingRecordRepository extends JpaRepository<ReadingRecord, Long> {
     ReadingRecord findByUserAndBook(User user, Book book);
+
+    Optional<ReadingRecord> findByreadingRecordSeqAndUser(Long id, User user);
 }

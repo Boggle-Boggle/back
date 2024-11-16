@@ -26,7 +26,7 @@ public class ReadingRecordController {
     @GetMapping("/{id}")
     public DataResponseDto<ReadingRecordResponse> getReadingRecord(@PathVariable(name = "id") Long id,
                                                                    @AuthenticationPrincipal UserDetails userDetails) {
-        return DataResponseDto.of(readingRecordService.getReadingRecord(id));
+        return DataResponseDto.of(readingRecordService.getReadingRecord(id, userDetails.getUsername()));
     }
 
     //독서기록 있는지 조회
@@ -47,10 +47,10 @@ public class ReadingRecordController {
 
     //독서기록 수정
     @PatchMapping("/{id}")
-    public DataResponseDto<Void> updateReadingRecord(@PathVariable(name = "id") Long id,
+    public DataResponseDto<Void> updateReadingRecord(@PathVariable(name = "id") Long LibraryId,
                                                         @RequestBody UpdateReadingRecordRequest request,
                                                         @AuthenticationPrincipal UserDetails userDetails) {
-        readingRecordService.updateReadingRecord(id, request, userDetails.getUsername());
+        readingRecordService.updateReadingRecord(LibraryId, request, userDetails.getUsername());
         return DataResponseDto.empty();
     }
 

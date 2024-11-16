@@ -46,8 +46,8 @@ public class ReadingRecordService {
 
         //독서기록 저장 > 다대다(Library - mapping - readingRecord) 매핑 저장
         List<Library> libraries = new ArrayList<>();
-        for (String libraryName : request.getLibraryNameList()) {
-            Library library = findLibrary(userId, libraryName);
+        for (Long libraryId : request.getLibraryIdList()) {
+            Library library = findLibrary(userId, libraryId);
             if (library == null) throw new GeneralException(Code.LIBRARY_NOT_FOUND);
             libraries.add(library);
         }
@@ -66,8 +66,8 @@ public class ReadingRecordService {
         readingRecordRepository.save(readingRecord);
     }
 
-    public ReadingRecordResponse getReadingRecord(Long id) {
-        ReadingRecord readingRecord = findReadingRecord(id);
+    public ReadingRecordResponse getReadingRecord(Long id, String userId) {
+        ReadingRecord readingRecord = findReadingRecord(id, userId);
         return ReadingRecordResponse.fromReadingRecord(readingRecord);
     }
 
@@ -78,7 +78,7 @@ public class ReadingRecordService {
     }
 
     public void updateReadingRecord(Long id, UpdateReadingRecordRequest request, String userId) {
-        ReadingRecord readingRecord = findReadingRecord(id);
+        ReadingRecord readingRecord = findReadingRecord(id, userId);
 
         //==날짜가 바뀌었다면 기존날짜 삭제후 업데이트
         if((request.getReadDateList() != null)) {
@@ -88,11 +88,10 @@ public class ReadingRecordService {
 
         //==서재가 바뀌었다면 바뀌기 전/후 서재 찾아서 업데이트
         List<Library> libraries = new ArrayList<>();
-        if(request.getLibraryNameList() != null) {
+        if(request.getLibraryIdList() != null) {
             readingRecord.getMappingList().clear();
             mappingRepository.deleteAll(readingRecord.getMappingList());
-
-            for(String libraryName : request.getLibraryNameList()) libraries.add(findLibrary(userId, libraryName));
+            for(Long libraryId : request.getLibraryIdList()) libraries.add(findLibrary(userId, libraryId));
         }
 
         readingRecord.update(request.getReadStatus(), request.getRating(), request.getReadDateList(),
@@ -105,14 +104,15 @@ public class ReadingRecordService {
         return readingRecordRepository.findByUserAndBook(user, book);
     }
 
-    private ReadingRecord findReadingRecord(Long id){
-        return readingRecordRepository.findById(id)
+    private ReadingRecord findReadingRecord(Long id, String userId){
+        User user = getUser(userId);
+        return readingRecordRepository.findByreadingRecordSeqAndUser(id, user)
                 .orElseThrow(() -> new GeneralException(Code.READING_RECORD_NOT_FOUND));
     }
 
-    private Library findLibrary(String userId, String libraryName){
+    private Library findLibrary(String userId, Long libraryId){
         User user = getUser(userId);
-        return libraryRepository.findByUserAndLibraryName(user, libraryName)
+        return libraryRepository.findByUserAndLibrarySeq(user, libraryId)
                 .orElseThrow(() -> new GeneralException(Code.LIBRARY_NOT_FOUND));
     }
 }

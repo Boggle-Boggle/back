@@ -35,9 +35,9 @@ public class LibraryController {
 
     //특정 서재 삭제
     @DeleteMapping("/libraries")
-    public DataResponseDto<Void> deleteLibrary(@RequestParam(name="libraryName") String libraryName,
+    public DataResponseDto<Void> deleteLibrary(@RequestParam(name="libraryId") Long libraryId,
                                                @AuthenticationPrincipal UserDetails userDetails) {
-        libraryService.deleteLibrary(libraryName, userDetails.getUsername());
+        libraryService.deleteLibrary(libraryId, userDetails.getUsername());
         return DataResponseDto.empty();
     }
 }
