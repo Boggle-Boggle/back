@@ -77,11 +77,12 @@ public class SecurityConfig {
                         .requestMatchers("/recent-searches/**").hasAnyAuthority(RoleType.GUEST.getCode(),RoleType.USER.getCode())
                         .requestMatchers("/reading-record/**").hasAnyAuthority(RoleType.GUEST.getCode(),RoleType.USER.getCode())
                         .requestMatchers("/library/**").hasAnyAuthority(RoleType.GUEST.getCode(),RoleType.USER.getCode())
+                        .requestMatchers("/bookshelf/**").hasAnyAuthority(RoleType.GUEST.getCode(),RoleType.USER.getCode())
 
                         //user : 빼곡의 모든 API에 접근가능
                         //.requestMatchers("/books/**").hasAnyAuthority(RoleType.USER.getCode())
                         //.anyRequest().hasAuthority(RoleType.USER.getCode()))
-                        .anyRequest().hasAuthority(RoleType.GUEST.getCode()))
+                        .anyRequest().hasAuthority(RoleType.USER.getCode()))
 
                 //OAuth2 로그인 요청 처리
                 .oauth2Login(oauth2 -> oauth2

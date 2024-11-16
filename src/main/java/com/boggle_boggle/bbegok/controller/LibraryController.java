@@ -4,6 +4,7 @@ import com.boggle_boggle.bbegok.dto.LibrariesDto;
 import com.boggle_boggle.bbegok.dto.base.DataResponseDto;
 import com.boggle_boggle.bbegok.dto.request.LibraryRequest;
 import com.boggle_boggle.bbegok.dto.response.BookDetailResponse;
+import com.boggle_boggle.bbegok.dto.response.BookShelfResponse;
 import com.boggle_boggle.bbegok.dto.response.LibraryBookListResponse;
 import com.boggle_boggle.bbegok.dto.response.LibraryResponse;
 import com.boggle_boggle.bbegok.enums.ReadStatus;
@@ -54,5 +55,13 @@ public class LibraryController {
         if (libraryId != null) return DataResponseDto.of(libraryService.findByLibraryId(libraryId, pageNum, userDetails.getUsername()));
         else if (status != null) return DataResponseDto.of(libraryService.findByStatus(status, pageNum, userDetails.getUsername()));
         else return DataResponseDto.of(libraryService.findAll(pageNum, userDetails.getUsername()));
+    }
+
+    //책장을 조회
+    @GetMapping("/bookshelf")
+    public DataResponseDto<BookShelfResponse>findBookshelfByEndDate(@RequestParam(required = false) Integer year,
+                                                                    @RequestParam(required = false) Integer month,
+                                                                    @AuthenticationPrincipal UserDetails userDetails) {
+        return DataResponseDto.of(libraryService.findBookshelfByEndDate(year, month, userDetails.getUsername()));
     }
 }

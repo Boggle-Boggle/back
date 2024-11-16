@@ -14,6 +14,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 
+import java.util.List;
+
 public interface ReadingRecordLibraryMappingRepository extends JpaRepository<ReadingRecordLibraryMapping, Long> {
     @Query("""
     SELECT DISTINCT new com.boggle_boggle.bbegok.dto.LibraryBook(r.readingRecord.readingRecordSeq, r.readingRecord.book.title, r.readingRecord.book.page)
@@ -49,4 +51,25 @@ public interface ReadingRecordLibraryMappingRepository extends JpaRepository<Rea
             @Param("user") User user,
             Pageable pageable
     );
+
+    @Query(value = """
+    SELECT DISTINCT new com.boggle_boggle.bbegok.dto.LibraryBook(
+        r.readingRecord.readingRecordSeq, 
+        r.readingRecord.book.title, 
+        r.readingRecord.book.page
+    )
+    FROM ReadingRecordLibraryMapping r
+    JOIN r.readingRecord.readDateList rd
+    WHERE r.readingRecord.user = :user
+    AND r.readingRecord.isBooksVisible = true
+    AND (:year IS NULL OR EXTRACT(YEAR FROM rd.endReadDate) = :year)
+    AND (:month IS NULL OR EXTRACT(MONTH FROM rd.endReadDate) = :month)
+""")
+    List<LibraryBook> findBooksByUserAndReadDate(
+            @Param("user") User user,
+            @Param("year") Integer year,
+            @Param("month") Integer month
+    );
+
+
 }
