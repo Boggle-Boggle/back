@@ -1,6 +1,7 @@
 package com.boggle_boggle.bbegok.service;
 
 import com.boggle_boggle.bbegok.dto.LibrariesDto;
+import com.boggle_boggle.bbegok.dto.LibraryBook;
 import com.boggle_boggle.bbegok.dto.request.LibraryRequest;
 import com.boggle_boggle.bbegok.dto.response.LibraryBookListResponse;
 import com.boggle_boggle.bbegok.dto.response.LibraryResponse;
@@ -66,7 +67,7 @@ public class LibraryService {
         User user = getUser(userId);
         Pageable pageable = PageRequest.of(pageNum-1, PAGE_SIZE);
 
-        Page<Book> booksPage = readingRecordLibraryMappingRepository.findBooksByLibraryAndUser(library, user, pageable);
+        Page<LibraryBook> booksPage = readingRecordLibraryMappingRepository.findBooksByLibraryAndUser(library, user, pageable);
         return LibraryBookListResponse.fromPage(booksPage);
     }
 
@@ -74,14 +75,14 @@ public class LibraryService {
         User user = getUser(userId);
         Pageable pageable = PageRequest.of(pageNum-1, PAGE_SIZE);
 
-        Page<Book> booksPage = readingRecordLibraryMappingRepository.findBooksByUserAndStatus(status, user, pageable);
+        Page<LibraryBook> booksPage = readingRecordLibraryMappingRepository.findBooksByUserAndStatus(status, user, pageable);
         return LibraryBookListResponse.fromPage(booksPage);
     }
 
     public LibraryBookListResponse findAll(int pageNum, String userId) {
         User user = getUser(userId);
         Pageable pageable = PageRequest.of(pageNum-1, PAGE_SIZE);
-        Page<Book> booksPage = readingRecordLibraryMappingRepository.findBooksByUser(user, pageable);
+        Page<LibraryBook> booksPage = readingRecordLibraryMappingRepository.findBooksWithReadingRecordIdByUser(user, pageable);
         return LibraryBookListResponse.fromPage(booksPage);
     }
 }

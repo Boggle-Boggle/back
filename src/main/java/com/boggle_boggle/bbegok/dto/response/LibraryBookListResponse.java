@@ -20,16 +20,13 @@ public class LibraryBookListResponse {
     private List<LibraryBook> books;
 
     // fromPage 메서드를 추가하여 Page<Book>를 LibraryBookListResponse로 변환
-    public static LibraryBookListResponse fromPage(Page<Book> booksPage) {
-        List<LibraryBook> libraryBooks = booksPage.stream()
-                .map(LibraryBook::fromEntity) // 각 Book을 LibraryBook으로 변환
-                .collect(Collectors.toList());
-
+    // fromPage 메소드 추가
+    public static LibraryBookListResponse fromPage(Page<LibraryBook> page) {
         return LibraryBookListResponse.builder()
-                .pageNum(booksPage.getNumber())
-                .totalResultCnt((int) booksPage.getTotalElements())
-                .cntPerPage(booksPage.getSize())
-                .books(libraryBooks)
+                .pageNum(page.getNumber() + 1)
+                .totalResultCnt((int) page.getTotalElements())
+                .cntPerPage(page.getSize())
+                .books(page.getContent())
                 .build();
     }
 }

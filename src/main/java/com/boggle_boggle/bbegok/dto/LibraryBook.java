@@ -9,6 +9,7 @@ import lombok.ToString;
 @ToString
 @Builder
 public class LibraryBook {
+    private Long readingRecordId;
     private String title;
     private int page;
 
