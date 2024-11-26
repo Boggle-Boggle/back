@@ -14,6 +14,7 @@ import com.boggle_boggle.bbegok.exception.Code;
 import com.boggle_boggle.bbegok.exception.exception.GeneralException;
 import com.boggle_boggle.bbegok.repository.LibraryRepository;
 import com.boggle_boggle.bbegok.repository.ReadingRecordLibraryMappingRepository;
+import com.boggle_boggle.bbegok.repository.ReadingRecordRepository;
 import com.boggle_boggle.bbegok.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
@@ -33,6 +34,7 @@ public class LibraryService {
     private final LibraryRepository libraryRepository;
     private final UserRepository userRepository;
     private final ReadingRecordLibraryMappingRepository readingRecordLibraryMappingRepository;
+    private final ReadingRecordRepository readingRecordRepository;
 
     public User getUser(String userId) {
         return userRepository.findByUserId(userId);
@@ -90,7 +92,7 @@ public class LibraryService {
 
     public BookShelfResponse findBookshelfByEndDate(Integer year, Integer month, String userId) {
         User user = getUser(userId);
-        List<LibraryBook> books = readingRecordLibraryMappingRepository.findBooksByUserAndReadDate(user, year, month);
+        List<LibraryBook> books = readingRecordRepository.findBooksByUserAndReadDate(user, year, month);
         return BookShelfResponse.fromDTO(books);
     }
 }
