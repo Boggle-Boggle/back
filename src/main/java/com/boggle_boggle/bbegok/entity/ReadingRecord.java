@@ -58,6 +58,7 @@ public class ReadingRecord {
         this.book = book;
         this.rating = rating;
         this.isBooksVisible = visible;
+        System.out.println("보여? "+visible+", "+isBooksVisible);
         this.status = readStatus;
         addReadDateList(readStartDate, readEndDate);
         addLibraries(libraries);

@@ -20,5 +20,5 @@ public class NewReadingRecordRequest {
     private LocalDateTime startReadDate;
     private LocalDateTime endReadDate;
     private List<Long> libraryIdList;
-    private boolean isVisible;
+    private Boolean isVisible;
 }

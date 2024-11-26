@@ -34,7 +34,7 @@ public enum Code {
     // 독서록 관련 예외
     READING_RECORD_NOT_FOUND(12000, HttpStatus.NOT_FOUND, "Reading record not found"),
     INVALID_READING_DATE(12001, HttpStatus.BAD_REQUEST, "Invalid reading date"),
-    READING_LOG_ALREADY_EXISTS(12002, HttpStatus.CONFLICT, "Reading log already exists for this date"),
+    READING_RECORD_ALREADY_EXIST(12002, HttpStatus.CONFLICT, "Reading Record already exists for this book"),
 
     // 노트 관련 예외
     NOTE_NOT_FOUND(12500, HttpStatus.NOT_FOUND, "Reading Note not found"),

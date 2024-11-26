@@ -43,6 +43,8 @@ public class ReadingRecordService {
             if(newBookData == null) throw new GeneralException(Code.BOOK_NOT_FOUND);
             book = bookRepository.save(Book.createBook(newBookData));
         }
+        //해당 책에대한 독서기록이 이전에 있었는지 확인 -> 이전에 있었다면 에러
+        if(findReadingRecord(book.getIsbn(), userId) != null) throw new GeneralException(Code.READING_RECORD_ALREADY_EXIST);
 
         //독서기록 저장 > 다대다(Library - mapping - readingRecord) 매핑 저장
         List<Library> libraries = new ArrayList<>();
@@ -59,7 +61,7 @@ public class ReadingRecordService {
                 request.getEndReadDate(),
                 libraries,
                 request.getRating(),
-                request.isVisible(),
+                request.getIsVisible(),
                 request.getReadStatus()
         );
 
