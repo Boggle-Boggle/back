@@ -47,7 +47,7 @@ public class AuthController {
         String accessToken = HeaderUtil.getAccessToken(request);
         AuthToken authToken = tokenProvider.convertAuthToken(accessToken);
         if (!authToken.validate()) {
-            return ErrorResponseDto.of(Code.JWT_INVALID_TOKEN, "Invalid access token");
+            return ErrorResponseDto.of(INVALID_ACCESS_TOKEN, "Invalid access token");
         }
 
         // expired access token 인지 확인

@@ -26,6 +26,14 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
             HttpServletResponse response,
             FilterChain filterChain)  throws ServletException, IOException {
 
+        String requestURI = request.getRequestURI();
+
+        if (requestURI.startsWith("/auth/")) {
+            log.debug("url={/auth/}, pass the TokenAuthenticationFilter");
+            filterChain.doFilter(request, response);
+            return;  // 토큰 검사 없이 다음 필터로 진행
+        }
+
         String tokenStr = HeaderUtil.getAccessToken(request);
         AuthToken token = tokenProvider.convertAuthToken(tokenStr);
 
