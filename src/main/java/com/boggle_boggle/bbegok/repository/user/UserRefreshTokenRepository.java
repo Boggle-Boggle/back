@@ -7,6 +7,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public interface UserRefreshTokenRepository extends JpaRepository<UserRefreshToken, Long> {
     UserRefreshToken findByUserId(String userId);
@@ -15,5 +17,7 @@ public interface UserRefreshTokenRepository extends JpaRepository<UserRefreshTok
     @Modifying
     @Query("DELETE FROM UserRefreshToken u WHERE u.userId = :userId")
     void deleteRefreshTokenByUserId(@Param("userId") String userId);
+
+    Optional<UserRefreshToken> findByRefreshToken(String refreshToken);
 }
 

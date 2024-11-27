@@ -44,24 +44,6 @@ public class AuthController {
 
     @GetMapping("/refresh")
     public ResponseDto refreshToken (HttpServletRequest request, HttpServletResponse response) {
-        // access token 확인
-        String accessToken = HeaderUtil.getAccessToken(request);
-        AuthToken authToken = tokenProvider.convertAuthToken(accessToken);
-
-        log.debug("refresh API in "+accessToken);
-        if (!authToken.validate2()) {
-            return ErrorResponseDto.of(INVALID_ACCESS_TOKEN, "Invalid access token");
-        }
-
-        // expired access token 인지 확인
-        Claims claims = authToken.getExpiredTokenClaims();
-        if (claims == null) {
-            return ErrorResponseDto.of(Code.TOKEN_NOT_EXPIRED, "Access token is not expired yet");
-        }
-
-        String userId = claims.getSubject();
-        RoleType roleType = RoleType.of(claims.get("role", String.class));
-
         // refresh token
         String refreshToken = CookieUtil.getCookie(request, REFRESH_TOKEN)
                 .map(Cookie::getValue)
@@ -70,21 +52,21 @@ public class AuthController {
             return ErrorResponseDto.of(Code.REFRESH_TOKEN_NOT_FOUND, "Refresh token not found in cookie");
         }
 
+        //==리프레쉬 토큰 검증하기
         AuthToken authRefreshToken = tokenProvider.convertAuthToken(refreshToken);
         if (!authRefreshToken.validate()) {
             return ErrorResponseDto.of(Code.INVALID_REFRESH_TOKEN, "Invalid refresh token. Please Sign-in");
         }
+
         // userId refresh token 으로 DB 확인
-        UserRefreshToken userRefreshToken = userRefreshTokenRepository.findByUserIdAndRefreshToken(userId, refreshToken);
-        if (userRefreshToken == null) {
-            return ErrorResponseDto.of(Code.INVALID_REFRESH_TOKEN, "Refresh token not found for user. Please Sign-in");
-        }
+        UserRefreshToken userRefreshToken = userRefreshTokenRepository.findByRefreshToken(refreshToken)
+                .orElseThrow(() -> new GeneralException(Code.REFRESH_TOKEN_NOT_FOUND));
 
         //유효한 Refresh token이며 DB에도 값이 있다면 access 재발급 로직 실행
         Date now = new Date();
         AuthToken newAccessToken = tokenProvider.createAuthToken(
-                userId,
-                roleType.getCode(),
+                userRefreshToken.getUserId(),
+                userRefreshToken.getUser().getRoleType().getCode(),
                 new Date(now.getTime() + appProperties.getAuth().getTokenExpiry())
         );
 
