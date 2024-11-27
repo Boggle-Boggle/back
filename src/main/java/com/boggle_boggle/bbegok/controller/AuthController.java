@@ -44,13 +44,11 @@ public class AuthController {
 
     @GetMapping("/refresh")
     public ResponseDto refreshToken (HttpServletRequest request, HttpServletResponse response) {
-        // refresh token
+        // refresh token 찾기
         String refreshToken = CookieUtil.getCookie(request, REFRESH_TOKEN)
                 .map(Cookie::getValue)
-                .orElse((null));
-        if (refreshToken == null) {
-            return ErrorResponseDto.of(Code.REFRESH_TOKEN_NOT_FOUND, "Refresh token not found in cookie");
-        }
+                .orElseThrow( () -> new GeneralException(Code.REFRESH_TOKEN_NOT_FOUND)
+        );
 
         //==리프레쉬 토큰 검증하기
         AuthToken authRefreshToken = tokenProvider.convertAuthToken(refreshToken);
