@@ -35,7 +35,7 @@ public class ReadingRecordService {
         return userRepository.findByUserId(userId);
     }
 
-    public void saveReadingRecord(NewReadingRecordRequest request, String userId) {
+    public Long saveReadingRecord(NewReadingRecordRequest request, String userId) {
         //이미 해당 isbn이 저장되어있는지 확인 -> 없다면 새로 저장
         Book book = bookRepository.findByIsbn(request.getIsbn());
         if(book == null) {
@@ -65,7 +65,8 @@ public class ReadingRecordService {
                 request.getReadStatus()
         );
 
-        readingRecordRepository.save(readingRecord);
+        ReadingRecord savedReadingRecord = readingRecordRepository.save(readingRecord);
+        return savedReadingRecord.getReadingRecordSeq();
     }
 
     public ReadingRecordResponse getReadingRecord(Long id, String userId) {
