@@ -44,11 +44,12 @@ public class AuthController {
 
     @GetMapping("/refresh")
     public ResponseDto refreshToken (HttpServletRequest request, HttpServletResponse response) {
-        log.debug("refresh API in");
         // access token 확인
         String accessToken = HeaderUtil.getAccessToken(request);
         AuthToken authToken = tokenProvider.convertAuthToken(accessToken);
-        if (!authToken.validate()) {
+
+        log.debug("refresh API in "+accessToken);
+        if (!authToken.validate2()) {
             return ErrorResponseDto.of(INVALID_ACCESS_TOKEN, "Invalid access token");
         }
 
