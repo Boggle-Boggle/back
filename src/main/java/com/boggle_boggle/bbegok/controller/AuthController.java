@@ -31,6 +31,7 @@ import static com.boggle_boggle.bbegok.exception.Code.INVALID_ACCESS_TOKEN;
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
+@Slf4j
 public class AuthController {
 
     private final AppProperties appProperties;
@@ -43,6 +44,7 @@ public class AuthController {
 
     @GetMapping("/refresh")
     public ResponseDto refreshToken (HttpServletRequest request, HttpServletResponse response) {
+        log.debug("refresh API in");
         // access token 확인
         String accessToken = HeaderUtil.getAccessToken(request);
         AuthToken authToken = tokenProvider.convertAuthToken(accessToken);
