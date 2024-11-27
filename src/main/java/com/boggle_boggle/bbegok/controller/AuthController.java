@@ -44,7 +44,7 @@ public class AuthController {
 
     @GetMapping("/refresh")
     public ResponseDto refreshToken (HttpServletRequest request, HttpServletResponse response) {
-        // refresh token 찾기
+        //==refresh token 찾기
         String refreshToken = CookieUtil.getCookie(request, REFRESH_TOKEN)
                 .map(Cookie::getValue)
                 .orElseThrow( () -> new GeneralException(Code.REFRESH_TOKEN_NOT_FOUND)
@@ -56,11 +56,11 @@ public class AuthController {
             return ErrorResponseDto.of(Code.INVALID_REFRESH_TOKEN, "Invalid refresh token. Please Sign-in");
         }
 
-        // userId refresh token 으로 DB 확인
+        //==userId refresh token 으로 DB 확인
         UserRefreshToken userRefreshToken = userRefreshTokenRepository.findByRefreshToken(refreshToken)
                 .orElseThrow(() -> new GeneralException(Code.REFRESH_TOKEN_NOT_FOUND));
 
-        //유효한 Refresh token이며 DB에도 값이 있다면 access 재발급 로직 실행
+        //==유효한 Refresh token이며 DB에도 값이 있다면 access 재발급 로직 실행
         Date now = new Date();
         AuthToken newAccessToken = tokenProvider.createAuthToken(
                 userRefreshToken.getUserId(),
@@ -70,7 +70,7 @@ public class AuthController {
 
         long validTime = authRefreshToken.getTokenClaims().getExpiration().getTime() - now.getTime();
 
-        // refresh 토큰 기간이 3일 이하로 남은 경우, refresh 토큰 갱신
+        //==refresh 토큰 기간이 3일 이하로 남은 경우, refresh 토큰 갱신
         if (validTime <= THREE_DAYS_MSEC) {
             // refresh 토큰 설정
             long refreshTokenExpiry = appProperties.getAuth().getRefreshTokenExpiry();

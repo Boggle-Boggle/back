@@ -22,11 +22,9 @@ public class CookieUtil {
     public static Optional<Cookie> getCookie(HttpServletRequest request, String name) {
 
         Cookie[] cookies = request.getCookies();
-        log.debug("now request have Cookie cnt : {}", cookies.length);
         if (cookies != null && cookies.length > 0) {
             for (Cookie cookie : cookies) {
                 if (name.equals(cookie.getName()))  {
-                    log.debug("name.equals({}) : {}", cookie.getName(), cookie.getValue());
                     return Optional.of(cookie);
                 }
             }

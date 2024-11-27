@@ -26,7 +26,7 @@ public class UserRefreshToken {
     @Column(name = "user_id", length = 64)
     private String userId;
 
-    @Column(name = "refresh_token", length = 256)
+    @Column(name = "refresh_token", length = 512)
     private String refreshToken;
 
     protected UserRefreshToken(){}
@@ -41,7 +41,7 @@ public class UserRefreshToken {
 
     public static UserRefreshToken createUserRefreshToken(
             User user,
-            @NotNull @Size(max = 256) String refreshToken){
+            @NotNull @Size(max = 512) String refreshToken){
         return new UserRefreshToken(user, refreshToken);
     }
 }
