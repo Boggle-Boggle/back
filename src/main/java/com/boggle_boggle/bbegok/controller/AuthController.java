@@ -47,7 +47,7 @@ public class AuthController {
         //==refresh token 찾기
         String refreshToken = CookieUtil.getCookie(request, REFRESH_TOKEN)
                 .map(Cookie::getValue)
-                .orElseThrow( () -> new GeneralException(Code.REFRESH_TOKEN_NOT_FOUND)
+                .orElseThrow( () -> new GeneralException(Code.REFRESH_COOKIE_NOT_FOUND)
         );
 
         //==리프레쉬 토큰 검증하기

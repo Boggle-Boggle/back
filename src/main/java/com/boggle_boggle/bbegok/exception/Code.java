@@ -68,6 +68,7 @@ public enum Code {
 
     //토큰 관련 예외
     TOKEN_NOT_EXPIRED(50006, HttpStatus.UNPROCESSABLE_ENTITY ,"Access token is not expired yet" ),
+    REFRESH_COOKIE_NOT_FOUND(50011, HttpStatus.UNAUTHORIZED ,"Token not found in cookie" ),
     REFRESH_TOKEN_NOT_FOUND(50007, HttpStatus.UNAUTHORIZED, "Refresh token not found"),
     INVALID_REFRESH_TOKEN(50008,HttpStatus.UNAUTHORIZED ,  "Invalid refresh token"),
     INVALID_ACCESS_TOKEN(50005,HttpStatus.UNAUTHORIZED ,  "Invalid access token"),
