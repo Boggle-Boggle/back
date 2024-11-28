@@ -21,6 +21,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -45,7 +46,6 @@ public class SecurityConfig {
     private final CustomAccessDeniedHandler customAccessDeniedHandler;
     private final UserRefreshTokenRepository userRefreshTokenRepository;
     private final UserRepository userRepository;
-
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -84,6 +84,9 @@ public class SecurityConfig {
                         //.anyRequest().hasAuthority(RoleType.USER.getCode()))
                         .anyRequest().hasAuthority(RoleType.USER.getCode()))
 
+                //토큰 검증 필터
+                .addFilterBefore( new TokenAuthenticationFilter(tokenProvider), UsernamePasswordAuthenticationFilter.class)
+
                 //OAuth2 로그인 요청 처리
                 .oauth2Login(oauth2 -> oauth2
                         .authorizationEndpoint(authorization -> authorization
@@ -96,10 +99,11 @@ public class SecurityConfig {
                         .successHandler(oAuth2AuthenticationSuccessHandler())
                         .failureHandler(oAuth2AuthenticationFailureHandler()));
 
-        http.addFilterBefore( new TokenAuthenticationFilter(tokenProvider), UsernamePasswordAuthenticationFilter.class);
+
 
         return http.build();
     }
+
 
     @Bean
     public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {

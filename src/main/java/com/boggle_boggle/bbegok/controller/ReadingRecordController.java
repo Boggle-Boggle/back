@@ -38,11 +38,10 @@ public class ReadingRecordController {
 
     //새로운 독서기록 등록
     @PostMapping
-    public DataResponseDto<Void> saveReadingRecord(
+    public DataResponseDto<Long> saveReadingRecord(
             @RequestBody NewReadingRecordRequest request,
             @AuthenticationPrincipal UserDetails userDetails) {
-        readingRecordService.saveReadingRecord(request, userDetails.getUsername());
-        return DataResponseDto.empty();
+        return DataResponseDto.of(readingRecordService.saveReadingRecord(request, userDetails.getUsername()));
     }
 
     //독서기록 수정

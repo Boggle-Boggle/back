@@ -31,6 +31,7 @@ import static com.boggle_boggle.bbegok.exception.Code.INVALID_ACCESS_TOKEN;
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
+@Slf4j
 public class AuthController {
 
     private final AppProperties appProperties;
@@ -43,51 +44,33 @@ public class AuthController {
 
     @GetMapping("/refresh")
     public ResponseDto refreshToken (HttpServletRequest request, HttpServletResponse response) {
-        // access token 확인
-        String accessToken = HeaderUtil.getAccessToken(request);
-        AuthToken authToken = tokenProvider.convertAuthToken(accessToken);
-        if (!authToken.validate()) {
-            return ErrorResponseDto.of(Code.JWT_INVALID_TOKEN, "Invalid access token");
-        }
-
-        // expired access token 인지 확인
-        Claims claims = authToken.getExpiredTokenClaims();
-        if (claims == null) {
-            return ErrorResponseDto.of(Code.TOKEN_NOT_EXPIRED, "Access token is not expired yet");
-        }
-
-        String userId = claims.getSubject();
-        RoleType roleType = RoleType.of(claims.get("role", String.class));
-
-        // refresh token
+        //==refresh token 찾기
         String refreshToken = CookieUtil.getCookie(request, REFRESH_TOKEN)
                 .map(Cookie::getValue)
-                .orElse((null));
-        if (refreshToken == null) {
-            return ErrorResponseDto.of(Code.REFRESH_TOKEN_NOT_FOUND, "Refresh token not found in cookie");
-        }
+                .orElseThrow( () -> new GeneralException(Code.REFRESH_COOKIE_NOT_FOUND)
+        );
 
+        //==리프레쉬 토큰 검증하기
         AuthToken authRefreshToken = tokenProvider.convertAuthToken(refreshToken);
         if (!authRefreshToken.validate()) {
             return ErrorResponseDto.of(Code.INVALID_REFRESH_TOKEN, "Invalid refresh token. Please Sign-in");
         }
-        // userId refresh token 으로 DB 확인
-        UserRefreshToken userRefreshToken = userRefreshTokenRepository.findByUserIdAndRefreshToken(userId, refreshToken);
-        if (userRefreshToken == null) {
-            return ErrorResponseDto.of(Code.INVALID_REFRESH_TOKEN, "Refresh token not found for user. Please Sign-in");
-        }
 
-        //유효한 Refresh token이며 DB에도 값이 있다면 access 재발급 로직 실행
+        //==userId refresh token 으로 DB 확인
+        UserRefreshToken userRefreshToken = userRefreshTokenRepository.findByRefreshToken(refreshToken)
+                .orElseThrow(() -> new GeneralException(Code.REFRESH_TOKEN_NOT_FOUND));
+
+        //==유효한 Refresh token이며 DB에도 값이 있다면 access 재발급 로직 실행
         Date now = new Date();
         AuthToken newAccessToken = tokenProvider.createAuthToken(
-                userId,
-                roleType.getCode(),
+                userRefreshToken.getUserId(),
+                userRefreshToken.getUser().getRoleType().getCode(),
                 new Date(now.getTime() + appProperties.getAuth().getTokenExpiry())
         );
 
         long validTime = authRefreshToken.getTokenClaims().getExpiration().getTime() - now.getTime();
 
-        // refresh 토큰 기간이 3일 이하로 남은 경우, refresh 토큰 갱신
+        //==refresh 토큰 기간이 3일 이하로 남은 경우, refresh 토큰 갱신
         if (validTime <= THREE_DAYS_MSEC) {
             // refresh 토큰 설정
             long refreshTokenExpiry = appProperties.getAuth().getRefreshTokenExpiry();

@@ -47,6 +47,7 @@ public class AuthToken {
                 .compact();
     }
 
+    //null이면 invalid, null이 아니면 valid한것
     public boolean validate() {
         return this.getTokenClaims() != null;
     }
