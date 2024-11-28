@@ -50,12 +50,15 @@ public class CookieUtil {
         if (cookies != null && cookies.length > 0) {
             for (Cookie cookie : cookies) {
                 if (name.equals(cookie.getName())) {
-                    cookie.setValue("");
-                    cookie.setPath("/");
-                    cookie.setMaxAge(0);
-                    cookie.setHttpOnly(true);
-                    cookie.setSecure(true);
-                    response.addCookie(cookie);
+                    ResponseCookie deleteCookie = ResponseCookie.from(name, "")
+                            .path("/")
+                            .domain(domain)
+                            .sameSite("None")
+                            .httpOnly(true)
+                            .secure(true)
+                            .maxAge(0)
+                            .build();
+                    response.addHeader(HttpHeaders.SET_COOKIE, deleteCookie.toString());
                 }
             }
         }
