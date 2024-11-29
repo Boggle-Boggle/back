@@ -79,7 +79,10 @@ public enum Code {
 
     //서재 예외
     DUPLICATE_LIBRARY_NAME(600000, HttpStatus.CONFLICT, "library name already exists"),
-    LIBRARY_NOT_FOUND(600001, HttpStatus.NOT_FOUND, "library not found");
+    LIBRARY_NOT_FOUND(600001, HttpStatus.NOT_FOUND, "library not found"),
+
+    TERMS_NOT_FOUND(700001, HttpStatus.NOT_FOUND, "terms not found"),
+    TERMS_NOT_AGREED(700002, HttpStatus.BAD_REQUEST, "Did not agree to the required terms");
 
 
     private final Integer code;

@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.ToString;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 
 @Entity
 @Getter
@@ -25,4 +26,18 @@ public class AgreeToTerms {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "terms_seq")
     private Terms terms;
+
+    protected AgreeToTerms() {
+    }
+
+    public AgreeToTerms(User user, Terms terms) {
+        this.user = user;
+        this.terms = terms;
+        this.agreeDate = LocalDateTime.now();
+    }
+
+    public static AgreeToTerms createAgreeToTerms(User user, Terms terms) {
+        return new AgreeToTerms(user, terms);
+    }
+
 }
