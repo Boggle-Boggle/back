@@ -3,6 +3,7 @@ package com.boggle_boggle.bbegok.controller;
 import com.boggle_boggle.bbegok.dto.base.DataResponseDto;
 import com.boggle_boggle.bbegok.dto.request.NickNameRequest;
 import com.boggle_boggle.bbegok.dto.response.SearchBookListResponse;
+import com.boggle_boggle.bbegok.dto.response.TermsResponse;
 import com.boggle_boggle.bbegok.repository.user.UserRepository;
 import com.boggle_boggle.bbegok.service.UserService;
 import jakarta.validation.Valid;
@@ -33,6 +34,12 @@ public class UserController {
         return DataResponseDto.of(userService.isNicknameAvailable(request.getNickname()));
     }
 
+    //약관조회
+    @GetMapping("/terms")
+    public DataResponseDto<TermsResponse> getLatestTerms() {
+        return DataResponseDto.of(userService.getLatestTerms());
+    }
+    
     //약관동의
     @PatchMapping("/terms")
     public DataResponseDto<Null> agreeToTerms(@AuthenticationPrincipal UserDetails userDetails) {
