@@ -29,8 +29,8 @@ public class UserController {
 
     //닉네임 중복확인
     @GetMapping("/nickname")
-    public DataResponseDto<Boolean> isNicknameAvailable(@Valid @RequestBody NickNameRequest request) {
-        return DataResponseDto.of(userService.isNicknameAvailable(request.getNickname()));
+    public DataResponseDto<Boolean> isNicknameAvailable(@RequestParam String nickname) {
+        return DataResponseDto.of(userService.isNicknameAvailable(nickName);
     }
 
     //약관동의
