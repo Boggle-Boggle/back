@@ -38,6 +38,7 @@ spring.data.redis.host=redis
 spring.data.redis.port=${REDIS_PORT}
 redis.size=10
 redis.prefix=${REDIS_PREFIX}
+redis.terms.key=${REDIS_TERMS_KEY}
 
 #aladin
 aladin.server.url=${ALADIN_SERVER_URL}

@@ -32,6 +32,7 @@ jobs:
         ALADIN_SERVER_URL: ${{ secrets.ALADIN_SERVER_URL }}
         REDIS_PREFIX: ${{secrets.REDIS_PREFIX}}
         REDIS_PORT: ${{secrets.REDIS_PORT}}
+        REDIS_TERMS_KEY: ${{secrets.REDIS_TERMS_KEY}}
 
     #프로젝트 빌드
     - name: Build with Gradle  
