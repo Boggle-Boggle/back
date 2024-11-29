@@ -11,4 +11,5 @@ public class Term {
     private String title;
     private String content;
     private boolean isMandatory;
+    private boolean isAgree;
 }

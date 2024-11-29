@@ -37,8 +37,8 @@ public class UserController {
 
     //약관조회
     @GetMapping("/terms")
-    public DataResponseDto<TermsResponse> getLatestTerms() {
-        return DataResponseDto.of(userService.getLatestTerms());
+    public DataResponseDto<TermsResponse> getLatestTerms(@AuthenticationPrincipal UserDetails userDetails) {
+        return DataResponseDto.of(userService.getLatestTerms(userDetails.getUsername()));
     }
     
     //약관동의

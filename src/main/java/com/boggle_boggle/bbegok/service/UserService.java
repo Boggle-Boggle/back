@@ -1,5 +1,6 @@
 package com.boggle_boggle.bbegok.service;
 
+import com.boggle_boggle.bbegok.dto.Term;
 import com.boggle_boggle.bbegok.dto.TermsAgreement;
 import com.boggle_boggle.bbegok.dto.response.TermsResponse;
 import com.boggle_boggle.bbegok.entity.AgreeToTerms;
@@ -15,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -61,11 +63,36 @@ public class UserService {
         }
     }
 
-    //최신 약관 조회
-    public TermsResponse getLatestTerms() {
+    //최신 약관 조회(동의여부도 같이 전송)
+    public TermsResponse getLatestTerms(String userId) {
         String latestVersion = termsRepository.getLatestTermsVersion();
         List<Terms> terms = termsJpaRepository.findByVersion(latestVersion);
-        return TermsResponse.from(latestVersion, terms);
+        User user = getUser(userId);
+        List<Term> termList = new ArrayList<>();
+
+        for(Terms t : terms) {
+            Optional<AgreeToTerms> agreeToTerms = agreeToTermsRepository.findByUserAndTerms(user, t);
+            agreeToTerms.ifPresent(att -> {
+                termList.add(Term.builder()
+                        .id(t.getTermsSeq())
+                        .title(t.getTitle())
+                        .content(t.getContent())
+                        .isMandatory(t.getIsMandatory())
+                        .isAgree(true)
+                        .build());
+            });
+            if (agreeToTerms.isEmpty()) {
+                termList.add(Term.builder()
+                        .id(t.getTermsSeq())
+                        .title(t.getTitle())
+                        .content(t.getContent())
+                        .isMandatory(t.getIsMandatory())
+                        .isAgree(false)
+                        .build());
+            }
+        }
+
+        return TermsResponse.from(latestVersion, termList);
     }
 
     //필수약관에 동의하지 않으면 에러 전송
