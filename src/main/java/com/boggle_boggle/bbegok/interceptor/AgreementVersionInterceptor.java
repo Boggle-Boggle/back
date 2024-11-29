@@ -10,12 +10,14 @@ import com.boggle_boggle.bbegok.utils.HeaderUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class AgreementVersionInterceptor implements HandlerInterceptor {
 
     private final TermsRepository termsRepository; // Redis에서 최신 약관 버전 확인을 위한 서비스
@@ -23,14 +25,14 @@ public class AgreementVersionInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        System.out.println("#인터셉터 진입");
+        log.debug("#Come In Interceptor");
         String tokenStr = HeaderUtil.getAccessToken(request);
         AuthToken token = tokenProvider.convertAuthToken(tokenStr);
 
         //약관검증
         String termsAgreedVersion = token.getTokenClaimsTermsVersion();
-        System.out.println("#최근에 동의한 약관의 버전 "+termsAgreedVersion);
-        System.out.println("#최신 버전 "+termsRepository.getLatestTermsVersion());
+        log.debug("#recent agreed version : {}", termsAgreedVersion);
+        log.debug("#recent Updated version : {}",termsRepository.getLatestTermsVersion());
 
         if (termsAgreedVersion == null || termsAgreedVersion.isEmpty()) {
             throw new GeneralException(Code.TOKEN_TERMS_NOT_FOUND);
