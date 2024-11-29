@@ -74,6 +74,8 @@ public enum Code {
     INVALID_ACCESS_TOKEN(50005,HttpStatus.UNAUTHORIZED ,  "Invalid access token"),
     EMPTY_COOKIE(50009,HttpStatus.UNAUTHORIZED, "Empty COOKIE"),
     EMPTY_ACCESS_TOKEN(50010,HttpStatus.UNAUTHORIZED, "Access token Empty"),
+    TOKEN_TERMS_NOT_FOUND(50012, HttpStatus.NOT_FOUND, "terms agree information is null"),
+    LATEST_AGREEMENT_NOT_ACCEPTED(50013, HttpStatus.FORBIDDEN, "User has not agreed to the latest terms and conditions."),
 
     //서재 예외
     DUPLICATE_LIBRARY_NAME(600000, HttpStatus.CONFLICT, "library name already exists"),

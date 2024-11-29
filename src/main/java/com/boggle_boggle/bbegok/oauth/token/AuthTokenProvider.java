@@ -34,10 +34,15 @@ public class AuthTokenProvider {
         return new AuthToken(id, role, expiry, key);
     }
 
+    public AuthToken createAuthToken(String id, String role, String termsAgreedVersion, Date expiry) {
+        return new AuthToken(id, role, termsAgreedVersion, expiry, key);
+    }
+
     public AuthToken convertAuthToken(String token) {
         return new AuthToken(token, key);
     }
 
+    //필터에서 권한정보 찾을떄 사용
     public Authentication getAuthentication(AuthToken authToken) {
 
         if(authToken.validate()) {

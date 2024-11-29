@@ -14,6 +14,7 @@ import com.boggle_boggle.bbegok.oauth.service.CustomUserDetailsService;
 import com.boggle_boggle.bbegok.oauth.token.AuthTokenProvider;
 import com.boggle_boggle.bbegok.repository.user.UserRefreshTokenRepository;
 import com.boggle_boggle.bbegok.repository.user.UserRepository;
+import com.boggle_boggle.bbegok.service.TermsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -46,6 +47,7 @@ public class SecurityConfig {
     private final CustomAccessDeniedHandler customAccessDeniedHandler;
     private final UserRefreshTokenRepository userRefreshTokenRepository;
     private final UserRepository userRepository;
+    private final TermsService termsService;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -148,7 +150,8 @@ public class SecurityConfig {
                 appProperties,
                 userRefreshTokenRepository,
                 oAuth2AuthorizationRequestBasedOnCookieRepository(),
-                userRepository
+                userRepository,
+                termsService
         );
     }
 

@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.security.Key;
 import java.util.Date;
+import java.util.Map;
 
 /** JWT를 생성 및 검증하는 클래스
  *
@@ -19,6 +20,7 @@ public class AuthToken {
     private final Key key;
 
     private static final String AUTHORITIES_KEY = "role";
+    private static final String TERMS_AGREE_VERSION_KEY = "version";
 
     AuthToken(String id, Date expiry, Key key) {
         this.key = key;
@@ -28,6 +30,11 @@ public class AuthToken {
     AuthToken(String id, String role, Date expiry, Key key) {
         this.key = key;
         this.token = createAuthToken(id, role, expiry);
+    }
+
+    AuthToken(String id, String role, String termsAgreedVersion, Date expiry, Key key) {
+        this.key = key;
+        this.token = createAuthToken(id, role, termsAgreedVersion, expiry);
     }
 
     private String createAuthToken(String id, Date expiry) {
@@ -46,6 +53,18 @@ public class AuthToken {
                 .setExpiration(expiry)
                 .compact();
     }
+
+
+    private String createAuthToken(String id, String role, String termsAgreedVersion, Date expiry) {
+        return Jwts.builder()
+                .setSubject(id)
+                .claim(AUTHORITIES_KEY, role)
+                .claim(TERMS_AGREE_VERSION_KEY, termsAgreedVersion)
+                .signWith(key, SignatureAlgorithm.HS256)
+                .setExpiration(expiry)
+                .compact();
+    }
+
 
     //null이면 invalid, null이 아니면 valid한것
     public boolean validate() {
@@ -73,6 +92,15 @@ public class AuthToken {
         return null;
     }
 
+    public String getTokenClaimsTermsVersion() {
+        Claims claim = Jwts.parserBuilder()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+        return claim.get(TERMS_AGREE_VERSION_KEY, String.class);
+    }
+
     public Claims getExpiredTokenClaims() {
         try {
             Jwts.parserBuilder()
@@ -86,4 +114,5 @@ public class AuthToken {
         }
         return null;
     }
+
 }
