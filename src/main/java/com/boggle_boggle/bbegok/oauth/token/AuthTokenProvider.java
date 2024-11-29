@@ -30,9 +30,9 @@ public class AuthTokenProvider {
         return new AuthToken(id, expiry, key);
     }
 
-    public AuthToken createAuthToken(String id, String role, Date expiry) {
-        return new AuthToken(id, role, expiry, key);
-    }
+//    public AuthToken createAuthToken(String id, String role, Date expiry) {
+//        return new AuthToken(id, role, expiry, key);
+//    }
 
     public AuthToken createAuthToken(String id, String role, String termsAgreedVersion, Date expiry) {
         return new AuthToken(id, role, termsAgreedVersion, expiry, key);
