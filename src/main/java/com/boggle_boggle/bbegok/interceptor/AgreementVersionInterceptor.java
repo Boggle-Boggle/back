@@ -25,21 +25,22 @@ public class AgreementVersionInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        log.debug("#Come In Interceptor");
         String tokenStr = HeaderUtil.getAccessToken(request);
         AuthToken token = tokenProvider.convertAuthToken(tokenStr);
 
         //약관검증
-        String termsAgreedVersion = token.getTokenClaimsTermsVersion();
-        log.debug("#recent agreed version : {}", termsAgreedVersion);
-        log.debug("#recent Updated version : {}",termsRepository.getLatestTermsVersion());
+        String recentAgreedVersion = token.getTokenClaimsTermsVersion();
+        String recentUpdatedVersion = termsRepository.getLatestTermsVersion();
+        log.debug("#recent agreed version : {}", recentAgreedVersion);
+        log.debug("#recent Updated version : {}",recentUpdatedVersion);
 
-        if (termsAgreedVersion == null || termsAgreedVersion.isEmpty()) {
+        //약관 동의 여부 자체가 토큰에 없다면
+        if (recentAgreedVersion == null || recentAgreedVersion.equals("null")) {
             throw new GeneralException(Code.TOKEN_TERMS_NOT_FOUND);
         }
 
-        //업데이트된 약관에 동의하지 않았다면,
-        if(!termsAgreedVersion.equals(termsRepository.getLatestTermsVersion())) {
+        //업데이트된 약관에 동의하지 않았다면
+        if(!recentAgreedVersion.equals(recentUpdatedVersion)) {
             throw new GeneralException(Code.LATEST_AGREEMENT_NOT_ACCEPTED);
         }
 

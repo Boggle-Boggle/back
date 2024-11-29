@@ -12,6 +12,7 @@ import com.boggle_boggle.bbegok.oauth.repository.OAuth2AuthorizationRequestBased
 import com.boggle_boggle.bbegok.oauth.token.AuthToken;
 import com.boggle_boggle.bbegok.oauth.token.AuthTokenProvider;
 import com.boggle_boggle.bbegok.repository.user.UserRefreshTokenRepository;
+import com.boggle_boggle.bbegok.service.TermsService;
 import com.boggle_boggle.bbegok.service.UserRefreshTokenService;
 import com.boggle_boggle.bbegok.utils.CookieUtil;
 import com.boggle_boggle.bbegok.utils.HeaderUtil;
@@ -38,6 +39,7 @@ public class AuthController {
     private final AuthTokenProvider tokenProvider;
     private final UserRefreshTokenRepository userRefreshTokenRepository;
     private final UserRefreshTokenService clearRefreshToken;
+    private final TermsService termsService;
 
     private final static long THREE_DAYS_MSEC = 259200000;
     private final static String REFRESH_TOKEN = "refresh_token";
@@ -65,6 +67,7 @@ public class AuthController {
         AuthToken newAccessToken = tokenProvider.createAuthToken(
                 userRefreshToken.getUserId(),
                 userRefreshToken.getUser().getRoleType().getCode(),
+                termsService.getLatestAgreedTermsVersion(userRefreshToken.getUserId()),
                 new Date(now.getTime() + appProperties.getAuth().getTokenExpiry())
         );
 
