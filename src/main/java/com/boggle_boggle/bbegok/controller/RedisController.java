@@ -1,5 +1,6 @@
 package com.boggle_boggle.bbegok.controller;
 
+import com.boggle_boggle.bbegok.dto.SearchLogs;
 import com.boggle_boggle.bbegok.dto.base.DataResponseDto;
 import com.boggle_boggle.bbegok.dto.request.DeleteRecentSearchRequest;
 import com.boggle_boggle.bbegok.dto.request.RecentSearchRequest;
@@ -10,6 +11,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/recent-searches")
@@ -19,7 +22,7 @@ public class RedisController {
 
     //최근검색어 조회
     @GetMapping
-    public DataResponseDto<SearchLogListResponse> getRecentSearchLogs(@AuthenticationPrincipal UserDetails userDetails) {
+    public DataResponseDto<List<SearchLogs>> getRecentSearchLogs(@AuthenticationPrincipal UserDetails userDetails) {
         return DataResponseDto.of(SearchLogService.getRecentSearchLogs(userDetails.getUsername()));
     }
 
