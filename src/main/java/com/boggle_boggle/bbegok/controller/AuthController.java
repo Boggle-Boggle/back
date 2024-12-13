@@ -28,6 +28,8 @@ import java.util.Date;
 
 import static com.boggle_boggle.bbegok.exception.Code.EMPTY_ACCESS_TOKEN;
 import static com.boggle_boggle.bbegok.exception.Code.INVALID_ACCESS_TOKEN;
+import static org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames.DEVICE_CODE;
+import static org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames.REFRESH_TOKEN;
 
 @RestController
 @RequestMapping("/auth")
@@ -42,7 +44,6 @@ public class AuthController {
     private final TermsService termsService;
 
     private final static long THREE_DAYS_MSEC = 259200000;
-    private final static String REFRESH_TOKEN = "refresh_token";
 
     @GetMapping("/refresh")
     public ResponseDto refreshToken (HttpServletRequest request, HttpServletResponse response) {
@@ -55,12 +56,12 @@ public class AuthController {
         //==리프레쉬 토큰 검증하기
         AuthToken authRefreshToken = tokenProvider.convertAuthToken(refreshToken);
         if (!authRefreshToken.validate()) {
-            return ErrorResponseDto.of(Code.INVALID_REFRESH_TOKEN, "Invalid refresh token. Please Sign-in");
+            return ErrorResponseDto.of(Code.INVALID_REFRESH_TOKEN);
         }
 
         //==userId refresh token 으로 DB 확인
         UserRefreshToken userRefreshToken = userRefreshTokenRepository.findByRefreshToken(refreshToken)
-                .orElseThrow(() -> new GeneralException(Code.REFRESH_TOKEN_NOT_FOUND));
+                .orElseThrow(() -> new GeneralException(Code.INVALID_REFRESH_TOKEN));
 
         //==유효한 Refresh token이며 DB에도 값이 있다면 access 재발급 로직 실행
         Date now = new Date();
@@ -105,22 +106,23 @@ public class AuthController {
         if (accessToken != null) {
             AuthToken authToken = tokenProvider.convertAuthToken(accessToken);
             Claims claims = null;
-
             if (authToken.validate()) claims = authToken.getTokenClaims();
             else claims = authToken.getExpiredTokenClaims();
 
             if (claims != null) {
-                String userId = claims.getSubject();
-                clearRefreshToken.deleteRefreshTokenByUserId(userId);
-
                 // 리프레시 토큰 삭제
-                clearRefreshToken.deleteRefreshTokenByUserId(userId);
+                String userId = claims.getSubject();
+                String deviceId = CookieUtil.getCookie(request, DEVICE_CODE).map(Cookie::getValue)
+                        .orElseThrow( () -> new GeneralException(Code.REFRESH_COOKIE_NOT_FOUND));
+
+                clearRefreshToken.deleteRefreshTokenByUserIdAndDeviceId(userId, deviceId);
             }
 
         }
 
-        // 쿠키에서 리프레시 토큰 제거
+        // 쿠키에서 리프레시 토큰 및 deviceId 제거
         CookieUtil.deleteCookie(request, response, REFRESH_TOKEN);
+        CookieUtil.deleteCookie(request, response, DEVICE_CODE);
 
         return DataResponseDto.of(null, "Logout successful.");
     }
