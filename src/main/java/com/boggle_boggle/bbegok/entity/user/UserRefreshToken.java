@@ -47,11 +47,13 @@ public class UserRefreshToken {
         this.userId = user.getUserId();
         this.refreshToken = refreshToken;
         this.deviceId = deviceId;
+        this.lastLoginAt = LocalDateTime.now();
     }
 
     public static UserRefreshToken createUserRefreshToken(
             User user,
-            @NotNull String refreshToken, String deviceId){
+            String refreshToken,
+            String deviceId){
         return new UserRefreshToken(user, refreshToken, deviceId);
     }
 
