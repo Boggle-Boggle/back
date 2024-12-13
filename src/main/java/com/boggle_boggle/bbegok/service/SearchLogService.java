@@ -26,4 +26,8 @@ public class SearchLogService {
     public void deleteRecentSearchLog(String userId, String keyword, String createdAt) {
         searchLogRepository.deleteRecentSearchLog(userId, keyword, createdAt);
     }
+
+    public void deleteAllRecentSearchLog(String userId) {
+        searchLogRepository.deleteAllRecentSearchLog(userId);
+    }
 }

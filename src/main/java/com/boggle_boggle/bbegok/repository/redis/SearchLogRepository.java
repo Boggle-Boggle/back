@@ -53,4 +53,18 @@ public class SearchLogRepository {
             throw new GeneralException(Code.SEARCH_LOG_NOT_EXIST);
         }
     }
+
+    public void deleteAllRecentSearchLog(String userId) {
+        String key = KEY_PREFIX + userId;
+
+        // 먼저 리스트가 존재하는지 확인
+        long size = redisTemplate.opsForList().size(key);
+        if (size == 0) {
+            throw new GeneralException(Code.SEARCH_LOG_NOT_EXIST);
+        }
+
+        // Redis 리스트를 비우기 위해 해당 키의 범위를 0에서 -1로 지정
+        redisTemplate.opsForList().trim(key, 1, 0);
+
+    }
 }

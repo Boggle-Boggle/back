@@ -41,4 +41,11 @@ public class RedisController {
         SearchLogService.deleteRecentSearchLog(userDetails.getUsername(), request.getKeyword(), request.getCreatedAt());
         return DataResponseDto.empty();
     }
+
+    //최근검색어 전체삭제
+    @DeleteMapping("/all")
+    public DataResponseDto<Void> deleteAllRecentSearchLog(@AuthenticationPrincipal UserDetails userDetails) {
+        SearchLogService.deleteAllRecentSearchLog(userDetails.getUsername());
+        return DataResponseDto.empty();
+    }
 }
