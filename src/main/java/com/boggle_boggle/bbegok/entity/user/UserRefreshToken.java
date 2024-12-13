@@ -41,15 +41,22 @@ public class UserRefreshToken {
 
     protected UserRefreshToken(
             User user,
-            String refreshToken ) {
+            String refreshToken,
+            String deviceId) {
         this.user = user;
         this.userId = user.getUserId();
         this.refreshToken = refreshToken;
+        this.deviceId = deviceId;
     }
 
     public static UserRefreshToken createUserRefreshToken(
             User user,
-            @NotNull String refreshToken){
-        return new UserRefreshToken(user, refreshToken);
+            @NotNull String refreshToken, String deviceId){
+        return new UserRefreshToken(user, refreshToken, deviceId);
+    }
+
+    public void updateRefreshToken(String token) {
+        this.refreshToken = token;
+        this.lastLoginAt = LocalDateTime.now();
     }
 }
