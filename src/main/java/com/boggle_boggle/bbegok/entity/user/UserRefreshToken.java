@@ -9,6 +9,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+
 @Getter
 @Setter
 @Entity
@@ -29,19 +31,32 @@ public class UserRefreshToken {
     @Column(name = "refresh_token", length = 512)
     private String refreshToken;
 
+    @Column(name = "device_id", length = 50)
+    private String deviceId;
+
+    @Column(name = "last_login_at")
+    private LocalDateTime lastLoginAt;
+
     protected UserRefreshToken(){}
 
     protected UserRefreshToken(
             User user,
-            String refreshToken ) {
+            String refreshToken,
+            String deviceId) {
         this.user = user;
         this.userId = user.getUserId();
         this.refreshToken = refreshToken;
+        this.deviceId = deviceId;
     }
 
     public static UserRefreshToken createUserRefreshToken(
             User user,
-            @NotNull @Size(max = 512) String refreshToken){
-        return new UserRefreshToken(user, refreshToken);
+            @NotNull String refreshToken, String deviceId){
+        return new UserRefreshToken(user, refreshToken, deviceId);
+    }
+
+    public void updateRefreshToken(String token) {
+        this.refreshToken = token;
+        this.lastLoginAt = LocalDateTime.now();
     }
 }

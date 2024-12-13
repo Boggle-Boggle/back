@@ -14,6 +14,7 @@ import com.boggle_boggle.bbegok.repository.user.UserRefreshTokenRepository;
 import com.boggle_boggle.bbegok.repository.user.UserRepository;
 import com.boggle_boggle.bbegok.service.TermsService;
 import com.boggle_boggle.bbegok.utils.CookieUtil;
+import com.boggle_boggle.bbegok.utils.UuidUtil;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -34,6 +35,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Optional;
 
+import static org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames.DEVICE_CODE;
 import static org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames.REFRESH_TOKEN;
 import static com.boggle_boggle.bbegok.oauth.repository.OAuth2AuthorizationRequestBasedOnCookieRepository.REDIRECT_URI_PARAM_COOKIE_NAME;
 
@@ -101,25 +103,37 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
                 new Date(now.getTime() + refreshTokenExpiry)
         );
 
-        // DB 저장
-        log.debug("new Refresh Token value = {}", refreshToken.getToken());
-        UserRefreshToken userRefreshToken = userRefreshTokenRepository.findByUserId(userInfo.getId());
-        if (userRefreshToken != null) {
-            userRefreshToken.setRefreshToken(refreshToken.getToken());
-        } else {
+
+        //쿠키가 있다면 -> 그값을 기반으로 DB 업데이트, 쿠키가 없다면 -> UUID 생성해 DB에 저장+deviceId를 쿠키에 저장
+        Optional<Cookie> optionalDeviceId = CookieUtil.getCookie(request, DEVICE_CODE);
+        String deviceId;
+        if (optionalDeviceId.isPresent()) deviceId = optionalDeviceId.get().getValue();
+        else deviceId = UuidUtil.createUUID().toString();
+
+        Optional<UserRefreshToken> userRefreshToken = userRefreshTokenRepository.findByUserIdAndDeviceId(userInfo.getId(), deviceId);
+        if (userRefreshToken.isPresent()) userRefreshToken.get().updateRefreshToken(refreshToken.getToken());
+        else {
             User userEntity = userRepository.findByUserId(userInfo.getId());
-            userRefreshToken = UserRefreshToken.createUserRefreshToken(userEntity, refreshToken.getToken());
-            userRefreshTokenRepository.saveAndFlush(userRefreshToken);
+            UserRefreshToken newUserRefreshToken = UserRefreshToken.createUserRefreshToken(userEntity,
+                    refreshToken.getToken(), deviceId);
+            userRefreshTokenRepository.saveAndFlush(newUserRefreshToken);
+
+            //새로운 디바이스코드를 쿠키에 저장
+            saveCookie(response, request, DEVICE_CODE, refreshTokenExpiry, deviceId);
         }
 
-        int cookieMaxAge = (int) refreshTokenExpiry / 60;
-
-        CookieUtil.deleteCookie(request, response, REFRESH_TOKEN);
-        CookieUtil.addCookie(response, REFRESH_TOKEN, refreshToken.getToken(), cookieMaxAge);
+        //리프레쉬 토큰을 쿠키에 저장
+        saveCookie(response, request, REFRESH_TOKEN, refreshTokenExpiry, refreshToken.getToken());
 
         return UriComponentsBuilder.fromUriString(targetUrl)
                 .queryParam("token", accessToken.getToken())
                 .build().toUriString();
+    }
+
+    protected void saveCookie(HttpServletResponse response, HttpServletRequest request, String cookieName, long tokenExpiry, String tokenValue) {
+        int cookieMaxAge = (int) tokenExpiry / 60;
+        CookieUtil.deleteCookie(request, response, cookieName);
+        CookieUtil.addCookie(response, cookieName, tokenValue, cookieMaxAge);
     }
 
     protected void clearAuthenticationAttributes(HttpServletRequest request, HttpServletResponse response) {

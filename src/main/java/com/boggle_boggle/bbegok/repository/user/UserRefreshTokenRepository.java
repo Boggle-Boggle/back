@@ -19,5 +19,7 @@ public interface UserRefreshTokenRepository extends JpaRepository<UserRefreshTok
     void deleteRefreshTokenByUserId(@Param("userId") String userId);
 
     Optional<UserRefreshToken> findByRefreshToken(String refreshToken);
+
+   Optional<UserRefreshToken> findByUserIdAndDeviceId(String id, String deviceId);
 }
 
