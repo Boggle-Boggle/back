@@ -6,7 +6,6 @@ build/
 !**/src/test/**/build/
 
 ###custom###
-*.properties
 application.properties
 
 ### STS ###
