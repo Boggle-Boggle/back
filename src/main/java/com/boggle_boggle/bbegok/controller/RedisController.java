@@ -22,7 +22,7 @@ public class RedisController {
 
     //최근검색어 조회
     @GetMapping
-    public DataResponseDto<List<SearchLogs>> getRecentSearchLogs(@AuthenticationPrincipal UserDetails userDetails) {
+    public DataResponseDto<List<String>> getRecentSearchLogs(@AuthenticationPrincipal UserDetails userDetails) {
         return DataResponseDto.of(SearchLogService.getRecentSearchLogs(userDetails.getUsername()));
     }
 
@@ -38,7 +38,7 @@ public class RedisController {
     @DeleteMapping
     public DataResponseDto<Void> deleteRecentSearchLogs(@AuthenticationPrincipal UserDetails userDetails,
                                                       @RequestBody DeleteRecentSearchRequest request) {
-        SearchLogService.deleteRecentSearchLog(userDetails.getUsername(), request.getKeyword(), request.getCreatedAt());
+        SearchLogService.deleteRecentSearchLog(userDetails.getUsername(), request.getKeyword());
         return DataResponseDto.empty();
     }
 

@@ -1,8 +1,5 @@
 package com.boggle_boggle.bbegok.repository.redis;
 
-import com.boggle_boggle.bbegok.dto.base.DataResponseDto;
-import com.boggle_boggle.bbegok.dto.response.SearchBookListResponse;
-import com.boggle_boggle.bbegok.dto.response.SearchLogListResponse;
 import com.boggle_boggle.bbegok.exception.Code;
 import com.boggle_boggle.bbegok.exception.exception.GeneralException;
 import com.boggle_boggle.bbegok.redis.SearchLogRedis;
@@ -12,8 +9,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 @Repository
 @RequiredArgsConstructor
@@ -23,33 +22,43 @@ public class SearchLogRepository {
     @Value("${redis.prefix}")
     private String KEY_PREFIX;
 
-    private final RedisTemplate<String, SearchLogRedis> redisTemplate;
+    private final RedisTemplate<String, String> redisTemplate;
 
-    public void saveRecentSearchLog(String userId, String keyword){
-        String createdAt = LocalDateTimeUtil.getCurrentTimeAsString();
-        SearchLogRedis searchLog = new SearchLogRedis(keyword,createdAt);
-
+    public void saveRecentSearchLog(String userId, String keyword) {
         String key = KEY_PREFIX + userId;
-        if ((redisTemplate.opsForList().size(key) != null) &&
-                (redisTemplate.opsForList().size(key) == RECENT_KEYWORD_SIZE)) {
-            redisTemplate.opsForList().rightPop(key);
+
+        // 현재 시간을 점수로 설정
+        long score = System.currentTimeMillis();
+
+        // 검색어 추가 (중복 시 덮어쓰기)
+        redisTemplate.opsForZSet().add(key, keyword, score);
+
+        // 최대 크기 초과 시 오래된 항목 제거
+        Long size = redisTemplate.opsForZSet().size(key);
+        if (size != null && size > RECENT_KEYWORD_SIZE) {
+            redisTemplate.opsForZSet().removeRange(key, 0, size - RECENT_KEYWORD_SIZE - 1);
         }
-        redisTemplate.opsForList().leftPush(key, searchLog);
     }
 
-    public List<SearchLogRedis> getRecentSearchLogs(String userId) {
+    public List<String> getRecentSearchLogs(String userId) {
         String key = KEY_PREFIX + userId;
-        return redisTemplate.opsForList().
-                range(key, 0, RECENT_KEYWORD_SIZE);
+
+        // 최근 검색어를 점수 기준으로 내림차순 조회
+        Set<String> resultSet = redisTemplate.opsForZSet()
+                .reverseRange(key, 0, RECENT_KEYWORD_SIZE - 1);
+
+        // Set을 List로 변환 후 반환
+        return resultSet != null ? new ArrayList<>(resultSet) : Collections.emptyList();
     }
 
-    public void deleteRecentSearchLog(String userId, String keyword, String createdAt) {
+    public void deleteRecentSearchLog(String userId, String keyword) {
         String key = KEY_PREFIX + userId;
-        SearchLogRedis searchLog = new SearchLogRedis(keyword,createdAt);
 
-        long count = redisTemplate.opsForList().remove(key, 1, searchLog);
+        // 검색어 삭제
+        Long removed = redisTemplate.opsForZSet().remove(key, keyword);
 
-        if (count == 0) {
+        // 삭제된 항목이 없으면 예외 발생
+        if (removed == null || removed == 0) {
             throw new GeneralException(Code.SEARCH_LOG_NOT_EXIST);
         }
     }
@@ -57,14 +66,15 @@ public class SearchLogRepository {
     public void deleteAllRecentSearchLog(String userId) {
         String key = KEY_PREFIX + userId;
 
-        // 먼저 리스트가 존재하는지 확인
-        long size = redisTemplate.opsForList().size(key);
-        if (size == 0) {
+        // 리스트 존재 여부 확인
+        Long size = redisTemplate.opsForZSet().size(key);
+        if (size == null || size == 0) {
             throw new GeneralException(Code.SEARCH_LOG_NOT_EXIST);
         }
 
-        // Redis 리스트를 비우기 위해 해당 키의 범위를 0에서 -1로 지정
-        redisTemplate.opsForList().trim(key, 1, 0);
-
+        // 키 삭제
+        redisTemplate.delete(key);
     }
+
+
 }
