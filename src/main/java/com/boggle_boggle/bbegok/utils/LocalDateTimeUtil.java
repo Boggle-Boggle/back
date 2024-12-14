@@ -14,7 +14,7 @@ public class LocalDateTimeUtil {
     }
 
     public static boolean isStartBeforeEnd(LocalDateTime startLocalDateTime, LocalDateTime endLocalDateTime) {
-        return startLocalDateTime.isBefore(endLocalDateTime);
+        return startLocalDateTime.isBefore(endLocalDateTime) || startLocalDateTime.isEqual(endLocalDateTime);
     }
 
     public static LocalDateTime StringToLocalDate(String date){
