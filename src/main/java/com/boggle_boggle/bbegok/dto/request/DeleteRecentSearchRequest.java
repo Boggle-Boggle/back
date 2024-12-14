@@ -7,5 +7,4 @@ import lombok.ToString;
 @ToString
 public class DeleteRecentSearchRequest {
     private String keyword;
-    private String createdAt;
 }
