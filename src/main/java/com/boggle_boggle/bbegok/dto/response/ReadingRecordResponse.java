@@ -24,6 +24,7 @@ public class ReadingRecordResponse {
     private List<ReadDateDto> readDateList;
     private List<LibraryListDto> libraries;
     private List<NoteDto> notes;
+    private Boolean isBookVisible;
 
     private ReadingRecordResponse(){}
 
@@ -36,6 +37,7 @@ public class ReadingRecordResponse {
         response.pubDate = entity.getBook().getPublishDate();
         response.rating = entity.getRating();
         response.status = entity.getStatus();
+        response.isBookVisible = entity.getIsBooksVisible();
         response.readDateList = entity.getReadDateList().stream()
                 .map(readDate -> new ReadDateDto(readDate.getStartReadDate(), readDate.getEndReadDate())).toList();
         response.libraries = entity.getMappingList().stream()

@@ -12,11 +12,4 @@ public class LibraryBook {
     private Long readingRecordId;
     private String title;
     private int page;
-
-    public static LibraryBook fromEntity(Book book) {
-        return LibraryBook.builder()
-                .title(book.getTitle())
-                .page(book.getPage())
-                .build();
-    }
 }
