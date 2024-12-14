@@ -12,6 +12,11 @@ public class LocalDateTimeUtil {
         LocalDate localDate = LocalDate.parse(date, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
         return localDate.atStartOfDay();
     }
+
+    public static boolean isStartBeforeEnd(LocalDateTime startLocalDateTime, LocalDateTime endLocalDateTime) {
+        return startLocalDateTime.isBefore(endLocalDateTime);
+    }
+
     public static LocalDateTime StringToLocalDate(String date){
         return LocalDateTime.parse(date, FORMATTER);
     }

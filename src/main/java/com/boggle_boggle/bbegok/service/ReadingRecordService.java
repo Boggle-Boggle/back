@@ -6,10 +6,12 @@ import com.boggle_boggle.bbegok.dto.response.BookDetailResponse;
 import com.boggle_boggle.bbegok.dto.response.ReadingRecordResponse;
 import com.boggle_boggle.bbegok.entity.*;
 import com.boggle_boggle.bbegok.entity.user.User;
+import com.boggle_boggle.bbegok.enums.ReadStatus;
 import com.boggle_boggle.bbegok.exception.Code;
 import com.boggle_boggle.bbegok.exception.exception.GeneralException;
 import com.boggle_boggle.bbegok.repository.*;
 import com.boggle_boggle.bbegok.repository.user.UserRepository;
+import com.boggle_boggle.bbegok.utils.LocalDateTimeUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,7 +37,21 @@ public class ReadingRecordService {
         return userRepository.findByUserId(userId);
     }
 
+    //다읽은 경우만 필수란이 있으므로 검사한다.
+    private void validationNewReadingRecordRequest(NewReadingRecordRequest request) {
+        ReadStatus status = request.getReadStatus();
+        if(status == ReadStatus.completed) {
+            if(request.getRating() == null || request.getIsVisible() == null ||
+            request.getStartReadDate() == null || request.getEndReadDate() == null) throw new GeneralException(Code.BAD_REQUEST, "Required value is missing.");
+            if(!LocalDateTimeUtil.isStartBeforeEnd(request.getStartReadDate(), request.getEndReadDate())) throw new GeneralException(Code.INVALID_READING_DATE);
+        }
+    }
+
+
     public Long saveReadingRecord(NewReadingRecordRequest request, String userId) {
+        //유효성 검사
+        validationNewReadingRecordRequest(request);
+
         //이미 해당 isbn이 저장되어있는지 확인 -> 없다면 새로 저장
         Book book = bookRepository.findByIsbn(request.getIsbn());
         if(book == null) {
@@ -48,10 +64,12 @@ public class ReadingRecordService {
 
         //독서기록 저장 > 다대다(Library - mapping - readingRecord) 매핑 저장
         List<Library> libraries = new ArrayList<>();
-        for (Long libraryId : request.getLibraryIdList()) {
-            Library library = findLibrary(userId, libraryId);
-            if (library == null) throw new GeneralException(Code.LIBRARY_NOT_FOUND);
-            libraries.add(library);
+        if(request.getLibraryIdList() != null && !request.getLibraryIdList().isEmpty()) {
+            for (Long libraryId : request.getLibraryIdList()) {
+                Library library = findLibrary(userId, libraryId);
+                if (library == null) throw new GeneralException(Code.LIBRARY_NOT_FOUND);
+                libraries.add(library);
+            }
         }
 
         ReadingRecord readingRecord = ReadingRecord.createReadingRecord(
@@ -68,6 +86,8 @@ public class ReadingRecordService {
         ReadingRecord savedReadingRecord = readingRecordRepository.save(readingRecord);
         return savedReadingRecord.getReadingRecordSeq();
     }
+
+
 
     public ReadingRecordResponse getReadingRecord(Long id, String userId) {
         ReadingRecord readingRecord = findReadingRecord(id, userId);

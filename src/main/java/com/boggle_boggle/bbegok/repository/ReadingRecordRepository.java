@@ -19,8 +19,8 @@ public interface ReadingRecordRepository extends JpaRepository<ReadingRecord, Lo
 
     @Query(value = """
     SELECT DISTINCT new com.boggle_boggle.bbegok.dto.LibraryBook(
-        r.readingRecordSeq, 
-        r.book.title, 
+        r.readingRecordSeq,
+        r.book.title,
         r.book.page
     )
     FROM ReadingRecord r
