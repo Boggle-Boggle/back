@@ -79,21 +79,26 @@ public class ReadingRecord {
             for(ReadDateDto dto : readDateList) addReadDateList(dto.getStartReadDate(), dto.getEndReadDate());
         }
 
-        if(!libraries.isEmpty()) addLibraries(libraries);
+        addLibraries(libraries);
     }
 
 
     //==연관관계 편의 메소드
     public void addLibraries(List<Library> libraries) {
+        if(libraries == null || libraries.isEmpty()) return;
+
         for (Library library : libraries) {
             addLibrary(library);
         }
     }
     public void addLibrary(Library library) {
+        if(library == null) return;
         ReadingRecordLibraryMapping mapping = ReadingRecordLibraryMapping.createReadingRecordLibraryMapping(this, library);
         this.mappingList.add(mapping);
     }
     public void addReadDateList(LocalDateTime readStartDate, LocalDateTime readEndDate) {
+        if(readStartDate == null || readEndDate == null) return;
+
         ReadDate readDate = ReadDate.createReadDate(this, readStartDate, readEndDate);
         this.readDateList.add(readDate);
     }

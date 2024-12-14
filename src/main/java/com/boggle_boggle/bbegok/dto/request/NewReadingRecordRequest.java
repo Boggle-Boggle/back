@@ -1,6 +1,7 @@
 package com.boggle_boggle.bbegok.dto.request;
 
 import com.boggle_boggle.bbegok.enums.ReadStatus;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -14,6 +15,7 @@ import java.util.List;
 @NoArgsConstructor
 @ToString
 public class NewReadingRecordRequest {
+    @NotNull
     private String isbn;
     private ReadStatus readStatus;
     private Double rating;
