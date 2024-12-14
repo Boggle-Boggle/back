@@ -13,7 +13,7 @@ public class ReadDate {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long readDateSeq;
 
-    @Column(name = "start_read_date", nullable = false)
+    @Column(name = "start_read_date")
     private LocalDateTime startReadDate;
 
     @Column(name = "end_read_date")

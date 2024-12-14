@@ -16,7 +16,7 @@ import java.util.List;
 public class NewReadingRecordRequest {
     private String isbn;
     private ReadStatus readStatus;
-    private double rating;
+    private Double rating;
     private LocalDateTime startReadDate;
     private LocalDateTime endReadDate;
     private List<Long> libraryIdList;

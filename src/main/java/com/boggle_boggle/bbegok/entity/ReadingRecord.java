@@ -40,32 +40,31 @@ public class ReadingRecord {
     @OneToMany(mappedBy = "readingRecord", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ReadingRecordLibraryMapping> mappingList = new ArrayList<>();
 
-    @Column(name = "is_book_visible", length = 255, nullable = false)
+    @Column(name = "is_book_visible")
     private Boolean isBooksVisible;
 
-    @Column(name = "rating", nullable = false)
+    @Column(name = "rating")
     private Double rating;
 
     @Enumerated(EnumType.STRING)  // ENUM을 스트링으로 저장
-    @Column(name = "status", length = 255, nullable = false)
+    @Column(name = "status", nullable = false)
     private ReadStatus status;
 
     protected ReadingRecord(){}
 
     private ReadingRecord(User user, Book book, LocalDateTime readStartDate, LocalDateTime readEndDate,
-                          List<Library> libraries, double rating, boolean visible, ReadStatus readStatus) {
+                          List<Library> libraries, Double rating, Boolean visible, ReadStatus readStatus) {
         this.user = user;
         this.book = book;
         this.rating = rating;
         this.isBooksVisible = visible;
-        System.out.println("보여? "+visible+", "+isBooksVisible);
         this.status = readStatus;
         addReadDateList(readStartDate, readEndDate);
         addLibraries(libraries);
     }
 
     public static ReadingRecord createReadingRecord(User user, Book book, LocalDateTime readStartDate, LocalDateTime readEndDate,
-                                                    List<Library> libraries, double rating, boolean visible, ReadStatus readStatus) {
+                                                    List<Library> libraries, Double rating, Boolean visible, ReadStatus readStatus) {
         return new ReadingRecord(user, book, readStartDate, readEndDate, libraries, rating, visible, readStatus);
     }
 

@@ -48,10 +48,12 @@ public class ReadingRecordService {
 
         //독서기록 저장 > 다대다(Library - mapping - readingRecord) 매핑 저장
         List<Library> libraries = new ArrayList<>();
-        for (Long libraryId : request.getLibraryIdList()) {
-            Library library = findLibrary(userId, libraryId);
-            if (library == null) throw new GeneralException(Code.LIBRARY_NOT_FOUND);
-            libraries.add(library);
+        if(request.getLibraryIdList() != null && !request.getLibraryIdList().isEmpty()) {
+            for (Long libraryId : request.getLibraryIdList()) {
+                Library library = findLibrary(userId, libraryId);
+                if (library == null) throw new GeneralException(Code.LIBRARY_NOT_FOUND);
+                libraries.add(library);
+            }
         }
 
         ReadingRecord readingRecord = ReadingRecord.createReadingRecord(
