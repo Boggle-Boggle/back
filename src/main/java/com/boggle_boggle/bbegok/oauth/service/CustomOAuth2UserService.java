@@ -1,6 +1,7 @@
 package com.boggle_boggle.bbegok.oauth.service;
 
 import com.boggle_boggle.bbegok.entity.user.User;
+import com.boggle_boggle.bbegok.entity.user.UserSettings;
 import com.boggle_boggle.bbegok.oauth.entity.ProviderType;
 import com.boggle_boggle.bbegok.oauth.entity.RoleType;
 import com.boggle_boggle.bbegok.oauth.entity.UserPrincipal;
@@ -8,6 +9,7 @@ import com.boggle_boggle.bbegok.oauth.exception.OAuthProviderMissMatchException;
 import com.boggle_boggle.bbegok.oauth.info.OAuth2UserInfo;
 import com.boggle_boggle.bbegok.oauth.info.OAuth2UserInfoFactory;
 import com.boggle_boggle.bbegok.repository.user.UserRepository;
+import com.boggle_boggle.bbegok.repository.user.UserSettingsRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.core.AuthenticationException;
@@ -26,6 +28,7 @@ import java.time.LocalDateTime;
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
     private final UserRepository userRepository;
+    private final UserSettingsRepository userSettingsRepository;
 
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
@@ -53,10 +56,15 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                                 " account. Please use your " + savedUser.getProviderType() + " account to login."
                 );
             }
-        } else savedUser = createUser(userId, providerType);
+            //기존 가입자에게 셋팅정보가 없다면 생성
+            if(userSettingsRepository.findByUser(savedUser) == null) userSettingsRepository.saveAndFlush(UserSettings.createUserSettings(savedUser));
 
 
 
+        } else { //가입한적 없다면 회원가입을 진행.
+            savedUser = createUser(userId, providerType);
+            userSettingsRepository.saveAndFlush(UserSettings.createUserSettings(savedUser));
+        }
 
         //이미 가입한 유저라면 가입한 유저, 회원가입했다면 회원가입할 유저의 정보를 리턴
         return UserPrincipal.create(savedUser, user.getAttributes());
