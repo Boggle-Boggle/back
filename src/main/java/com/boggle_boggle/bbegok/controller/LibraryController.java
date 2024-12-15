@@ -50,11 +50,13 @@ public class LibraryController {
     @GetMapping("/library")
     public DataResponseDto<LibraryBookListResponse>searchLibrary(@RequestParam(required = false) Long libraryId,
                                                                  @RequestParam(required = false) ReadStatus status,
+                                                                 @RequestParam(defaultValue = "30") int pageSize,
+                                                                 @RequestParam(required = false) String keyword,
                                                                  @RequestParam(defaultValue = "1") int pageNum,
                                                                  @AuthenticationPrincipal UserDetails userDetails) {
-        if (libraryId != null) return DataResponseDto.of(libraryService.findByLibraryId(libraryId, pageNum, userDetails.getUsername()));
-        else if (status != null) return DataResponseDto.of(libraryService.findByStatus(status, pageNum, userDetails.getUsername()));
-        else return DataResponseDto.of(libraryService.findAll(pageNum, userDetails.getUsername()));
+        if (libraryId != null) return DataResponseDto.of(libraryService.findByLibraryId(libraryId, pageNum, userDetails.getUsername(), pageSize, keyword));
+        else if (status != null) return DataResponseDto.of(libraryService.findByStatus(status, pageNum, userDetails.getUsername(), pageSize, keyword));
+        else return DataResponseDto.of(libraryService.findAll(pageNum, userDetails.getUsername(), pageSize, keyword));
     }
 
     //책장을 조회

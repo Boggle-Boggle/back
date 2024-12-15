@@ -29,6 +29,19 @@ public interface ReadingRecordLibraryMappingRepository extends JpaRepository<Rea
             Pageable pageable
     );
 
+
+    @Query("""
+    SELECT DISTINCT new com.boggle_boggle.bbegok.dto.LibraryBook(r.readingRecord.readingRecordSeq, r.readingRecord.book.title, r.readingRecord.rating, r.readingRecord.readDateList, r.readingRecord.book.imageUrl)
+    FROM ReadingRecordLibraryMapping r
+    WHERE r.library = :library
+    AND r.library.user = :user
+    AND LOWER(r.readingRecord.book.title) LIKE LOWER(CONCAT('%', :keyword, '%'))
+    ORDER BY 
+    """)
+    Page<LibraryBook> findBooksByLibraryAndUserAndKeyword(Library library, User user, Pageable pageable, String keyword);
+
+
+
     @Query("""
     SELECT DISTINCT new com.boggle_boggle.bbegok.dto.LibraryBook(r.readingRecord.readingRecordSeq, r.readingRecord.book.title, r.readingRecord.book.page)
     FROM ReadingRecordLibraryMapping r
@@ -51,6 +64,7 @@ public interface ReadingRecordLibraryMappingRepository extends JpaRepository<Rea
             @Param("user") User user,
             Pageable pageable
     );
+
 
 
 }

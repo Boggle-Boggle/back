@@ -64,27 +64,30 @@ public class LibraryService {
         libraryRepository.delete(library);
     }
 
-    public LibraryBookListResponse findByLibraryId(Long libraryId, int pageNum, String userId) {
+    public LibraryBookListResponse findByLibraryId(Long libraryId, int pageNum, String userId, int pageSize, String keyword) {
         Library library = libraryRepository.findByUserAndLibrarySeq(getUser(userId), libraryId)
                 .orElseThrow(() -> new GeneralException(Code.LIBRARY_NOT_FOUND));
         User user = getUser(userId);
-        Pageable pageable = PageRequest.of(pageNum-1, PAGE_SIZE);
+        Pageable pageable = PageRequest.of(pageNum-1, pageSize);
 
-        Page<LibraryBook> booksPage = readingRecordLibraryMappingRepository.findBooksByLibraryAndUser(library, user, pageable);
+        Page<LibraryBook> booksPage;
+        if(keyword == null) booksPage = readingRecordLibraryMappingRepository.findBooksByLibraryAndUser(library, user, pageable);
+        else booksPage = readingRecordLibraryMappingRepository.findBooksByLibraryAndUserAndKeyword(library, user, pageable, keyword);
+
         return LibraryBookListResponse.fromPage(booksPage);
     }
 
-    public LibraryBookListResponse findByStatus(ReadStatus status, int pageNum, String userId) {
+    public LibraryBookListResponse findByStatus(ReadStatus status, int pageNum, String userId, int pageSize, String keyword) {
         User user = getUser(userId);
-        Pageable pageable = PageRequest.of(pageNum-1, PAGE_SIZE);
+        Pageable pageable = PageRequest.of(pageNum-1, pageSize);
 
         Page<LibraryBook> booksPage = readingRecordLibraryMappingRepository.findBooksByUserAndStatus(status, user, pageable);
         return LibraryBookListResponse.fromPage(booksPage);
     }
 
-    public LibraryBookListResponse findAll(int pageNum, String userId) {
+    public LibraryBookListResponse findAll(int pageNum, String userId, int pageSize, String keyword) {
         User user = getUser(userId);
-        Pageable pageable = PageRequest.of(pageNum-1, PAGE_SIZE);
+        Pageable pageable = PageRequest.of(pageNum-1, pageSize);
         Page<LibraryBook> booksPage = readingRecordLibraryMappingRepository.findBooksWithReadingRecordIdByUser(user, pageable);
         return LibraryBookListResponse.fromPage(booksPage);
     }
