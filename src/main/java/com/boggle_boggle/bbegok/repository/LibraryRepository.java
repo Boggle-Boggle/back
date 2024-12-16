@@ -3,9 +3,9 @@ package com.boggle_boggle.bbegok.repository;
 import com.boggle_boggle.bbegok.dto.LibrariesDto;
 import com.boggle_boggle.bbegok.entity.Library;
 import com.boggle_boggle.bbegok.entity.user.User;
-import feign.Param;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import javax.swing.text.html.Option;
 import java.util.List;
