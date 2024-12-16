@@ -18,7 +18,7 @@ public interface ReadingRecordRepository extends JpaRepository<ReadingRecord, Lo
     Optional<ReadingRecord> findByreadingRecordSeqAndUser(Long id, User user);
 
     @Query(value = """
-    SELECT DISTINCT r.readingRecordSeq
+    SELECT DISTINCT r
     FROM ReadingRecord r
     JOIN r.readDateList rd
     WHERE r.user = :user
