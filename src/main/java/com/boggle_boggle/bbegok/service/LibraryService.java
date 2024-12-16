@@ -8,14 +8,18 @@ import com.boggle_boggle.bbegok.dto.response.LibraryBookListResponse;
 import com.boggle_boggle.bbegok.dto.response.LibraryResponse;
 import com.boggle_boggle.bbegok.entity.Book;
 import com.boggle_boggle.bbegok.entity.Library;
+import com.boggle_boggle.bbegok.entity.ReadingRecord;
 import com.boggle_boggle.bbegok.entity.user.User;
+import com.boggle_boggle.bbegok.entity.user.UserSettings;
 import com.boggle_boggle.bbegok.enums.ReadStatus;
+import com.boggle_boggle.bbegok.enums.SortingType;
 import com.boggle_boggle.bbegok.exception.Code;
 import com.boggle_boggle.bbegok.exception.exception.GeneralException;
 import com.boggle_boggle.bbegok.repository.LibraryRepository;
 import com.boggle_boggle.bbegok.repository.ReadingRecordLibraryMappingRepository;
 import com.boggle_boggle.bbegok.repository.ReadingRecordRepository;
 import com.boggle_boggle.bbegok.repository.user.UserRepository;
+import com.boggle_boggle.bbegok.repository.user.UserSettingsRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
@@ -33,11 +37,23 @@ public class LibraryService {
     private final int PAGE_SIZE = 30;
     private final LibraryRepository libraryRepository;
     private final UserRepository userRepository;
+    private final UserSettingsRepository userSettingsRepository;
     private final ReadingRecordLibraryMappingRepository readingRecordLibraryMappingRepository;
     private final ReadingRecordRepository readingRecordRepository;
 
     public User getUser(String userId) {
         return userRepository.findByUserId(userId);
+    }
+
+    public Sort getSort(User user) {
+        switch (userSettingsRepository.findByUser(user).getSortingType()) {
+            case newest_first:
+                return Sort.by(Sort.Direction.DESC, "readingRecord.readingRecordSeq");
+            case oldest_first:
+                return Sort.by(Sort.Direction.ASC, "readingRecord.readingRecordSeq");
+            default:
+                return Sort.by(Sort.Direction.DESC, "readingRecord.rating");
+        }
     }
 
     public List<LibraryResponse> getLibraries(String userId) {
@@ -68,34 +84,36 @@ public class LibraryService {
         Library library = libraryRepository.findByUserAndLibrarySeq(getUser(userId), libraryId)
                 .orElseThrow(() -> new GeneralException(Code.LIBRARY_NOT_FOUND));
         User user = getUser(userId);
-        Pageable pageable = PageRequest.of(pageNum-1, pageSize);
+        Pageable pageable = PageRequest.of(pageNum-1, pageSize, getSort(user));
 
-        Page<LibraryBook> booksPage;
+        Page<ReadingRecord> booksPage;
         if(keyword == null) booksPage = readingRecordLibraryMappingRepository.findBooksByLibraryAndUser(library, user, pageable);
-        else booksPage = readingRecordLibraryMappingRepository.findBooksByLibraryAndUserAndKeyword(library, user, pageable, keyword);
+        else booksPage = readingRecordLibraryMappingRepository.findBooksByLibraryAndUserAndKeyword(library, user, keyword, pageable);
+
+
 
         return LibraryBookListResponse.fromPage(booksPage);
     }
 
     public LibraryBookListResponse findByStatus(ReadStatus status, int pageNum, String userId, int pageSize, String keyword) {
         User user = getUser(userId);
-        Pageable pageable = PageRequest.of(pageNum-1, pageSize);
+        Pageable pageable = PageRequest.of(pageNum-1, pageSize, getSort(user));
 
-        Page<LibraryBook> booksPage = readingRecordLibraryMappingRepository.findBooksByUserAndStatus(status, user, pageable);
+        Page<ReadingRecord> booksPage = readingRecordLibraryMappingRepository.findBooksByUserAndStatus(status, user, pageable);
         return LibraryBookListResponse.fromPage(booksPage);
     }
 
     public LibraryBookListResponse findAll(int pageNum, String userId, int pageSize, String keyword) {
         User user = getUser(userId);
-        Pageable pageable = PageRequest.of(pageNum-1, pageSize);
-        Page<LibraryBook> booksPage = readingRecordLibraryMappingRepository.findBooksWithReadingRecordIdByUser(user, pageable);
+        Pageable pageable = PageRequest.of(pageNum-1, pageSize, getSort(user));
+        Page<ReadingRecord> booksPage = readingRecordLibraryMappingRepository.findBooksWithReadingRecordIdByUser(user, pageable);
         return LibraryBookListResponse.fromPage(booksPage);
     }
 
 
     public BookShelfResponse findBookshelfByEndDate(Integer year, Integer month, String userId) {
         User user = getUser(userId);
-        List<LibraryBook> books = readingRecordRepository.findBooksByUserAndReadDate(user, year, month);
-        return BookShelfResponse.fromDTO(books);
+        List<ReadingRecord> booksPage = readingRecordRepository.findBooksByUserAndReadDate(user, year, month);
+        return BookShelfResponse.fromPage(booksPage);
     }
 }

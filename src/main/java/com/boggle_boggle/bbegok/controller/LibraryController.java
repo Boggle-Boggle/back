@@ -48,11 +48,11 @@ public class LibraryController {
 
     //서재의 독서기록을 조회
     @GetMapping("/library")
-    public DataResponseDto<LibraryBookListResponse>searchLibrary(@RequestParam(required = false) Long libraryId,
-                                                                 @RequestParam(required = false) ReadStatus status,
-                                                                 @RequestParam(defaultValue = "30") int pageSize,
-                                                                 @RequestParam(required = false) String keyword,
-                                                                 @RequestParam(defaultValue = "1") int pageNum,
+    public DataResponseDto<LibraryBookListResponse>searchLibrary(@RequestParam(name="libraryId", required = false) Long libraryId,
+                                                                 @RequestParam(name="status", required = false) ReadStatus status,
+                                                                 @RequestParam(name="pageSize", defaultValue = "30") int pageSize,
+                                                                 @RequestParam(name="keyword", required = false) String keyword,
+                                                                 @RequestParam(name="pageNum", defaultValue = "1") int pageNum,
                                                                  @AuthenticationPrincipal UserDetails userDetails) {
         if (libraryId != null) return DataResponseDto.of(libraryService.findByLibraryId(libraryId, pageNum, userDetails.getUsername(), pageSize, keyword));
         else if (status != null) return DataResponseDto.of(libraryService.findByStatus(status, pageNum, userDetails.getUsername(), pageSize, keyword));
@@ -61,8 +61,8 @@ public class LibraryController {
 
     //책장을 조회
     @GetMapping("/bookshelf")
-    public DataResponseDto<BookShelfResponse>findBookshelfByEndDate(@RequestParam(required = false) Integer year,
-                                                                    @RequestParam(required = false) Integer month,
+    public DataResponseDto<BookShelfResponse>findBookshelfByEndDate(@RequestParam(name="year", required = false) Integer year,
+                                                                    @RequestParam(name="month", required = false) Integer month,
                                                                     @AuthenticationPrincipal UserDetails userDetails) {
         return DataResponseDto.of(libraryService.findBookshelfByEndDate(year, month, userDetails.getUsername()));
     }
