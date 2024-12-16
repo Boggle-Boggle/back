@@ -1,5 +1,6 @@
 package com.boggle_boggle.bbegok.dto.response;
 
+import com.boggle_boggle.bbegok.dto.BookShelfItem;
 import com.boggle_boggle.bbegok.dto.LibraryBook;
 import com.boggle_boggle.bbegok.entity.ReadingRecord;
 import lombok.Builder;
@@ -8,14 +9,16 @@ import lombok.ToString;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
+import java.util.stream.Collectors;
+
 @Getter
 @ToString
 @Builder
 public class BookShelfResponse {
-    private List<LibraryBook> books;
+    private List<BookShelfItem> books;
 
 
-    public static BookShelfResponse fromDTO(List<LibraryBook> dto) {
+    public static BookShelfResponse fromDTO(List<BookShelfItem> dto) {
         return BookShelfResponse.builder()
                 .books(dto)
                 .build();
@@ -23,7 +26,13 @@ public class BookShelfResponse {
 
     public static BookShelfResponse fromPage(List<ReadingRecord> booksPage) {
         return BookShelfResponse.builder()
-                .books(LibraryBook.fromReadingRecordList(booksPage))
+                .books(booksPage.stream().map(bp -> BookShelfItem.builder()
+                        .readingRecordId(bp.getReadingRecordSeq())
+                        .title(bp.getBook().getTitle())
+                        .page(bp.getBook().getPage())
+                        .build())
+                        .collect(Collectors.toList())
+                )
                 .build();
     }
 }
