@@ -25,7 +25,8 @@ app.auth.tokenSecret=${JWT_SECRET}
 bbaegok.domain=${DOMAIN_NAME}
 
 #1 min
-app.auth.tokenExpiry=60000
+# app.auth.tokenExpiry=60000
+app.auth.tokenExpiry=31536000000
 
 #7 days
 app.auth.refreshTokenExpiry=604800000
