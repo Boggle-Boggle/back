@@ -2,6 +2,7 @@ package com.boggle_boggle.bbegok.dto.response;
 
 import com.boggle_boggle.bbegok.dto.OriginBookData;
 import com.boggle_boggle.bbegok.utils.LocalDateTimeUtil;
+import com.boggle_boggle.bbegok.utils.SpecialCharUtil;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
@@ -24,14 +25,14 @@ public class BookDetailResponse {
 
     public static BookDetailResponse fromOriginBookData(OriginBookData origin) {
         return BookDetailResponse.builder()
-                .title(origin.getTitle())
+                .title(SpecialCharUtil.convertSpecialChars(origin.getTitle()))
                 .isbn(origin.getIsbn())
-                .author(origin.getAuthor())
+                .author(SpecialCharUtil.convertSpecialChars(origin.getAuthor()))
                 .pubDate(LocalDateTimeUtil.StringToLocalDateAndAddTime(origin.getPubDate()))
                 .cover(origin.getCover())
                 .publisher(origin.getPublisher())
                 .genre(origin.getCategoryName())
-                .plot(origin.getDescription())
+                .plot(SpecialCharUtil.convertSpecialChars(origin.getDescription()))
                 .page(origin.getSubInfo().getItemPage())
                 .build();
     }

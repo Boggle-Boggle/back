@@ -3,6 +3,7 @@ package com.boggle_boggle.bbegok.dto.response;
 import com.boggle_boggle.bbegok.dto.BookData;
 import com.boggle_boggle.bbegok.dto.OriginSearchBookList;
 import com.boggle_boggle.bbegok.utils.LocalDateTimeUtil;
+import com.boggle_boggle.bbegok.utils.SpecialCharUtil;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Getter;
@@ -28,9 +29,9 @@ public class SearchBookListResponse {
                 .bookList(
                         originList.getItem().stream()
                             .map(book -> BookData.builder()
-                                    .title(book.getTitle())
+                                    .title(SpecialCharUtil.convertSpecialChars(book.getTitle()))
                                     .isbn(book.getIsbn())
-                                    .author(book.getAuthor())
+                                    .author(SpecialCharUtil.convertSpecialChars(book.getAuthor()))
                                     .pubDate(LocalDateTimeUtil.StringToLocalDateAndAddTime(book.getPubDate()))
                                     .cover(book.getCover())
                                     .publisher(book.getPublisher())
