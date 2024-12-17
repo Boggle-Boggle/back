@@ -53,16 +53,16 @@ public interface ReadingRecordLibraryMappingRepository extends JpaRepository<Rea
             Pageable pageable
     );
 
-
     @Query("""
     SELECT r.readingRecord
     FROM ReadingRecordLibraryMapping r
-    WHERE r.readingRecord.user = :user
+    WHERE r.readingRecord.status = :status
+    AND r.library.user = :user
+    AND LOWER(r.readingRecord.book.title) LIKE LOWER(CONCAT('%', :keyword, '%'))
     """)
-    Page<ReadingRecord> findBooksWithReadingRecordIdByUser(
-            @Param("user") User user,
-            Pageable pageable
-    );
+    Page<ReadingRecord> findBooksByUserAndStatusAndKeyword(ReadStatus status, User user, String keyword, Pageable pageable);
+
+
 
 
 
