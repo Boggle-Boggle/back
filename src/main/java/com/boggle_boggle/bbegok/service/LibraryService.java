@@ -108,11 +108,11 @@ public class LibraryService {
 
     public LibraryBookListResponse findByStatus(ReadStatus status, int pageNum, String userId, int pageSize, String keyword) {
         User user = getUser(userId);
-        Pageable pageable = PageRequest.of(pageNum-1, pageSize, getSortWithReadingRecordToLibraryMapping(user));
+        Pageable pageable = PageRequest.of(pageNum-1, pageSize, getSortWithReadingRecord(user));
 
         Page<ReadingRecord> booksPage;
-        if(keyword == null) booksPage = readingRecordLibraryMappingRepository.findBooksByUserAndStatus(status, user, pageable);
-        else booksPage = readingRecordLibraryMappingRepository.findBooksByUserAndStatusAndKeyword(status, user, keyword, pageable);
+        if(keyword == null) booksPage = readingRecordRepository.findBooksByUserAndStatus(status, user, pageable);
+        else booksPage = readingRecordRepository.findBooksByUserAndStatusAndKeyword(status, user, keyword, pageable);
 
         return LibraryBookListResponse.fromPage(booksPage);
     }

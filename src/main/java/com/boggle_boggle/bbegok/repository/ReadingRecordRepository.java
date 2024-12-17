@@ -5,6 +5,7 @@ import com.boggle_boggle.bbegok.entity.Book;
 import com.boggle_boggle.bbegok.entity.Library;
 import com.boggle_boggle.bbegok.entity.ReadingRecord;
 import com.boggle_boggle.bbegok.entity.user.User;
+import com.boggle_boggle.bbegok.enums.ReadStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -33,6 +34,29 @@ public interface ReadingRecordRepository extends JpaRepository<ReadingRecord, Lo
             @Param("year") Integer year,
             @Param("month") Integer month
     );
+
+
+    @Query("""
+    SELECT r
+    FROM ReadingRecord r
+    WHERE r.status = :status
+    AND r.user = :user
+    """)
+    Page<ReadingRecord> findBooksByUserAndStatus(
+            @Param("status") ReadStatus status,
+            @Param("user") User user,
+            Pageable pageable
+    );
+
+    @Query("""
+    SELECT r
+    FROM ReadingRecord r
+    WHERE r.status = :status
+    AND r.user = :user
+    AND LOWER(r.book.title) LIKE LOWER(CONCAT('%', :keyword, '%'))
+    """)
+    Page<ReadingRecord> findBooksByUserAndStatusAndKeyword(ReadStatus status, User user, String keyword, Pageable pageable);
+
 
 
     @Query("""
