@@ -45,7 +45,7 @@ public class LibraryService {
         return userRepository.findByUserId(userId);
     }
 
-    public Sort getSort(User user) {
+    public Sort getSortWithReadingRecordToLibraryMapping(User user) {
         switch (userSettingsRepository.findByUser(user).getSortingType()) {
             case newest_first:
                 return Sort.by(Sort.Direction.DESC, "readingRecord.readingRecordSeq");
@@ -53,6 +53,17 @@ public class LibraryService {
                 return Sort.by(Sort.Direction.ASC, "readingRecord.readingRecordSeq");
             default:
                 return Sort.by(Sort.Direction.DESC, "readingRecord.rating");
+        }
+    }
+
+    public Sort getSortWithReadingRecord(User user) {
+        switch (userSettingsRepository.findByUser(user).getSortingType()) {
+            case newest_first:
+                return Sort.by(Sort.Direction.DESC, "readingRecordSeq");
+            case oldest_first:
+                return Sort.by(Sort.Direction.ASC, "readingRecordSeq");
+            default:
+                return Sort.by(Sort.Direction.DESC, "rating");
         }
     }
 
@@ -84,7 +95,7 @@ public class LibraryService {
         Library library = libraryRepository.findByUserAndLibrarySeq(getUser(userId), libraryId)
                 .orElseThrow(() -> new GeneralException(Code.LIBRARY_NOT_FOUND));
         User user = getUser(userId);
-        Pageable pageable = PageRequest.of(pageNum-1, pageSize, getSort(user));
+        Pageable pageable = PageRequest.of(pageNum-1, pageSize, getSortWithReadingRecordToLibraryMapping(user));
 
         Page<ReadingRecord> booksPage;
         if(keyword == null) booksPage = readingRecordLibraryMappingRepository.findBooksByLibraryAndUser(library, user, pageable);
@@ -97,16 +108,22 @@ public class LibraryService {
 
     public LibraryBookListResponse findByStatus(ReadStatus status, int pageNum, String userId, int pageSize, String keyword) {
         User user = getUser(userId);
-        Pageable pageable = PageRequest.of(pageNum-1, pageSize, getSort(user));
+        Pageable pageable = PageRequest.of(pageNum-1, pageSize, getSortWithReadingRecord(user));
 
-        Page<ReadingRecord> booksPage = readingRecordLibraryMappingRepository.findBooksByUserAndStatus(status, user, pageable);
+        Page<ReadingRecord> booksPage;
+        if(keyword == null) booksPage = readingRecordRepository.findBooksByUserAndStatus(status, user, pageable);
+        else booksPage = readingRecordRepository.findBooksByUserAndStatusAndKeyword(status, user, keyword, pageable);
+
         return LibraryBookListResponse.fromPage(booksPage);
     }
 
     public LibraryBookListResponse findAll(int pageNum, String userId, int pageSize, String keyword) {
         User user = getUser(userId);
-        Pageable pageable = PageRequest.of(pageNum-1, pageSize, getSort(user));
-        Page<ReadingRecord> booksPage = readingRecordLibraryMappingRepository.findBooksWithReadingRecordIdByUser(user, pageable);
+        Pageable pageable = PageRequest.of(pageNum-1, pageSize, getSortWithReadingRecord(user));
+        Page<ReadingRecord> booksPage;
+
+        if(keyword == null) booksPage = readingRecordRepository.findBooksWithReadingRecordIdByUser(user, pageable);
+        else booksPage = readingRecordRepository.findBooksWithReadingRecordIdByUserAndKeyword(user, keyword, pageable);
         return LibraryBookListResponse.fromPage(booksPage);
     }
 
