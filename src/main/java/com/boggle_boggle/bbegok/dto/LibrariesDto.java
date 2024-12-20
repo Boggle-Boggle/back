@@ -1,5 +1,6 @@
 package com.boggle_boggle.bbegok.dto;
 
+import com.boggle_boggle.bbegok.dto.response.LibraryResponse;
 import com.boggle_boggle.bbegok.entity.Library;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -13,6 +14,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class LibrariesDto {
-    private Library library;
+    private Long libraryId;
+    private String libraryName;
     private Long bookCount;
 }

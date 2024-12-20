@@ -2,6 +2,7 @@ package com.boggle_boggle.bbegok.service;
 
 import com.boggle_boggle.bbegok.dto.LibrariesDto;
 import com.boggle_boggle.bbegok.dto.LibraryBook;
+import com.boggle_boggle.bbegok.dto.RecordByStatusDto;
 import com.boggle_boggle.bbegok.dto.request.LibraryRequest;
 import com.boggle_boggle.bbegok.dto.response.BookShelfResponse;
 import com.boggle_boggle.bbegok.dto.response.LibraryBookListResponse;
@@ -27,8 +28,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import java.util.List;
-
-import static com.boggle_boggle.bbegok.dto.response.LibraryResponse.ofLibrariesDto;
 
 @Service
 @RequiredArgsConstructor
@@ -67,10 +66,11 @@ public class LibraryService {
         }
     }
 
-    public List<LibraryResponse> getLibraries(String userId) {
-        List<LibrariesDto> librariesDtos = libraryRepository.findAllByUserWithBookCount(getUser(userId));
-        return librariesDtos.stream()
-                .map(LibraryResponse::ofLibrariesDto).toList();
+    public LibraryResponse getLibraries(String userId) {
+        User user = getUser(userId);
+        List<LibrariesDto> librariesDtos = libraryRepository.findAllByUserWithBookCount(user);
+        List<RecordByStatusDto> readingRecords = readingRecordRepository.countReadingRecordsByStatus(user);
+        return LibraryResponse.ofDtos(librariesDtos, readingRecords);
     }
 
     public void saveNewLibrary(LibraryRequest request, String userId) {
