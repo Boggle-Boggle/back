@@ -26,7 +26,7 @@ public class LibraryController {
 
     //서재 목록 조회
     @GetMapping("/libraries")
-    public DataResponseDto<List<LibraryResponse>> getLibraries(@AuthenticationPrincipal UserDetails userDetails) {
+    public DataResponseDto<LibraryResponse> getLibraries(@AuthenticationPrincipal UserDetails userDetails) {
         return DataResponseDto.of(libraryService.getLibraries(userDetails.getUsername()));
     }
 

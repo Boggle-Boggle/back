@@ -1,18 +1,19 @@
 package com.boggle_boggle.bbegok.dto.response;
 
 import com.boggle_boggle.bbegok.dto.LibrariesDto;
-import com.boggle_boggle.bbegok.entity.Library;
+import com.boggle_boggle.bbegok.dto.RecordByStatusDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+
+import java.util.List;
 
 @Getter
 @AllArgsConstructor
 public class LibraryResponse {
-    private Long libraryId;
-    private String libraryName;
-    private Long bookCount;
+    private List<LibrariesDto> libraryList;
+    private List<RecordByStatusDto> statusList;
 
-    public static LibraryResponse ofLibrariesDto(LibrariesDto dto){
-        return new LibraryResponse(dto.getLibrary().getLibrarySeq(), dto.getLibrary().getLibraryName(), dto.getBookCount());
+    public static LibraryResponse ofDtos(List<LibrariesDto> librariesDtos, List<RecordByStatusDto> readingRecords) {
+        return new LibraryResponse(librariesDtos, readingRecords);
     }
 }

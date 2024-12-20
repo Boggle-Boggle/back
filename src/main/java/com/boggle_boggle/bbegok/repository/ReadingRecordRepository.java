@@ -1,6 +1,7 @@
 package com.boggle_boggle.bbegok.repository;
 
 import com.boggle_boggle.bbegok.dto.LibraryBook;
+import com.boggle_boggle.bbegok.dto.RecordByStatusDto;
 import com.boggle_boggle.bbegok.entity.Book;
 import com.boggle_boggle.bbegok.entity.Library;
 import com.boggle_boggle.bbegok.entity.ReadingRecord;
@@ -47,6 +48,15 @@ public interface ReadingRecordRepository extends JpaRepository<ReadingRecord, Lo
             @Param("user") User user,
             Pageable pageable
     );
+
+    @Query("""
+    SELECT new com.boggle_boggle.bbegok.dto.RecordByStatusDto(r.status, COUNT(r))
+    FROM ReadingRecord r
+    WHERE r.user = :user
+    GROUP BY r.status
+    """)
+    List<RecordByStatusDto> countReadingRecordsByStatus(@Param("user") User user);
+
 
     @Query("""
     SELECT r
