@@ -8,6 +8,6 @@ import lombok.Setter;
 @Getter
 public class LibraryRequest {
     @NotBlank
-    @Size(max = 30)
+    @Size(max = 15)
     private String libraryName;
 }
