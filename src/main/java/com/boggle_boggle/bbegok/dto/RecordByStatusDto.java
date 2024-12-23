@@ -1,5 +1,6 @@
 package com.boggle_boggle.bbegok.dto;
 
+import com.boggle_boggle.bbegok.enums.LibraryByStatus;
 import com.boggle_boggle.bbegok.enums.ReadStatus;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -11,13 +12,26 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 public class RecordByStatusDto {
-    private ReadStatus status;
+    private LibraryByStatus status;
     private String libraryName;
     private Long bookCount;
 
-    public RecordByStatusDto(ReadStatus status, Long bookCount){
-        this.status = status;
-        this.libraryName = status.getLibraryName();
+
+    public RecordByStatusDto(ReadStatus readStatus, Long bookCount){
+        LibraryByStatus libraryByStatus;
+        if(readStatus == ReadStatus.completed) libraryByStatus = LibraryByStatus.completed;
+        else if(readStatus == ReadStatus.pending) libraryByStatus = LibraryByStatus.pending;
+        else if(readStatus == ReadStatus.reading) libraryByStatus = LibraryByStatus.reading;
+        else libraryByStatus = LibraryByStatus.all;
+
+        this.status = libraryByStatus;
+        this.libraryName = libraryByStatus.getLibraryName();
+        this.bookCount = bookCount;
+    }
+
+    public RecordByStatusDto(LibraryByStatus libraryByStatus, Long bookCount) {
+        this.status = libraryByStatus;
+        this.libraryName = libraryByStatus.getLibraryName();
         this.bookCount = bookCount;
     }
 }
