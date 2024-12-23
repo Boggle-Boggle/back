@@ -20,7 +20,7 @@ public class LibraryResponse {
 
         Long cnt = 0L;
         for(RecordByStatusDto dto : resp.getStatusList()) cnt+=dto.getBookCount();
-        resp.getStatusList().add(new RecordByStatusDto(LibraryByStatus.all, cnt));
+        resp.getStatusList().add(0, new RecordByStatusDto(LibraryByStatus.all, cnt));
         return resp;
     }
 }
