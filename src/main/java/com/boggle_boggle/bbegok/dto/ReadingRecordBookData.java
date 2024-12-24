@@ -20,6 +20,7 @@ public class ReadingRecordBookData {
     private LocalDateTime pubDate;
     private String genre;
     private String plot;
+    private int page;
 
     public static ReadingRecordBookData fromEntity(Book book){
         return ReadingRecordBookData.builder()
@@ -30,6 +31,7 @@ public class ReadingRecordBookData {
                 .pubDate(book.getPublishDate())
                 .genre(book.getGenre())
                 .plot(book.getPlot())
+                .page(book.getPage())
                 .build();
     }
 }
