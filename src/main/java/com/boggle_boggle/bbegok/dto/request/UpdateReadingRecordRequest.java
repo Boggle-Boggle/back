@@ -14,8 +14,8 @@ import java.util.List;
 @ToString
 public class UpdateReadingRecordRequest {
     private ReadStatus readStatus;
-    private Double rating;
-    List<ReadDateDto> readDateList;
+    private List<ReadDateDto> readDateList;
     private List<Long> libraryIdList;
+    private Double rating;
     private Boolean isVisible;
 }
