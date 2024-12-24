@@ -85,8 +85,6 @@ public class ReadingRecord {
 
     //==연관관계 편의 메소드
     public void addLibraries(List<Library> libraries) {
-        if(libraries == null || libraries.isEmpty()) return;
-
         for (Library library : libraries) {
             addLibrary(library);
         }
@@ -97,8 +95,6 @@ public class ReadingRecord {
         this.mappingList.add(mapping);
     }
     public void addReadDateList(LocalDateTime readStartDate, LocalDateTime readEndDate) {
-        if(readStartDate == null || readEndDate == null) return;
-
         ReadDate readDate = ReadDate.createReadDate(this, readStartDate, readEndDate);
         this.readDateList.add(readDate);
     }

@@ -91,7 +91,7 @@ public class ReadingRecordService {
 
     public ReadingRecordResponse getReadingRecord(Long id, String userId) {
         ReadingRecord readingRecord = findReadingRecord(id, userId);
-        return ReadingRecordResponse.fromReadingRecord(readingRecord);
+        return ReadingRecordResponse.fromEntity(readingRecord);
     }
 
     public Long getReadingRecordId(String isbn, String userId) {
