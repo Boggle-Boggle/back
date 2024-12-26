@@ -17,7 +17,7 @@ import java.util.List;
 public class RecordData {
     private ReadStatus status;
     private Double rating;
-    private List<ReadDateDto> readDateList;
+    private List<ReadDateAndIdDto> readDateList;
     private List<LibraryListDto> libraries;
     private Boolean isBookVisible;
 
@@ -27,7 +27,7 @@ public class RecordData {
                 .rating(readingRecord.getRating())
                 .isBookVisible(readingRecord.getIsBooksVisible())
                 .readDateList(readingRecord.getReadDateList().stream()
-                        .map(readDate -> new ReadDateDto(readDate.getStartReadDate(),readDate.getEndReadDate())).toList())
+                        .map(ReadDateAndIdDto::new).toList())
                 .libraries(readingRecord.getMappingList().stream()
                         .map(library -> new LibraryListDto(library.getLibrary().getLibrarySeq(),library.getLibrary().getLibraryName())).toList())
                 .build();
