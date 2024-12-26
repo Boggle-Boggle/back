@@ -115,7 +115,9 @@ public class NoteService {
             }
         }
         if(request.getSelectedDate().isPresent()) note.updateSelectedDate(request.getSelectedDate().get());
-        if(request.getTags().isPresent()) note.updateTags(request.getTags().get());
+        if(request.getTags().isPresent() && request.getTags().get() != null) {
+            note.updateTags(request.getTags().get());
+        }
     }
 
 }

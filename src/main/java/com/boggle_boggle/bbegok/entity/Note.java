@@ -45,8 +45,8 @@ public class Note {
     private Pages pages;
 
     @Type(JsonType.class)
-    @Column(name = "tags", columnDefinition = "longtext")
-    private List<String> tags;
+    @Column(name = "tags", columnDefinition = "longtext", nullable = false)
+    private List<String> tags = new ArrayList<>();
 
     @Column(name = "selected_date")
     private LocalDateTime selectedDate;
