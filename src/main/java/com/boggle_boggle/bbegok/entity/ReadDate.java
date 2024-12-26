@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.ToString;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @ToString @Getter
@@ -22,6 +24,9 @@ public class ReadDate {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "reading_record_seq")
     private ReadingRecord readingRecord;
+
+    @OneToMany(mappedBy = "readDate", cascade = CascadeType.PERSIST)
+    private List<Note> notes = new ArrayList<>();
 
     protected ReadDate(){}
 
@@ -48,4 +53,17 @@ public class ReadDate {
     public int hashCode() {
         return readDateSeq != null ? readDateSeq.hashCode() : 0;
     }
+
+    public void update(LocalDateTime startReadDate, LocalDateTime endReadDate) {
+        this.startReadDate = startReadDate;
+        this.endReadDate = endReadDate;
+    }
+
+    public void removeNoteAssociation() {
+        for (Note note : this.notes) {
+            note.updateReadDate(null); // 외래 키를 null로 설정
+        }
+        this.notes.clear(); // 로컬 리스트 비우기
+    }
+
 }

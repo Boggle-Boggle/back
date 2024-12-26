@@ -115,7 +115,8 @@ public class NoteService {
             }
         }
         if(request.getSelectedDate().isPresent()) note.updateSelectedDate(request.getSelectedDate().get());
-        if(request.getTags().isPresent() && request.getTags().get() != null) {
+        if(request.getTags().isPresent()) {
+            if(request.getTags().get() == null) throw new GeneralException(Code.BAD_REQUEST, "tags can't null");
             note.updateTags(request.getTags().get());
         }
     }

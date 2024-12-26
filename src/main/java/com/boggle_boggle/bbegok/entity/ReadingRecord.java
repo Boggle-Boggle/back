@@ -11,6 +11,7 @@ import lombok.ToString;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Entity
 @Getter
@@ -97,5 +98,27 @@ public class ReadingRecord {
     public void addReadDateList(LocalDateTime readStartDate, LocalDateTime readEndDate) {
         ReadDate readDate = ReadDate.createReadDate(this, readStartDate, readEndDate);
         this.readDateList.add(readDate);
+    }
+
+    public void updateReadDateList(ReadDate readDate) {
+        this.readDateList.add(readDate);
+    }
+
+    public void updateReadStatus(ReadStatus status) {
+        this.status = status;
+    }
+
+    public void updateRating(Double rating) {
+        this.rating = rating;
+    }
+
+    public void updateIsVisible(Boolean visible) {
+        this.isBooksVisible = visible;
+    }
+
+    public void removeReadDate(ReadDate readDate) {
+        System.out.println("삭제 할게 : "+readDate.getReadDateSeq());
+        boolean b = this.readDateList.remove(readDate);
+        System.out.println("삭제됨? : "+b);
     }
 }

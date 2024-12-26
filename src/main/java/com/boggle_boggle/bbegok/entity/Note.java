@@ -28,8 +28,8 @@ public class Note {
     @JoinColumn(name = "reading_record_seq", nullable = false)
     private ReadingRecord readingRecord;
 
-    @OneToOne
-    @JoinColumn(name = "read_date_seq")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "read_date_seq", nullable = true)
     private ReadDate readDate;
 
     @Column(name = "title", length = 30)
