@@ -38,8 +38,9 @@ public class UserService {
         user.updateNickName(name);
     }
 
-    public boolean isNicknameAvailable(String nickname) {
-        return userRepository.findByUserName(nickname).isEmpty();
+    public boolean isNicknameAvailable(String userId, String nickname) {
+        if(getUser(userId).getUserName().equals(nickname)) return true;
+        else return userRepository.findByUserName(nickname).isEmpty();
     }
 
     //약관동의 및 권한 업데이트
