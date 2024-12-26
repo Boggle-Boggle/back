@@ -22,5 +22,4 @@ public class CrudDate {
     private LocalDateTime updateAt;
 
     private Boolean isDelete;
-
 }
