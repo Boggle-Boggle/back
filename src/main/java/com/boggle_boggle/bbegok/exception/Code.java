@@ -38,6 +38,7 @@ public enum Code {
 
     // 노트 관련 예외
     NOTE_NOT_FOUND(12500, HttpStatus.NOT_FOUND, "Reading Note not found"),
+    READ_DATE_NOT_FOUND(12501, HttpStatus.NOT_FOUND, "Read Date not found"),
 
     // 사용자 관련 예외
     USER_NOT_FOUND(13000, HttpStatus.NOT_FOUND, "User not found"),

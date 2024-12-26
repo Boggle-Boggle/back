@@ -33,6 +33,10 @@ dependencyManagement {
 
 dependencies {
 
+	//json 처리
+	implementation("org.openapitools:jackson-databind-nullable:0.2.4")
+	implementation "io.hypersistence:hypersistence-utils-hibernate-63:3.9.0"
+
 	//openFeign 추가
 	implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
 	implementation 'io.github.openfeign:feign-gson:11.8'

@@ -34,4 +34,18 @@ public class ReadDate {
     public static ReadDate createReadDate(ReadingRecord record, LocalDateTime startReadDate, LocalDateTime endReadDate){
         return new ReadDate(record, startReadDate, endReadDate);
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        ReadDate readDate = (ReadDate) o;
+        return readDateSeq != null && readDateSeq.equals(readDate.readDateSeq);
+    }
+
+    @Override
+    public int hashCode() {
+        return readDateSeq != null ? readDateSeq.hashCode() : 0;
+    }
 }
