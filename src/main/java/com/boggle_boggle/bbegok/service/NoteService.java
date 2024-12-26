@@ -1,7 +1,10 @@
 package com.boggle_boggle.bbegok.service;
 
+import com.boggle_boggle.bbegok.dto.NoteDto;
 import com.boggle_boggle.bbegok.dto.PagesDto;
+import com.boggle_boggle.bbegok.dto.ReadDateAndIdDto;
 import com.boggle_boggle.bbegok.dto.request.NewNoteRequest;
+import com.boggle_boggle.bbegok.dto.response.NotesByReadDateResponse;
 import com.boggle_boggle.bbegok.entity.*;
 import com.boggle_boggle.bbegok.entity.embed.Pages;
 import com.boggle_boggle.bbegok.entity.user.User;
@@ -13,7 +16,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -28,6 +31,35 @@ public class NoteService {
     private final UserRepository userRepository;
     private final BookService bookService;
 
+    public List<NotesByReadDateResponse> getNote(Long recordId, String userId) {
+        User user = getUser(userId);
+        ReadingRecord readingRecord = findReadingRecord(recordId, userId);
+
+        //현재 독서기록에 대한 모든 Note를 찾는다. 이때 readDateSeq별로 그룹바이 해야하고, readDateSeq순서대로 정렬(Null이면 제일 앞으로)
+        List<Note> noteList = noteRepository.findByReadingRecordAndReadingRecord_UserOrderByReadDate_ReadDateSeq(readingRecord, user);
+
+        Map<ReadDateAndIdDto, List<NoteDto>> map = new HashMap<>();
+        ReadDateAndIdDto nullReadDateAndIDDto = new ReadDateAndIdDto(); // 적절한 기본값 설정
+        for (Note note : noteList) {
+            ReadDate readDate = note.getReadDate();
+            ReadDateAndIdDto key = readDate != null ? new ReadDateAndIdDto(readDate) : nullReadDateAndIDDto;
+            map.computeIfAbsent(key, k -> new ArrayList<>())
+                    .add(NoteDto.fromEntity(note));
+        }
+
+        List<NotesByReadDateResponse> result = new ArrayList<>();
+        for (Map.Entry<ReadDateAndIdDto, List<NoteDto>> entry : map.entrySet()) {
+            result.add(new NotesByReadDateResponse(entry.getKey(), entry.getValue()));
+        }
+
+        // id 기준 오름차순 정렬
+        result.sort(Comparator.comparing(
+                response -> response.getReadDate().getReadDateId(),
+                Comparator.nullsFirst(Comparator.naturalOrder())
+        ));
+
+        return result;
+    }
 
     public void saveNote(Long recordId, NewNoteRequest request, String userId) {
         ReadingRecord readingRecord = findReadingRecord(recordId, userId);

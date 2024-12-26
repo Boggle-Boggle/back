@@ -25,7 +25,7 @@ public class Note {
     private CrudDate crudDate = new CrudDate();
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "reding_record_seq", nullable = false)
+    @JoinColumn(name = "reading_record_seq", nullable = false)
     private ReadingRecord readingRecord;
 
     @OneToOne
