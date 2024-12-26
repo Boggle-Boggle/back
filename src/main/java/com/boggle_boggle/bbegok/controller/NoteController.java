@@ -31,11 +31,10 @@ public class NoteController {
 
     //새로운 독서노트 등록
     @PostMapping("/{recordId}/note")
-    public DataResponseDto<Void> saveNote(@PathVariable(name = "recordId") Long recordId,
+    public DataResponseDto<Long> saveNote(@PathVariable(name = "recordId") Long recordId,
                                             @RequestBody NewNoteRequest request,
                                             @AuthenticationPrincipal UserDetails userDetails) {
-        noteService.saveNote(recordId, request, userDetails.getUsername());
-        return DataResponseDto.empty();
+        return DataResponseDto.of(noteService.saveNote(recordId, request, userDetails.getUsername()));
     }
 
     //독서노트 수정

@@ -61,11 +61,11 @@ public class NoteService {
         return result;
     }
 
-    public void saveNote(Long recordId, NewNoteRequest request, String userId) {
+    public Long saveNote(Long recordId, NewNoteRequest request, String userId) {
         ReadingRecord readingRecord = findReadingRecord(recordId, userId);
         Note note = Note.createNote(readingRecord);
         updateNote(note, request, readingRecord);
-        noteRepository.save(note);
+        return noteRepository.save(note).getNoteSeq();
     }
 
     public void updateNote(Long recordId, Long noteId, NewNoteRequest request, String userId) {
