@@ -1,5 +1,6 @@
 package com.boggle_boggle.bbegok.controller;
 
+import com.boggle_boggle.bbegok.dto.ReadDateAndIdDto;
 import com.boggle_boggle.bbegok.dto.base.DataResponseDto;
 import com.boggle_boggle.bbegok.dto.request.NewReadingRecordRequest;
 import com.boggle_boggle.bbegok.dto.request.UpdateReadingRecordRequest;
@@ -59,5 +60,12 @@ public class ReadingRecordController {
                                                      @AuthenticationPrincipal UserDetails userDetails) {
         readingRecordService.deleteReadingRecord(readingRecordId, userDetails.getUsername());
         return DataResponseDto.empty();
+    }
+
+    //독서기록의 회독정보들만 조회
+    @GetMapping("/{id}/read-dates")
+    public DataResponseDto<List<ReadDateAndIdDto>> getReadDates(@PathVariable(name = "id") Long readingRecordId,
+                                                                @AuthenticationPrincipal UserDetails userDetails) {
+        return DataResponseDto.of(readingRecordService.getReadDates(readingRecordId, userDetails.getUsername()));
     }
 }

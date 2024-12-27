@@ -182,4 +182,8 @@ public class ReadingRecordService {
 
     }
 
+    public List<ReadDateAndIdDto> getReadDates(Long readingRecordId, String userId) {
+        List<ReadDate> readDateList = readDateRepository.findByReadingRecordOrderByReadDateSeq(findReadingRecord(readingRecordId, userId));
+        return readDateList.stream().map(ReadDateAndIdDto::new).toList();
+    }
 }
