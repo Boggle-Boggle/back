@@ -11,4 +11,5 @@ import java.util.Optional;
 public interface ReadDateRepository extends JpaRepository<ReadDate, Long> {
     Optional<ReadDate> findByreadDateSeqAndReadingRecord(Long id, ReadingRecord readingRecord);
     List<ReadDate> findByReadingRecordAndReadingRecord_User(ReadingRecord readingRecord, User user);
+    List<ReadDate> findByReadingRecordOrderByReadDateSeq(ReadingRecord readingRecord);
 }
