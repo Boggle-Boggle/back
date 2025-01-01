@@ -90,7 +90,6 @@ public class ReadingRecord {
         this.mappingList.add(mapping);
     }
     public void addReadDateList(LocalDateTime readStartDate, LocalDateTime readEndDate, ReadStatus status) {
-        if(status == ReadStatus.pending) return;
         ReadDate readDate = ReadDate.createReadDate(this, readStartDate, readEndDate, status);
         updateReadDateList(readDate);
     }

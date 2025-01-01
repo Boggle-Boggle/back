@@ -25,6 +25,7 @@ public class RecordData {
                 .rating(readingRecord.getRating())
                 .isBookVisible(readingRecord.getIsBooksVisible())
                 .readDateList(readingRecord.getReadDateList().stream()
+                        .filter(readDate -> !readDate.getStatus().equals(ReadStatus.pending))
                         .map(ReadDateAndIdDto::new).toList())
                 .libraries(readingRecord.getMappingList().stream()
                         .map(library -> new LibraryListDto(library.getLibrary().getLibrarySeq(),library.getLibrary().getLibraryName())).toList())
