@@ -1,5 +1,6 @@
 package com.boggle_boggle.bbegok.entity;
 
+import com.boggle_boggle.bbegok.enums.ReadStatus;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.ToString;
@@ -28,17 +29,36 @@ public class ReadDate {
     @OneToMany(mappedBy = "readDate", cascade = CascadeType.PERSIST)
     private List<Note> notes = new ArrayList<>();
 
+    @Enumerated(EnumType.STRING)  // ENUM을 스트링으로 저장
+    @Column(name = "status")
+    private ReadStatus status;
+
     protected ReadDate(){}
 
-    public ReadDate(ReadingRecord record, LocalDateTime startReadDate, LocalDateTime endReadDate) {
+    public ReadDate(ReadingRecord record, LocalDateTime startReadDate, LocalDateTime endReadDate, ReadStatus status) {
         this.readingRecord = record;
         this.startReadDate = startReadDate;
         this.endReadDate = endReadDate;
+        this.status = status;
     }
 
-    public static ReadDate createReadDate(ReadingRecord record, LocalDateTime startReadDate, LocalDateTime endReadDate){
-        return new ReadDate(record, startReadDate, endReadDate);
+    public static ReadDate createReadDate(ReadingRecord record, LocalDateTime startReadDate, LocalDateTime endReadDate, ReadStatus status){
+        return new ReadDate(record, startReadDate, endReadDate, status);
     }
+
+    public void update(LocalDateTime startReadDate, LocalDateTime endReadDate, ReadStatus status) {
+        this.startReadDate = startReadDate;
+        this.endReadDate = endReadDate;
+        this.status = status;
+    }
+
+    public void removeNoteAssociation() {
+        for (Note note : this.notes) {
+            note.updateReadDate(null); // 외래 키를 null로 설정
+        }
+        this.notes.clear(); // 로컬 리스트 비우기
+    }
+
 
     @Override
     public boolean equals(Object o) {
@@ -52,18 +72,6 @@ public class ReadDate {
     @Override
     public int hashCode() {
         return readDateSeq != null ? readDateSeq.hashCode() : 0;
-    }
-
-    public void update(LocalDateTime startReadDate, LocalDateTime endReadDate) {
-        this.startReadDate = startReadDate;
-        this.endReadDate = endReadDate;
-    }
-
-    public void removeNoteAssociation() {
-        for (Note note : this.notes) {
-            note.updateReadDate(null); // 외래 키를 null로 설정
-        }
-        this.notes.clear(); // 로컬 리스트 비우기
     }
 
 }

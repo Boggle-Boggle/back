@@ -122,7 +122,7 @@ public class ReadingRecordService {
 
     private ReadingRecord findReadingRecord(Long id, String userId){
         User user = getUser(userId);
-        return readingRecordRepository.findByreadingRecordSeqAndUser(id, user)
+        return readingRecordRepository.findByreadingRecordSeqAndUserOrderByReadingRecordSeq(id, user)
                 .orElseThrow(() -> new GeneralException(Code.READING_RECORD_NOT_FOUND));
     }
 
@@ -133,25 +133,24 @@ public class ReadingRecordService {
     }
 
     private void updateReadingRecord(UpdateReadingRecordRequest request, User user, ReadingRecord readingRecord) {
-        if(request.getReadStatus().isPresent()) {
-            if(request.getReadStatus().get() == null) throw new GeneralException(Code.BAD_REQUEST, "status can't null");
-            readingRecord.updateReadStatus(request.getReadStatus().get());
-        }
-        if(request.getReadDateAndIdList().isPresent()) {
-            if(request.getReadDateAndIdList().get() == null) throw new GeneralException(Code.BAD_REQUEST, "readDateIdList can't null");
-            List<ReadDateAndIdDto> readDateAndIdDtoList = request.getReadDateAndIdList().get();
+        if(request.getReadDateList().isPresent()) {
+            if(request.getReadDateList().get() == null) throw new GeneralException(Code.BAD_REQUEST, "readDateIdList can't null");
+            List<ReadDateAndIdDto> readDateAndIdDtoList = request.getReadDateList().get();
 
             //기존 ReadDate중에서 요청readDate에 없는경우 해당 readDate를 삭제해야하는데,
             //1. id가 있으면 업데이트처리 -> 2. id가 없으면 새로운 회독정보 추가 -> 3. 원래 DB와 비교했을때 1에 해당하지 않은 정보들은 삭제
             List<ReadDate> readDateList = readingRecord.getReadDateList();
-            Set<Long> set = new HashSet();
+            Set<Long> set = new HashSet<>();
             for(ReadDateAndIdDto dto : readDateAndIdDtoList) {
                 if(dto.getReadDateId() != null) {
                     set.add(dto.getReadDateId());
                     ReadDate readDate = readDateRepository.findById(dto.getReadDateId())
                             .orElseThrow(()-> new GeneralException(Code.READ_DATE_NOT_FOUND));
-                    readDate.update(dto.getStartReadDate(), dto.getEndReadDate());
-                } else readDateRepository.save(ReadDate.createReadDate(readingRecord, dto.getStartReadDate(), dto.getEndReadDate()));
+                    readDate.update(dto.getStartReadDate(), dto.getEndReadDate(), dto.getStatus());
+                } else {
+                    ReadDate readDate = readDateRepository.save(ReadDate.createReadDate(readingRecord, dto.getStartReadDate(), dto.getEndReadDate(),dto.getStatus()));
+                    set.add(readDate.getReadDateSeq());
+                }
             }
             Iterator<ReadDate> iterator = readDateList.iterator();
             while (iterator.hasNext()) {

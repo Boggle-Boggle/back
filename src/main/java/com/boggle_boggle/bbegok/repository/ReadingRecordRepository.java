@@ -19,7 +19,7 @@ import java.util.Optional;
 public interface ReadingRecordRepository extends JpaRepository<ReadingRecord, Long> {
     ReadingRecord findByUserAndBook(User user, Book book);
 
-    Optional<ReadingRecord> findByreadingRecordSeqAndUser(Long id, User user);
+    Optional<ReadingRecord> findByreadingRecordSeqAndUserOrderByReadingRecordSeq(Long id, User user);
 
     @Query(value = """
     SELECT DISTINCT r
@@ -40,7 +40,8 @@ public interface ReadingRecordRepository extends JpaRepository<ReadingRecord, Lo
     @Query("""
     SELECT r
     FROM ReadingRecord r
-    WHERE r.status = :status
+    JOIN r.readDateList rd
+    WHERE rd.status = :status
     AND r.user = :user
     """)
     Page<ReadingRecord> findBooksByUserAndStatus(
@@ -50,10 +51,11 @@ public interface ReadingRecordRepository extends JpaRepository<ReadingRecord, Lo
     );
 
     @Query("""
-    SELECT new com.boggle_boggle.bbegok.dto.RecordByStatusDto(r.status, COUNT(r))
+    SELECT DISTINCT new com.boggle_boggle.bbegok.dto.RecordByStatusDto(rd.status, COUNT(r))
     FROM ReadingRecord r
+    JOIN r.readDateList rd
     WHERE r.user = :user
-    GROUP BY r.status
+    GROUP BY rd.status
     """)
     List<RecordByStatusDto> countReadingRecordsByStatus(@Param("user") User user);
 
@@ -61,7 +63,8 @@ public interface ReadingRecordRepository extends JpaRepository<ReadingRecord, Lo
     @Query("""
     SELECT r
     FROM ReadingRecord r
-    WHERE r.status = :status
+    JOIN r.readDateList rd
+    WHERE rd.status = :status
     AND r.user = :user
     AND LOWER(r.book.title) LIKE LOWER(CONCAT('%', :keyword, '%'))
     """)
