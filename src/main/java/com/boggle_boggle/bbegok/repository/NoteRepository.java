@@ -16,5 +16,5 @@ import java.util.Optional;
 
 public interface NoteRepository extends JpaRepository<Note, Long> {
     Optional<Note> findByNoteSeqAndReadingRecord(Long noteId, ReadingRecord readingRecord);
-    List<Note> findByReadingRecordAndReadingRecord_UserOrderByReadDate_ReadDateSeq(ReadingRecord readingRecord, User user);
+    List<Note> findByReadingRecordAndReadingRecord_User(ReadingRecord readingRecord, User user);
 }

@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -36,29 +37,48 @@ public class NoteService {
         ReadingRecord readingRecord = findReadingRecord(recordId, userId);
 
         //현재 독서기록에 대한 모든 Note를 찾는다. 이때 readDateSeq별로 그룹바이 해야하고, readDateSeq순서대로 정렬(Null이면 제일 앞으로)
-        List<Note> noteList = noteRepository.findByReadingRecordAndReadingRecord_UserOrderByReadDate_ReadDateSeq(readingRecord, user);
+        List<Note> notes = noteRepository.findByReadingRecordAndReadingRecord_User(readingRecord, user);
+        List<ReadDate> readDates = readDateRepository.findByReadingRecordAndReadingRecord_User(readingRecord, user);
+        // 그룹화된 결과 생성
+        Map<ReadDateAndIdDto, List<NoteDto>> groupedNotes = groupNotesByReadDate(notes, readDates);
 
-        Map<ReadDateAndIdDto, List<NoteDto>> map = new HashMap<>();
-        ReadDateAndIdDto nullReadDateAndIDDto = new ReadDateAndIdDto(); // 적절한 기본값 설정
-        for (Note note : noteList) {
-            ReadDate readDate = note.getReadDate();
-            ReadDateAndIdDto key = readDate != null ? new ReadDateAndIdDto(readDate) : nullReadDateAndIDDto;
-            map.computeIfAbsent(key, k -> new ArrayList<>())
-                    .add(NoteDto.fromEntity(note));
+        // 결과를 응답 객체로 변환
+        List<NotesByReadDateResponse> response = groupedNotes.entrySet().stream()
+                .map(entry -> new NotesByReadDateResponse(entry.getKey(), entry.getValue()))
+                .sorted(Comparator.comparing(
+                        r -> r.getReadDate().getReadDateId(),
+                        Comparator.nullsFirst(Comparator.naturalOrder())
+                ))
+                .collect(Collectors.toList());
+
+        // 최종 응답 반환
+        return response;
+    }
+
+    public Map<ReadDateAndIdDto, List<NoteDto>> groupNotesByReadDate(List<Note> notes, List<ReadDate> readDates) {
+        // 1. ReadDate를 ReadDateAndIdDto로 변환
+        Map<ReadDateAndIdDto, List<NoteDto>> groupedNotes = readDates.stream()
+                .map(ReadDateAndIdDto::new)
+                .collect(Collectors.toMap(
+                        readDateDto -> readDateDto,
+                        readDateDto -> new ArrayList<>()
+                ));
+
+        // 3. null 키가 없으면 추가
+        ReadDateAndIdDto nullKey = new ReadDateAndIdDto(null, null, null);
+        groupedNotes.putIfAbsent(nullKey , new ArrayList<>());
+
+        // 4. Note를 NoteDto로 변환하고 ReadDateAndIdDto 기준으로 그룹화
+        for (Note note : notes) {
+            ReadDateAndIdDto key = note.getReadDate() != null
+                    ? new ReadDateAndIdDto(note.getReadDate())
+                    : nullKey;
+
+            // NoteDto 변환 후 그룹에 추가
+            groupedNotes.get(key).add(NoteDto.fromEntity(note));
         }
 
-        List<NotesByReadDateResponse> result = new ArrayList<>();
-        for (Map.Entry<ReadDateAndIdDto, List<NoteDto>> entry : map.entrySet()) {
-            result.add(new NotesByReadDateResponse(entry.getKey(), entry.getValue()));
-        }
-
-        // id 기준 오름차순 정렬
-        result.sort(Comparator.comparing(
-                response -> response.getReadDate().getReadDateId(),
-                Comparator.nullsFirst(Comparator.naturalOrder())
-        ));
-
-        return result;
+        return groupedNotes;
     }
 
     public Long saveNote(Long recordId, NewNoteRequest request, String userId) {
