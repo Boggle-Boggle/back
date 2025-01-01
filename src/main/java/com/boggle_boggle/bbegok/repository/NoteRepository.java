@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -17,4 +18,5 @@ import java.util.Optional;
 public interface NoteRepository extends JpaRepository<Note, Long> {
     Optional<Note> findByNoteSeqAndReadingRecord(Long noteId, ReadingRecord readingRecord);
     List<Note> findByReadingRecordAndReadingRecord_User(ReadingRecord readingRecord, User user);
+    List<Note> findByReadingRecord_User(User user);
 }
