@@ -3,6 +3,7 @@ package com.boggle_boggle.bbegok.service;
 import com.boggle_boggle.bbegok.dto.PagesDto;
 import com.boggle_boggle.bbegok.dto.ReadDateAndIdDto;
 import com.boggle_boggle.bbegok.dto.ReadDateDto;
+import com.boggle_boggle.bbegok.dto.ReadDateIndexDto;
 import com.boggle_boggle.bbegok.dto.request.NewNoteRequest;
 import com.boggle_boggle.bbegok.dto.request.NewReadingRecordRequest;
 import com.boggle_boggle.bbegok.dto.request.UpdateReadingRecordRequest;
@@ -24,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Service
 @RequiredArgsConstructor
@@ -181,8 +183,10 @@ public class ReadingRecordService {
 
     }
 
-    public List<ReadDateAndIdDto> getReadDates(Long readingRecordId, String userId) {
+    public List<ReadDateIndexDto> getReadDates(Long readingRecordId, String userId) {
         List<ReadDate> readDateList = readDateRepository.findByReadingRecordOrderByReadDateSeq(findReadingRecord(readingRecordId, userId));
-        return readDateList.stream().map(ReadDateAndIdDto::new).toList();
+        return IntStream.range(0, readDateList.size())
+                .mapToObj(i -> new ReadDateIndexDto(readDateList.get(i), i))
+                .toList();
     }
 }
