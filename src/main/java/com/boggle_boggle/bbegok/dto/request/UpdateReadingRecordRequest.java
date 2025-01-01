@@ -16,8 +16,7 @@ import java.util.List;
 @NoArgsConstructor
 @ToString
 public class UpdateReadingRecordRequest {
-    private JsonNullable<ReadStatus> readStatus = JsonNullable.undefined();
-    private JsonNullable<List<ReadDateAndIdDto>> readDateAndIdList = JsonNullable.undefined();
+    private JsonNullable<List<ReadDateAndIdDto>> readDateList = JsonNullable.undefined();
     private JsonNullable<List<Long>> libraryIdList = JsonNullable.undefined();
     private JsonNullable<Double> rating = JsonNullable.undefined();
     private JsonNullable<Boolean> isVisible = JsonNullable.undefined();

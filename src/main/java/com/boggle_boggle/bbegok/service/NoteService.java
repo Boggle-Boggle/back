@@ -65,7 +65,7 @@ public class NoteService {
                 ));
 
         // 3. null 키가 없으면 추가
-        ReadDateAndIdDto nullKey = new ReadDateAndIdDto(null, null, null);
+        ReadDateAndIdDto nullKey = new ReadDateAndIdDto(null, null, null, null);
         groupedNotes.putIfAbsent(nullKey , new ArrayList<>());
 
         // 4. Note를 NoteDto로 변환하고 ReadDateAndIdDto 기준으로 그룹화
@@ -111,7 +111,7 @@ public class NoteService {
 
     private ReadingRecord findReadingRecord(Long id, String userId){
         User user = getUser(userId);
-        return readingRecordRepository.findByreadingRecordSeqAndUser(id, user)
+        return readingRecordRepository.findByreadingRecordSeqAndUserOrderByReadingRecordSeq(id, user)
                 .orElseThrow(() -> new GeneralException(Code.READING_RECORD_NOT_FOUND));
     }
 

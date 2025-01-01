@@ -1,6 +1,7 @@
 package com.boggle_boggle.bbegok.dto;
 
 import com.boggle_boggle.bbegok.entity.ReadDate;
+import com.boggle_boggle.bbegok.enums.ReadStatus;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,11 +16,13 @@ public class ReadDateAndIdDto {
     private Long readDateId;
     private LocalDateTime startReadDate;
     private LocalDateTime endReadDate;
+    private ReadStatus status;
 
     public ReadDateAndIdDto(ReadDate readDate) {
         this.readDateId = readDate.getReadDateSeq();
         this.startReadDate = readDate.getStartReadDate();
         this.endReadDate = readDate.getEndReadDate();
+        this.status = readDate.getStatus();
     }
 
 

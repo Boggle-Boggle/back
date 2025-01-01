@@ -15,7 +15,6 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 public class RecordData {
-    private ReadStatus status;
     private Double rating;
     private List<ReadDateAndIdDto> readDateList;
     private List<LibraryListDto> libraries;
@@ -23,7 +22,6 @@ public class RecordData {
 
     public static RecordData fromEntity(ReadingRecord readingRecord){
         return RecordData.builder()
-                .status(readingRecord.getStatus())
                 .rating(readingRecord.getRating())
                 .isBookVisible(readingRecord.getIsBooksVisible())
                 .readDateList(readingRecord.getReadDateList().stream()

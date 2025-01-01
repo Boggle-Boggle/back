@@ -47,37 +47,31 @@ public class ReadingRecord {
     @Column(name = "rating")
     private Double rating;
 
-    @Enumerated(EnumType.STRING)  // ENUM을 스트링으로 저장
-    @Column(name = "status", nullable = false)
-    private ReadStatus status;
-
     protected ReadingRecord(){}
 
     private ReadingRecord(User user, Book book, LocalDateTime readStartDate, LocalDateTime readEndDate,
-                          List<Library> libraries, Double rating, Boolean visible, ReadStatus readStatus) {
+                          List<Library> libraries, Double rating, Boolean visible, ReadStatus status) {
         this.user = user;
         this.book = book;
         this.rating = rating;
         this.isBooksVisible = visible;
-        this.status = readStatus;
-        addReadDateList(readStartDate, readEndDate);
+        addReadDateList(readStartDate, readEndDate, status);
         addLibraries(libraries);
     }
 
     public static ReadingRecord createReadingRecord(User user, Book book, LocalDateTime readStartDate, LocalDateTime readEndDate,
-                                                    List<Library> libraries, Double rating, Boolean visible, ReadStatus readStatus) {
-        return new ReadingRecord(user, book, readStartDate, readEndDate, libraries, rating, visible, readStatus);
+                                                    List<Library> libraries, Double rating, Boolean visible, ReadStatus status) {
+        return new ReadingRecord(user, book, readStartDate, readEndDate, libraries, rating, visible, status);
     }
 
     //==수정
     public void update(ReadStatus readStatus,  Double rating, List<ReadDateDto> readDateList,
-                       Boolean visible, List<Library> libraries) {
-        if(readStatus != null) this.status = readStatus;
+                       Boolean visible, List<Library> libraries, ReadStatus status) {
         if(rating != null) this.rating = rating;
         if(visible != null) this.isBooksVisible = visible;
 
         if(readDateList != null) {
-            for(ReadDateDto dto : readDateList) addReadDateList(dto.getStartReadDate(), dto.getEndReadDate());
+            for(ReadDateDto dto : readDateList) addReadDateList(dto.getStartReadDate(), dto.getEndReadDate(), status);
         }
 
         addLibraries(libraries);
@@ -95,17 +89,14 @@ public class ReadingRecord {
         ReadingRecordLibraryMapping mapping = ReadingRecordLibraryMapping.createReadingRecordLibraryMapping(this, library);
         this.mappingList.add(mapping);
     }
-    public void addReadDateList(LocalDateTime readStartDate, LocalDateTime readEndDate) {
-        ReadDate readDate = ReadDate.createReadDate(this, readStartDate, readEndDate);
-        this.readDateList.add(readDate);
+    public void addReadDateList(LocalDateTime readStartDate, LocalDateTime readEndDate, ReadStatus status) {
+        if(status == ReadStatus.pending) return;
+        ReadDate readDate = ReadDate.createReadDate(this, readStartDate, readEndDate, status);
+        updateReadDateList(readDate);
     }
 
     public void updateReadDateList(ReadDate readDate) {
         this.readDateList.add(readDate);
-    }
-
-    public void updateReadStatus(ReadStatus status) {
-        this.status = status;
     }
 
     public void updateRating(Double rating) {
@@ -117,8 +108,6 @@ public class ReadingRecord {
     }
 
     public void removeReadDate(ReadDate readDate) {
-        System.out.println("삭제 할게 : "+readDate.getReadDateSeq());
         boolean b = this.readDateList.remove(readDate);
-        System.out.println("삭제됨? : "+b);
     }
 }
