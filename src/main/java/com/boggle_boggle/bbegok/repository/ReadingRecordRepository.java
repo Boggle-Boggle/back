@@ -13,6 +13,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,6 +21,22 @@ public interface ReadingRecordRepository extends JpaRepository<ReadingRecord, Lo
     ReadingRecord findByUserAndBook(User user, Book book);
 
     Optional<ReadingRecord> findByreadingRecordSeqAndUserOrderByReadingRecordSeq(Long id, User user);
+
+
+    @Query(value = """
+    SELECT COUNT(DISTINCT r)
+    FROM ReadingRecord r
+    JOIN r.readDateList rd
+    WHERE r.user = :user
+      AND rd.status = :status
+      AND EXTRACT(YEAR FROM rd.endReadDate) = EXTRACT(YEAR FROM CURRENT_DATE)
+      AND EXTRACT(MONTH FROM rd.endReadDate) = EXTRACT(MONTH FROM CURRENT_DATE)
+    """)
+    int findMonthlyReadingCnt(
+            @Param("user") User user,
+            @Param("status") ReadStatus status
+    );
+
 
     @Query(value = """
     SELECT DISTINCT r
@@ -29,7 +46,7 @@ public interface ReadingRecordRepository extends JpaRepository<ReadingRecord, Lo
     AND r.isBooksVisible = true
     AND (:year IS NULL OR EXTRACT(YEAR FROM rd.endReadDate) = :year)
     AND (:month IS NULL OR EXTRACT(MONTH FROM rd.endReadDate) = :month)
-""")
+    """)
     List<ReadingRecord> findBooksByUserAndReadDate(
             @Param("user") User user,
             @Param("year") Integer year,
@@ -94,4 +111,5 @@ public interface ReadingRecordRepository extends JpaRepository<ReadingRecord, Lo
             Pageable pageable
     );
 
+    List<ReadingRecord> findByUser(User user);
 }
