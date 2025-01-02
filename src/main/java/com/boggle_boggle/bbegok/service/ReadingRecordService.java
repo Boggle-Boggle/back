@@ -184,7 +184,7 @@ public class ReadingRecordService {
     }
 
     public List<ReadDateIndexDto> getReadDates(Long readingRecordId, String userId) {
-        List<ReadDate> readDateList = readDateRepository.findByReadingRecordOrderByReadDateSeq(findReadingRecord(readingRecordId, userId));
+        List<ReadDate> readDateList = readDateRepository.findByReadingRecordAndStatusNotOrderByReadDateSeq(findReadingRecord(readingRecordId, userId), ReadStatus.pending);
         return IntStream.range(0, readDateList.size())
                 .mapToObj(i -> new ReadDateIndexDto(readDateList.get(i), i))
                 .toList();
