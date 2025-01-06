@@ -17,6 +17,7 @@ import java.util.List;
 public class NewReadingRecordRequest {
     @NotNull
     private String isbn;
+    @NotNull
     private ReadStatus readStatus;
     private Double rating;
     private LocalDateTime startReadDate;

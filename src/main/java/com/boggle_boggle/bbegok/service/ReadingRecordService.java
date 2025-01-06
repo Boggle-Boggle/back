@@ -43,14 +43,31 @@ public class ReadingRecordService {
         return userRepository.findByUserId(userId);
     }
 
-    //다읽은 경우만 필수란이 있으므로 검사한다.
     private void validationNewReadingRecordRequest(NewReadingRecordRequest request) {
-        ReadStatus status = request.getReadStatus();
-        if(status == ReadStatus.completed) {
-            if(request.getRating() == null || request.getIsVisible() == null ||
-            request.getStartReadDate() == null || request.getEndReadDate() == null) throw new GeneralException(Code.BAD_REQUEST, "Required value is missing.");
-            if(!LocalDateTimeUtil.isStartBeforeEnd(request.getStartReadDate(), request.getEndReadDate())) throw new GeneralException(Code.INVALID_READING_DATE);
+        switch (request.getReadStatus()) {
+            case completed: //별점, 시작/종료일 필수
+                if(request.getRating() == null || request.getIsVisible() == null ||
+                        request.getStartReadDate() == null || request.getEndReadDate() == null) {
+                    throw new GeneralException(Code.BAD_REQUEST, "Required value is missing.");
+                }
+                if(!LocalDateTimeUtil.isStartBeforeEnd(request.getStartReadDate(), request.getEndReadDate())) throw new GeneralException(Code.INVALID_READING_DATE);
+                break;
+
+            case reading: //시작일 필수, 종료일/별점 공란
+                if(request.getStartReadDate() == null) throw new GeneralException(Code.BAD_REQUEST, "start-read-date is missing");
+                if(request.getEndReadDate() != null || request.getRating() != null) throw  new GeneralException(Code.BAD_REQUEST, "End-date and rating cannot be set in the Reading status.");
+                break;
+
+            case pending: //시작/종료일/별점 공란
+                if(request.getStartReadDate() != null || request.getEndReadDate() != null || request.getRating() != null) {
+                    throw  new GeneralException(Code.BAD_REQUEST, "Date and rating cannot be set in the Pending status.");
+                }
+                break;
+
+            default:
+                throw new GeneralException(Code.BAD_REQUEST, "Invalid read status.");
         }
+
     }
 
 
@@ -85,7 +102,7 @@ public class ReadingRecordService {
                 request.getEndReadDate(),
                 libraries,
                 request.getRating(),
-                request.getIsVisible(),
+                request.getIsVisible() == null ? true:request.getIsVisible(),
                 request.getReadStatus()
         );
 
