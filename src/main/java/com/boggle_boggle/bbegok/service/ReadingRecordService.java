@@ -66,6 +66,27 @@ public class ReadingRecordService {
 
     }
 
+    private void validationReadDateAndIdDto(ReadDateAndIdDto readDateAndIdDto) {
+        switch (readDateAndIdDto.getStatus()) {
+            case completed:
+                if(readDateAndIdDto.getStartReadDate() == null || readDateAndIdDto.getEndReadDate() == null) throw new GeneralException(Code.BAD_REQUEST, "Required value is missing.");
+                if(!LocalDateTimeUtil.isStartBeforeEnd(readDateAndIdDto.getStartReadDate(), readDateAndIdDto.getEndReadDate())) throw new GeneralException(Code.INVALID_READING_DATE);
+                break;
+
+            case reading:
+                if(readDateAndIdDto.getStartReadDate() == null) throw new GeneralException(Code.BAD_REQUEST, "start-read-date is missing");
+                if(readDateAndIdDto.getEndReadDate() != null) throw  new GeneralException(Code.BAD_REQUEST, "End-date and rating cannot be set in the Reading status.");
+                break;
+
+            case pending:
+                throw new GeneralException(Code.BAD_REQUEST, "Cannot update while in pending status.");
+
+            default:
+                throw new GeneralException(Code.BAD_REQUEST, "Invalid read status.");
+        }
+
+    }
+
 
     public Long saveReadingRecord(NewReadingRecordRequest request, String userId) {
         //유효성 검사
@@ -126,6 +147,13 @@ public class ReadingRecordService {
     }
 
     public void updateReadingRecord(Long id, UpdateReadingRecordRequest request, String userId) {
+        //ReadDate에 대한 유효성 검사
+        if(request.getReadDateList().isPresent()) {
+            if(request.getReadDateList().get() == null) throw new GeneralException(Code.BAD_REQUEST, "readDateIdList can't null");
+            else if(!request.getReadDateList().get().isEmpty()) {
+                for(ReadDateAndIdDto readDateAndIdDto : request.getReadDateList().get()) validationReadDateAndIdDto(readDateAndIdDto);
+            }
+        }
         ReadingRecord readingRecord = findReadingRecord(id, userId);
         updateReadingRecord(request, getUser(userId), readingRecord);
     }
