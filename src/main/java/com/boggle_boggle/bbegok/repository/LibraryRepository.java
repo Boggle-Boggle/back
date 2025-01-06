@@ -1,7 +1,9 @@
 package com.boggle_boggle.bbegok.repository;
 
 import com.boggle_boggle.bbegok.dto.LibrariesDto;
+import com.boggle_boggle.bbegok.dto.RecordLibraryListDto;
 import com.boggle_boggle.bbegok.entity.Library;
+import com.boggle_boggle.bbegok.entity.ReadingRecord;
 import com.boggle_boggle.bbegok.entity.user.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -24,4 +26,17 @@ public interface LibraryRepository extends JpaRepository<Library, Long> {
     //유저의 특정 서재 조회
     Optional<Library> findByUserAndLibrarySeq(User user, Long libraryId);
 
+    //레코드에 대한 서재 매핑 true/false정보
+    @Query("""
+        SELECT new com.boggle_boggle.bbegok.dto.RecordLibraryListDto(
+            l.librarySeq,
+            l.libraryName,
+            CASE WHEN r.readingRecord = :readingRecord THEN true ELSE false END
+        )
+        FROM Library l
+        LEFT JOIN ReadingRecordLibraryMapping r
+         ON l.librarySeq = r.library.librarySeq AND (r.readingRecord = :readingRecord)
+        WHERE l.user = :user
+    """)
+    List<RecordLibraryListDto> findRecordLibraryListDtosInfoByUser(ReadingRecord readingRecord, User user);
 }

@@ -1,16 +1,14 @@
 package com.boggle_boggle.bbegok.service;
 
-import com.boggle_boggle.bbegok.dto.PagesDto;
 import com.boggle_boggle.bbegok.dto.ReadDateAndIdDto;
-import com.boggle_boggle.bbegok.dto.ReadDateDto;
 import com.boggle_boggle.bbegok.dto.ReadDateIndexDto;
-import com.boggle_boggle.bbegok.dto.request.NewNoteRequest;
+import com.boggle_boggle.bbegok.dto.RecordLibraryListDto;
 import com.boggle_boggle.bbegok.dto.request.NewReadingRecordRequest;
 import com.boggle_boggle.bbegok.dto.request.UpdateReadingRecordRequest;
 import com.boggle_boggle.bbegok.dto.response.BookDetailResponse;
+import com.boggle_boggle.bbegok.dto.response.EditReadingRecordResponse;
 import com.boggle_boggle.bbegok.dto.response.ReadingRecordResponse;
 import com.boggle_boggle.bbegok.entity.*;
-import com.boggle_boggle.bbegok.entity.embed.Pages;
 import com.boggle_boggle.bbegok.entity.user.User;
 import com.boggle_boggle.bbegok.enums.ReadStatus;
 import com.boggle_boggle.bbegok.exception.Code;
@@ -19,12 +17,10 @@ import com.boggle_boggle.bbegok.repository.*;
 import com.boggle_boggle.bbegok.repository.user.UserRepository;
 import com.boggle_boggle.bbegok.utils.LocalDateTimeUtil;
 import lombok.RequiredArgsConstructor;
-import org.openapitools.jackson.nullable.JsonNullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 @Service
@@ -111,10 +107,16 @@ public class ReadingRecordService {
     }
 
 
-
     public ReadingRecordResponse getReadingRecord(Long id, String userId) {
         ReadingRecord readingRecord = findReadingRecord(id, userId);
         return ReadingRecordResponse.fromEntity(readingRecord);
+    }
+
+    public EditReadingRecordResponse getEditReadingRecord(Long readingRecordId, String userId) {
+        User user = getUser(userId);
+        ReadingRecord readingRecord = findReadingRecord(readingRecordId, userId);
+        List<RecordLibraryListDto> recordLibraryListDtos = libraryRepository.findRecordLibraryListDtosInfoByUser(readingRecord, user);
+        return EditReadingRecordResponse.from(readingRecord, recordLibraryListDtos);
     }
 
     public Long getReadingRecordId(String isbn, String userId) {
@@ -206,4 +208,5 @@ public class ReadingRecordService {
                 .mapToObj(i -> new ReadDateIndexDto(readDateList.get(i), i))
                 .toList();
     }
+
 }

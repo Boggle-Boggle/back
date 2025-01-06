@@ -6,6 +6,7 @@ import com.boggle_boggle.bbegok.dto.base.DataResponseDto;
 import com.boggle_boggle.bbegok.dto.request.NewReadingRecordRequest;
 import com.boggle_boggle.bbegok.dto.request.UpdateReadingRecordRequest;
 import com.boggle_boggle.bbegok.dto.response.BookDetailResponse;
+import com.boggle_boggle.bbegok.dto.response.EditReadingRecordResponse;
 import com.boggle_boggle.bbegok.dto.response.LibraryResponse;
 import com.boggle_boggle.bbegok.dto.response.ReadingRecordResponse;
 import com.boggle_boggle.bbegok.entity.Book;
@@ -44,6 +45,13 @@ public class ReadingRecordController {
             @RequestBody NewReadingRecordRequest request,
             @AuthenticationPrincipal UserDetails userDetails) {
         return DataResponseDto.of(readingRecordService.saveReadingRecord(request, userDetails.getUsername()));
+    }
+
+    //독서기록 수정창 조회
+    @GetMapping("/{id}/edit")
+    public DataResponseDto<EditReadingRecordResponse> getUpdateReadingRecord(@PathVariable(name = "id") Long readingRecordId,
+                                                                             @AuthenticationPrincipal UserDetails userDetails) {
+        return DataResponseDto.of(readingRecordService.getEditReadingRecord(readingRecordId, userDetails.getUsername()));
     }
 
     //독서기록 수정
