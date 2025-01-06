@@ -4,6 +4,7 @@ import com.boggle_boggle.bbegok.dto.response.LibraryResponse;
 import com.boggle_boggle.bbegok.entity.Book;
 import com.boggle_boggle.bbegok.entity.ReadDate;
 import com.boggle_boggle.bbegok.entity.ReadingRecord;
+import com.boggle_boggle.bbegok.enums.ReadStatus;
 import com.nimbusds.oauth2.sdk.AuthorizationRequest;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,6 +12,8 @@ import lombok.Getter;
 import lombok.ToString;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 @Getter
@@ -56,7 +59,10 @@ public class LibraryBook {
 
     private ReadDateDto calculateRecentReadDate(List<ReadDate> readDateList) {
         if(readDateList.isEmpty()) return null;
+        else if(readDateList.get(0).getStatus() == ReadStatus.pending) return null;
         else {
+            //오름차순 정렬
+            readDateList.sort(Comparator.comparingLong(ReadDate::getReadDateSeq));
             ReadDate rd = readDateList.get(readDateList.size()-1);
             return new ReadDateDto(rd.getStartReadDate(), rd.getEndReadDate());
         }
