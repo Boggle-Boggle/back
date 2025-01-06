@@ -1,16 +1,14 @@
 package com.boggle_boggle.bbegok.service;
 
-import com.boggle_boggle.bbegok.dto.PagesDto;
 import com.boggle_boggle.bbegok.dto.ReadDateAndIdDto;
-import com.boggle_boggle.bbegok.dto.ReadDateDto;
 import com.boggle_boggle.bbegok.dto.ReadDateIndexDto;
-import com.boggle_boggle.bbegok.dto.request.NewNoteRequest;
+import com.boggle_boggle.bbegok.dto.RecordLibraryListDto;
 import com.boggle_boggle.bbegok.dto.request.NewReadingRecordRequest;
 import com.boggle_boggle.bbegok.dto.request.UpdateReadingRecordRequest;
 import com.boggle_boggle.bbegok.dto.response.BookDetailResponse;
+import com.boggle_boggle.bbegok.dto.response.EditReadingRecordResponse;
 import com.boggle_boggle.bbegok.dto.response.ReadingRecordResponse;
 import com.boggle_boggle.bbegok.entity.*;
-import com.boggle_boggle.bbegok.entity.embed.Pages;
 import com.boggle_boggle.bbegok.entity.user.User;
 import com.boggle_boggle.bbegok.enums.ReadStatus;
 import com.boggle_boggle.bbegok.exception.Code;
@@ -19,12 +17,10 @@ import com.boggle_boggle.bbegok.repository.*;
 import com.boggle_boggle.bbegok.repository.user.UserRepository;
 import com.boggle_boggle.bbegok.utils.LocalDateTimeUtil;
 import lombok.RequiredArgsConstructor;
-import org.openapitools.jackson.nullable.JsonNullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 @Service
@@ -63,6 +59,27 @@ public class ReadingRecordService {
                     throw  new GeneralException(Code.BAD_REQUEST, "Date and rating cannot be set in the Pending status.");
                 }
                 break;
+
+            default:
+                throw new GeneralException(Code.BAD_REQUEST, "Invalid read status.");
+        }
+
+    }
+
+    private void validationReadDateAndIdDto(ReadDateAndIdDto readDateAndIdDto) {
+        switch (readDateAndIdDto.getStatus()) {
+            case completed:
+                if(readDateAndIdDto.getStartReadDate() == null || readDateAndIdDto.getEndReadDate() == null) throw new GeneralException(Code.BAD_REQUEST, "Required value is missing.");
+                if(!LocalDateTimeUtil.isStartBeforeEnd(readDateAndIdDto.getStartReadDate(), readDateAndIdDto.getEndReadDate())) throw new GeneralException(Code.INVALID_READING_DATE);
+                break;
+
+            case reading:
+                if(readDateAndIdDto.getStartReadDate() == null) throw new GeneralException(Code.BAD_REQUEST, "start-read-date is missing");
+                if(readDateAndIdDto.getEndReadDate() != null) throw  new GeneralException(Code.BAD_REQUEST, "End-date and rating cannot be set in the Reading status.");
+                break;
+
+            case pending:
+                throw new GeneralException(Code.BAD_REQUEST, "Cannot update while in pending status.");
 
             default:
                 throw new GeneralException(Code.BAD_REQUEST, "Invalid read status.");
@@ -111,10 +128,16 @@ public class ReadingRecordService {
     }
 
 
-
     public ReadingRecordResponse getReadingRecord(Long id, String userId) {
         ReadingRecord readingRecord = findReadingRecord(id, userId);
         return ReadingRecordResponse.fromEntity(readingRecord);
+    }
+
+    public EditReadingRecordResponse getEditReadingRecord(Long readingRecordId, String userId) {
+        User user = getUser(userId);
+        ReadingRecord readingRecord = findReadingRecord(readingRecordId, userId);
+        List<RecordLibraryListDto> recordLibraryListDtos = libraryRepository.findRecordLibraryListDtosInfoByUser(readingRecord, user);
+        return EditReadingRecordResponse.from(readingRecord, recordLibraryListDtos);
     }
 
     public Long getReadingRecordId(String isbn, String userId) {
@@ -124,6 +147,13 @@ public class ReadingRecordService {
     }
 
     public void updateReadingRecord(Long id, UpdateReadingRecordRequest request, String userId) {
+        //ReadDate에 대한 유효성 검사
+        if(request.getReadDateList().isPresent()) {
+            if(request.getReadDateList().get() == null) throw new GeneralException(Code.BAD_REQUEST, "readDateIdList can't null");
+            else if(!request.getReadDateList().get().isEmpty()) {
+                for(ReadDateAndIdDto readDateAndIdDto : request.getReadDateList().get()) validationReadDateAndIdDto(readDateAndIdDto);
+            }
+        }
         ReadingRecord readingRecord = findReadingRecord(id, userId);
         updateReadingRecord(request, getUser(userId), readingRecord);
     }
@@ -206,4 +236,5 @@ public class ReadingRecordService {
                 .mapToObj(i -> new ReadDateIndexDto(readDateList.get(i), i))
                 .toList();
     }
+
 }
