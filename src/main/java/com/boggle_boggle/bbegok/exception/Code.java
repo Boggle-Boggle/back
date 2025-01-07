@@ -59,7 +59,7 @@ public enum Code {
     ACCESS_DENIED(16000, HttpStatus.FORBIDDEN, "Access denied to requested resource"),
     INSUFFICIENT_PERMISSIONS(16001, HttpStatus.FORBIDDEN, "Insufficient permissions for this action"),
     GUEST_DENIED_ACCESS(16003, HttpStatus.FORBIDDEN, "Guest denied acess user's resource"),
-    LIMITED_USER_DENIED_ACCESS(16003, HttpStatus.FORBIDDEN, "Limited User denied acess user's resource, Please check latest agreement"),
+    LIMITED_USER_DENIED_ACCESS(16004, HttpStatus.FORBIDDEN, "Limited User denied acess user's resource, Please check latest agreement"),
 
     // JWT 관련 예외
     JWT_INVALID_SIGNATURE(40001, HttpStatus.UNAUTHORIZED, "Invalid JWT signature"),
