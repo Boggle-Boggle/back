@@ -74,12 +74,6 @@ public class AuthToken {
 
     public Claims getTokenClaims() {
         try {
-            Claims claim = Jwts.parserBuilder()
-                    .setSigningKey(key)
-                    .build()
-                    .parseClaimsJws(token)
-                    .getBody();
-            System.out.println("##### "+claim.get(AUTHORITIES_KEY, String.class));
             return Jwts.parserBuilder()
                     .setSigningKey(key)
                     .build()
