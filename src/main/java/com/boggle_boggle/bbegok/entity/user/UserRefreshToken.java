@@ -25,8 +25,8 @@ public class UserRefreshToken {
     @JoinColumn(name = "user_seq")
     private User user;
 
-    @Column(name = "user_id", length = 64)
-    private String userId;
+//    @Column(name = "user_id", length = 64)
+//    private String userId;
 
     @Column(name = "refresh_token", length = 512)
     private String refreshToken;
@@ -44,7 +44,6 @@ public class UserRefreshToken {
             String refreshToken,
             String deviceId) {
         this.user = user;
-        this.userId = user.getUserId();
         this.refreshToken = refreshToken;
         this.deviceId = deviceId;
         this.lastLoginAt = LocalDateTime.now();
@@ -60,5 +59,9 @@ public class UserRefreshToken {
     public void updateRefreshToken(String token) {
         this.refreshToken = token;
         this.lastLoginAt = LocalDateTime.now();
+    }
+
+    public String getUserId() {
+        return this.user.getUserId();
     }
 }

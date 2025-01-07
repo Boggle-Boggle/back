@@ -110,7 +110,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         if (optionalDeviceId.isPresent()) deviceId = optionalDeviceId.get().getValue();
         else deviceId = UuidUtil.createUUID().toString();
 
-        Optional<UserRefreshToken> userRefreshToken = userRefreshTokenRepository.findByUserIdAndDeviceId(userInfo.getId(), deviceId);
+        Optional<UserRefreshToken> userRefreshToken = userRefreshTokenRepository.findByUser_UserIdAndDeviceId(userInfo.getId(), deviceId);
         if (userRefreshToken.isPresent()) userRefreshToken.get().updateRefreshToken(refreshToken.getToken());
         else {
             User userEntity = userRepository.findByUserId(userInfo.getId());

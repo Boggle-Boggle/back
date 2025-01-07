@@ -1,5 +1,6 @@
 package com.boggle_boggle.bbegok.repository.user;
 
+import com.boggle_boggle.bbegok.entity.user.User;
 import com.boggle_boggle.bbegok.entity.user.UserRefreshToken;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -11,17 +12,15 @@ import java.util.Optional;
 
 @Repository
 public interface UserRefreshTokenRepository extends JpaRepository<UserRefreshToken, Long> {
-    UserRefreshToken findByUserId(String userId);
-    UserRefreshToken findByUserIdAndRefreshToken(String userId, String refreshToken);
+    UserRefreshToken findByUser_UserId(String userId);
+    UserRefreshToken findByUser_UserIdAndRefreshToken(String userId, String refreshToken);
 
-    @Modifying
-    @Query("DELETE FROM UserRefreshToken u WHERE u.userId = :userId")
-    void deleteRefreshTokenByUserId(@Param("userId") String userId);
+    void deleteByUser(User user);
 
     Optional<UserRefreshToken> findByRefreshToken(String refreshToken);
 
-   Optional<UserRefreshToken> findByUserIdAndDeviceId(String id, String deviceId);
+    Optional<UserRefreshToken> findByUser_UserIdAndDeviceId(String id, String deviceId);
 
-    void deleteByUserIdAndDeviceId(String userId, String deviceId);
+    void deleteByUser_UserIdAndDeviceId(String userId, String deviceId);
 }
 

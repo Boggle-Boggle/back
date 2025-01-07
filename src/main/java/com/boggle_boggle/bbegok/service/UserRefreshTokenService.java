@@ -13,11 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserRefreshTokenService {
     private final UserRefreshTokenRepository userRefreshTokenRepository;
 
-    public void deleteRefreshTokenByUserId(String userId) {
-        userRefreshTokenRepository.deleteRefreshTokenByUserId(userId);
-    }
-
     public void deleteRefreshTokenByUserIdAndDeviceId(String userId, String deviceId) {
-        userRefreshTokenRepository.deleteByUserIdAndDeviceId(userId, deviceId);
+        userRefreshTokenRepository.deleteByUser_UserIdAndDeviceId(userId, deviceId);
     }
 }

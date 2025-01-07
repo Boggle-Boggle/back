@@ -21,6 +21,14 @@ public class UserController {
 
     private final UserService userService;
 
+    //회원탈퇴
+    //닉네임 수정
+    @PatchMapping("/")
+    public DataResponseDto<Null> deleteUser(@AuthenticationPrincipal UserDetails userDetails) {
+        userService.deleteUser(userDetails.getUsername());
+        return DataResponseDto.empty();
+    }
+
     //닉네임 수정
     @PatchMapping("/nickname")
     public DataResponseDto<Null> updateNickname(@AuthenticationPrincipal UserDetails userDetails,
