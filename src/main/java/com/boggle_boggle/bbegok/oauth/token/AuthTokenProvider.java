@@ -70,7 +70,7 @@ public class AuthTokenProvider {
         String role = claims.get(AUTHORITIES_KEY).toString();
 
         if ("ROLE_GUEST".equals(role)) return RoleType.GUEST;
-        else if ("ROLE_LIMITED_GUEST".equals(role)) return RoleType.LIMITED_USER;
+        else if ("ROLE_LIMITED_USER".equals(role)) return RoleType.LIMITED_USER;
         else return null;
     }
 
