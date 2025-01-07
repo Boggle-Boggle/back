@@ -28,6 +28,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.ExceptionTranslationFilter;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsUtils;
@@ -75,19 +76,14 @@ public class SecurityConfig {
 
                         //guest : 약관동의, 닉네임 수정 API에만 접근 가능
                         .requestMatchers("/user/**").hasAnyAuthority(RoleType.GUEST.getCode(),RoleType.USER.getCode())
-                        
                         //임시로 게스트에게 허용
-                        .requestMatchers("/books/**").hasAnyAuthority(RoleType.GUEST.getCode(),RoleType.USER.getCode())
-                        .requestMatchers("/libraries/**").hasAnyAuthority(RoleType.GUEST.getCode(),RoleType.USER.getCode())
-                        .requestMatchers("/recent-searches/**").hasAnyAuthority(RoleType.GUEST.getCode(),RoleType.USER.getCode())
+                        .requestMatchers("/books/**").hasAnyAuthority(RoleType.USER.getCode())
+                        .requestMatchers("/libraries/**").hasAnyAuthority(RoleType.USER.getCode())
+                        .requestMatchers("/recent-searches/**").hasAnyAuthority(RoleType.USER.getCode())
                         .requestMatchers("/reading-record/**").hasAnyAuthority(RoleType.GUEST.getCode(),RoleType.USER.getCode())
-                        .requestMatchers("/library/**").hasAnyAuthority(RoleType.GUEST.getCode(),RoleType.USER.getCode())
-                        .requestMatchers("/bookshelf/**").hasAnyAuthority(RoleType.GUEST.getCode(),RoleType.USER.getCode())
-                        .requestMatchers("/mypage/**").hasAnyAuthority(RoleType.GUEST.getCode(),RoleType.USER.getCode())
-
-                        //user : 빼곡의 모든 API에 접근가능
-                        //.requestMatchers("/books/**").hasAnyAuthority(RoleType.USER.getCode())
-                        //.anyRequest().hasAuthority(RoleType.USER.getCode()))
+                        .requestMatchers("/library/**").hasAnyAuthority(RoleType.USER.getCode())
+                        .requestMatchers("/bookshelf/**").hasAnyAuthority(RoleType.USER.getCode())
+                        .requestMatchers("/mypage/**").hasAnyAuthority(RoleType.USER.getCode())
                         .anyRequest().hasAuthority(RoleType.USER.getCode()))
 
                 //토큰 검증 필터
@@ -104,8 +100,6 @@ public class SecurityConfig {
                                 .userService(oAuth2UserService))
                         .successHandler(oAuth2AuthenticationSuccessHandler())
                         .failureHandler(oAuth2AuthenticationFailureHandler()));
-
-
 
         return http.build();
     }

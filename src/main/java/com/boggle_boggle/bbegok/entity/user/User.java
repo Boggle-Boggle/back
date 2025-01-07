@@ -116,4 +116,8 @@ public class User {
     public void updateRoleType(RoleType roleType) {
         this.roleType = roleType;
     }
+
+    public void updateAgreedVersion(String latestVersion) {
+        this.agreedVersion = latestVersion;
+    }
 }

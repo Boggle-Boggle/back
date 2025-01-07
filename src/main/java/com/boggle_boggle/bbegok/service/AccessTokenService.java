@@ -34,7 +34,7 @@ public class AccessTokenService {
             String recentUpdatedVersion = termsRepository.getLatestTermsVersion();
 
             RoleType newRoleType;
-            if(userEntity.getAgreedVersion().equals(recentUpdatedVersion)) newRoleType = RoleType.USER;
+            if(userEntity.getAgreedVersion()!=null && userEntity.getAgreedVersion().equals(recentUpdatedVersion)) newRoleType = RoleType.USER;
             else newRoleType = RoleType.LIMITED_USER;
 
             accessToken = tokenProvider.createAuthToken(
