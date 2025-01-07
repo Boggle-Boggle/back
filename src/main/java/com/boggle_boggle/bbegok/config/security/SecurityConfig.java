@@ -75,7 +75,7 @@ public class SecurityConfig {
                         .requestMatchers("/auth/**").permitAll()
 
                         //guest : 약관동의, 닉네임 수정 API에만 접근 가능
-                        .requestMatchers("/user/**").hasAnyAuthority(RoleType.GUEST.getCode(),RoleType.USER.getCode())
+                        .requestMatchers("/user/**").hasAnyAuthority(RoleType.GUEST.getCode(),RoleType.USER.getCode(),RoleType.LIMITED_USER.getCode())
                         //임시로 게스트에게 허용
                         .requestMatchers("/books/**").hasAnyAuthority(RoleType.USER.getCode())
                         .requestMatchers("/libraries/**").hasAnyAuthority(RoleType.USER.getCode())
