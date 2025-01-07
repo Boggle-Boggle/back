@@ -47,7 +47,7 @@ public class UserService {
     }
 
     public boolean isNicknameAvailable(String userId, String nickname) {
-        if(getUser(userId).getUserName().equals(nickname)) return true;
+        if(getUser(userId).getUserName() != null && getUser(userId).getUserName().equals(nickname)) return true;
         else return userRepository.findByUserName(nickname).isEmpty();
     }
 
@@ -71,8 +71,10 @@ public class UserService {
             }
         }
 
-        //현재 필수약관에 모두 동의한 상태라면 GUEST->USER로 변경
+        //현재 최신 필수약관에 모두 동의한 상태라면 GUEST->USER로 변경
+        String latestVersion = termsRepository.getLatestTermsVersion();
         user.updateRoleType(RoleType.USER);
+        user.updateAgreedVersion(latestVersion);
     }
 
     //최신 약관 조회(동의여부도 같이 전송)
