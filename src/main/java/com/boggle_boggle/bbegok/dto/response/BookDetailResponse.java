@@ -22,6 +22,7 @@ public class BookDetailResponse {
     private String genre;
     private String plot;
     private int page;
+    private String link;
 
     public static BookDetailResponse fromOriginBookData(OriginBookData origin) {
         return BookDetailResponse.builder()
@@ -34,6 +35,7 @@ public class BookDetailResponse {
                 .genre(origin.getCategoryName())
                 .plot(SpecialCharUtil.convertSpecialChars(origin.getDescription()))
                 .page(origin.getSubInfo().getItemPage())
+                .link(origin.getLink())
                 .build();
     }
 }
