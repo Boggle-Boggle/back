@@ -25,9 +25,6 @@ public class UserRefreshToken {
     @JoinColumn(name = "user_seq")
     private User user;
 
-//    @Column(name = "user_id", length = 64)
-//    private String userId;
-
     @Column(name = "refresh_token", length = 512)
     private String refreshToken;
 

@@ -10,8 +10,10 @@ import com.boggle_boggle.bbegok.oauth.info.OAuth2UserInfoFactory;
 import com.boggle_boggle.bbegok.oauth.repository.OAuth2AuthorizationRequestBasedOnCookieRepository;
 import com.boggle_boggle.bbegok.oauth.token.AuthToken;
 import com.boggle_boggle.bbegok.oauth.token.AuthTokenProvider;
+import com.boggle_boggle.bbegok.repository.redis.TermsRepository;
 import com.boggle_boggle.bbegok.repository.user.UserRefreshTokenRepository;
 import com.boggle_boggle.bbegok.repository.user.UserRepository;
+import com.boggle_boggle.bbegok.service.AccessTokenService;
 import com.boggle_boggle.bbegok.service.TermsService;
 import com.boggle_boggle.bbegok.utils.CookieUtil;
 import com.boggle_boggle.bbegok.utils.UuidUtil;
@@ -44,12 +46,12 @@ import static com.boggle_boggle.bbegok.oauth.repository.OAuth2AuthorizationReque
 @RequiredArgsConstructor
 public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
+    private final AccessTokenService accessTokenService;
     private final AuthTokenProvider tokenProvider;
     private final AppProperties appProperties;
     private final UserRefreshTokenRepository userRefreshTokenRepository;
     private final OAuth2AuthorizationRequestBasedOnCookieRepository authorizationRequestRepository;
     private final UserRepository userRepository;
-    private final TermsService termsService;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
@@ -86,14 +88,9 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 
         RoleType roleType = hasAuthority(authorities, RoleType.GUEST.getCode()) ? RoleType.GUEST : RoleType.USER;
 
-        // access 토큰 설정
+        // access 토큰 설정 : GUEST는 그냥 저장, User의 경우 약관정보 확인 후 LIMITED_USER 또는 USER를 저장
         Date now = new Date();
-        AuthToken accessToken = tokenProvider.createAuthToken(
-                userInfo.getId(),
-                roleType.getCode(),
-                termsService.getLatestAgreedTermsVersion(userInfo.getId()),
-                new Date(now.getTime() + appProperties.getAuth().getTokenExpiry())
-        );
+        AuthToken accessToken = accessTokenService.createAccessToken(userInfo.getId(), roleType, now);
 
         // refresh 토큰 설정
         long refreshTokenExpiry = appProperties.getAuth().getRefreshTokenExpiry();
@@ -129,6 +126,8 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
                 .queryParam("token", accessToken.getToken())
                 .build().toUriString();
     }
+
+
 
     protected void saveCookie(HttpServletResponse response, HttpServletRequest request, String cookieName, long tokenExpiry, String tokenValue) {
         int cookieMaxAge = (int) tokenExpiry / 60;

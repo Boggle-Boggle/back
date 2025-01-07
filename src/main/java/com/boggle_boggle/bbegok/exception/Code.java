@@ -59,6 +59,7 @@ public enum Code {
     ACCESS_DENIED(16000, HttpStatus.FORBIDDEN, "Access denied to requested resource"),
     INSUFFICIENT_PERMISSIONS(16001, HttpStatus.FORBIDDEN, "Insufficient permissions for this action"),
     GUEST_DENIED_ACCESS(16003, HttpStatus.FORBIDDEN, "Guest denied acess user's resource"),
+    LIMITED_USER_DENIED_ACCESS(16003, HttpStatus.FORBIDDEN, "Limited User denied acess user's resource, Please check latest agreement"),
 
     // JWT 관련 예외
     JWT_INVALID_SIGNATURE(40001, HttpStatus.UNAUTHORIZED, "Invalid JWT signature"),
@@ -74,15 +75,16 @@ public enum Code {
     INVALID_ACCESS_TOKEN(50005,HttpStatus.UNAUTHORIZED ,  "Invalid access token"),
     EMPTY_COOKIE(50009,HttpStatus.UNAUTHORIZED, "Empty COOKIE"),
     EMPTY_ACCESS_TOKEN(50010,HttpStatus.UNAUTHORIZED, "Access token Empty"),
-    TOKEN_TERMS_NOT_FOUND(50012, HttpStatus.NOT_FOUND, "terms agree information is null"),
-    LATEST_AGREEMENT_NOT_ACCEPTED(50013, HttpStatus.FORBIDDEN, "User has not agreed to the latest terms and conditions."),
+    //TOKEN_TERMS_NOT_FOUND(50012, HttpStatus.NOT_FOUND, "terms agree information is null"),
+    //LATEST_AGREEMENT_NOT_ACCEPTED(50013, HttpStatus.FORBIDDEN, "User has not agreed to the latest terms and conditions."),
 
     //서재 예외
     DUPLICATE_LIBRARY_NAME(600000, HttpStatus.CONFLICT, "library name already exists"),
     LIBRARY_NOT_FOUND(600001, HttpStatus.NOT_FOUND, "library not found"),
 
     TERMS_NOT_FOUND(700001, HttpStatus.NOT_FOUND, "terms not found"),
-    TERMS_NOT_AGREED(700002, HttpStatus.BAD_REQUEST, "Did not agree to the required terms");
+    TERMS_NOT_AGREED(700002, HttpStatus.BAD_REQUEST, "Did not agree to the required terms"),
+    LATEST_TERMS_NOT_AGREED(700002, HttpStatus.BAD_REQUEST, "Did not agree to the required latest terms");
 
 
     private final Integer code;

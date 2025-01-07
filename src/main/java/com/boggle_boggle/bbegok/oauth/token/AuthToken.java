@@ -37,6 +37,7 @@ public class AuthToken {
         this.token = createAuthToken(id, role, termsAgreedVersion, expiry);
     }
 
+
     private String createAuthToken(String id, Date expiry) {
         return Jwts.builder()
                 .setSubject(id)

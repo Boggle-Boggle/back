@@ -58,6 +58,9 @@ public class User {
     @NotNull
     private RoleType roleType;
 
+    @Column(name = "agreed_version", length = 10)
+    private String agreedVersion;
+
     @Column(name = "created_at")
     @NotNull
     private LocalDateTime createdAt;
@@ -92,8 +95,8 @@ public class User {
 
 
     public static User createUser(
-            @NotNull @Size(max = 64) String userId,
-            @NotNull @Size(max = 1) String emailVerifiedYn,
+            @NotNull String userId,
+            @NotNull String emailVerifiedYn,
             @NotNull ProviderType providerType,
             @NotNull RoleType roleType,
             @NotNull LocalDateTime createdAt,
@@ -108,5 +111,9 @@ public class User {
     public void softDelete() {
         this.isDeleted = true;
         this.deletedAt = LocalDateTime.now();
+    }
+
+    public void updateRoleType(RoleType roleType) {
+        this.roleType = roleType;
     }
 }

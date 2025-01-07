@@ -51,8 +51,9 @@ public class UserController {
     }
     
     //약관동의
-    @PatchMapping("/terms")
-    public DataResponseDto<Null> agreeToTerms(@RequestBody List<TermsAgreement> request, @AuthenticationPrincipal UserDetails userDetails) {
+    @PutMapping("/terms")
+    public DataResponseDto<Null> agreeToTerms(@RequestBody @Valid List<TermsAgreement> request,
+                                              @AuthenticationPrincipal UserDetails userDetails) {
         //약관 유효성 검사
         userService.agreeToTerms(request,userDetails.getUsername());
         return DataResponseDto.empty();
