@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import java.nio.file.AccessDeniedException;
+
 @RestControllerAdvice(annotations = {RestController.class})
 public class ExceptionHandler extends ResponseEntityExceptionHandler {
 
@@ -19,7 +21,6 @@ public class ExceptionHandler extends ResponseEntityExceptionHandler {
      */
     @org.springframework.web.bind.annotation.ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<Object> validation(ConstraintViolationException e, WebRequest request) {
-        System.out.println("유효성1 ");
         return handleExceptionInternal(e, Code.VALIDATION_ERROR, request);
     }
 

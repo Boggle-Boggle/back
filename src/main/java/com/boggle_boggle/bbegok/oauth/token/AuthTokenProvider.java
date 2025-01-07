@@ -2,6 +2,7 @@ package com.boggle_boggle.bbegok.oauth.token;
 
 import com.boggle_boggle.bbegok.exception.Code;
 import com.boggle_boggle.bbegok.exception.exception.GeneralException;
+import com.boggle_boggle.bbegok.oauth.entity.RoleType;
 import com.boggle_boggle.bbegok.oauth.exception.TokenValidFailedException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.security.Keys;
@@ -64,13 +65,13 @@ public class AuthTokenProvider {
         }
     }
 
-    //권한 예외 세분화
-    public void validateRole(AuthToken authToken) {
+    public RoleType getRoleType(AuthToken authToken) {
         Claims claims = authToken.getTokenClaims();
         String role = claims.get(AUTHORITIES_KEY).toString();
 
-        if ("ROLE_GUEST".equals(role)) throw new GeneralException(Code.GUEST_DENIED_ACCESS);
-        else if ("ROLE_LIMITED_GUEST".equals(role)) throw new GeneralException(Code.GUEST_DENIED_ACCESS);
+        if ("ROLE_GUEST".equals(role)) return RoleType.GUEST;
+        else if ("ROLE_LIMITED_GUEST".equals(role)) return RoleType.LIMITED_USER;
+        else return null;
     }
 
 

@@ -25,7 +25,10 @@ public class RestAuthenticationEntryPoint implements AuthenticationEntryPoint {
     @Override
     public void commence(HttpServletRequest request,
                             HttpServletResponse response,
-                            AuthenticationException authException){
-        throw new GeneralException(Code.UNAUTHORIZED);
+                            AuthenticationException authException) throws IOException {
+        ErrorResponseDto errorResponse = ErrorResponseDto.of(Code.INVALID_ACCESS_TOKEN);
+        response.setStatus(Code.INVALID_ACCESS_TOKEN.getHttpStatus().value());
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        response.getWriter().write(objectMapper.writeValueAsString(errorResponse));
     }
 }
