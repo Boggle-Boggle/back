@@ -14,9 +14,9 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        //auth를 제외한 모든 요청에 대해 약관동의여부를 검사함
+        /* auth를 제외한 모든 요청에 대해 약관동의여부를 검사함
         registry.addInterceptor(agreementVersionInterceptor)
                 .addPathPatterns("/**")
-                .excludePathPatterns("/auth/**", "/user/**");
+                .excludePathPatterns("/auth/**", "/user/**");*/
     }
 }

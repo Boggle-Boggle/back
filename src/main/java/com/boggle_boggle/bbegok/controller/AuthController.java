@@ -12,6 +12,7 @@ import com.boggle_boggle.bbegok.oauth.repository.OAuth2AuthorizationRequestBased
 import com.boggle_boggle.bbegok.oauth.token.AuthToken;
 import com.boggle_boggle.bbegok.oauth.token.AuthTokenProvider;
 import com.boggle_boggle.bbegok.repository.user.UserRefreshTokenRepository;
+import com.boggle_boggle.bbegok.service.AccessTokenService;
 import com.boggle_boggle.bbegok.service.TermsService;
 import com.boggle_boggle.bbegok.service.UserRefreshTokenService;
 import com.boggle_boggle.bbegok.utils.CookieUtil;
@@ -41,7 +42,7 @@ public class AuthController {
     private final AuthTokenProvider tokenProvider;
     private final UserRefreshTokenRepository userRefreshTokenRepository;
     private final UserRefreshTokenService clearRefreshToken;
-    private final TermsService termsService;
+    private final AccessTokenService accessTokenService;
 
     private final static long THREE_DAYS_MSEC = 259200000;
 
@@ -65,12 +66,9 @@ public class AuthController {
 
         //==유효한 Refresh token이며 DB에도 값이 있다면 access 재발급 로직 실행
         Date now = new Date();
-        AuthToken newAccessToken = tokenProvider.createAuthToken(
-                userRefreshToken.getUserId(),
-                userRefreshToken.getUser().getRoleType().getCode(),
-                termsService.getLatestAgreedTermsVersion(userRefreshToken.getUserId()),
-                new Date(now.getTime() + appProperties.getAuth().getTokenExpiry())
-        );
+        AuthToken newAccessToken = accessTokenService.createAccessToken(userRefreshToken.getUserId(),
+                                                                            userRefreshToken.getUser().getRoleType(),
+                                                                            now);
 
         long validTime = authRefreshToken.getTokenClaims().getExpiration().getTime() - now.getTime();
 

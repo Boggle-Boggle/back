@@ -8,6 +8,7 @@ import com.boggle_boggle.bbegok.entity.Terms;
 import com.boggle_boggle.bbegok.entity.user.User;
 import com.boggle_boggle.bbegok.exception.Code;
 import com.boggle_boggle.bbegok.exception.exception.GeneralException;
+import com.boggle_boggle.bbegok.oauth.entity.RoleType;
 import com.boggle_boggle.bbegok.repository.AgreeToTermsRepository;
 import com.boggle_boggle.bbegok.repository.TermsJpaRepository;
 import com.boggle_boggle.bbegok.repository.redis.TermsRepository;
@@ -17,9 +18,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -71,6 +70,9 @@ public class UserService {
                 agreeToTermsRepository.save(AgreeToTerms.createAgreeToTerms(user, terms));
             }
         }
+
+        //현재 필수약관에 모두 동의한 상태라면 GUEST->USER로 변경
+        user.updateRoleType(RoleType.USER);
     }
 
     //최신 약관 조회(동의여부도 같이 전송)
@@ -105,8 +107,24 @@ public class UserService {
         return TermsResponse.from(latestVersion, termList);
     }
 
-    //필수약관에 동의하지 않으면 에러 전송
+    //필수약관에 동의하지 않으면 에러 전송/ 최신 필수약관에 모두 동의해야만 함.
     public void termsValid(List<TermsAgreement> termsAgreementList) {
+        String latestVersion = termsRepository.getLatestTermsVersion();
+        List<Terms> latestTerms = termsJpaRepository.findByVersion(latestVersion);
+        Collections.sort(latestTerms, (o1, o2) -> {
+            return o1.getTermsSeq().compareTo(o2.getTermsSeq());
+        });
+        Collections.sort(termsAgreementList, (o1, o2) -> {
+            return o1.getId().compareTo(o2.getId());
+        });
+
+        if(latestTerms.size() == termsAgreementList.size()) {
+            for(int i=0; i<latestTerms.size(); i++){
+                if(latestTerms.get(i).getTermsSeq() != termsAgreementList.get(i).getId()) throw new GeneralException(Code.LATEST_TERMS_NOT_AGREED);
+            }
+        } else throw new GeneralException(Code.LATEST_TERMS_NOT_AGREED);
+
+
         for(TermsAgreement ta : termsAgreementList) {
             Terms terms = termsJpaRepository.findById(ta.getId())
                     .orElseThrow(() -> new GeneralException(Code.TERMS_NOT_FOUND));

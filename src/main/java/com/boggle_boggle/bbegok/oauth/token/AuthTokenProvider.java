@@ -1,5 +1,7 @@
 package com.boggle_boggle.bbegok.oauth.token;
 
+import com.boggle_boggle.bbegok.exception.Code;
+import com.boggle_boggle.bbegok.exception.exception.GeneralException;
 import com.boggle_boggle.bbegok.oauth.exception.TokenValidFailedException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.security.Keys;
@@ -30,9 +32,9 @@ public class AuthTokenProvider {
         return new AuthToken(id, expiry, key);
     }
 
-//    public AuthToken createAuthToken(String id, String role, Date expiry) {
-//        return new AuthToken(id, role, expiry, key);
-//    }
+    public AuthToken createAuthToken(String id, String role, Date expiry) {
+        return new AuthToken(id, role, expiry, key);
+    }
 
     public AuthToken createAuthToken(String id, String role, String termsAgreedVersion, Date expiry) {
         return new AuthToken(id, role, termsAgreedVersion, expiry, key);
@@ -61,4 +63,15 @@ public class AuthTokenProvider {
             throw new TokenValidFailedException();
         }
     }
+
+    //권한 예외 세분화
+    public void validateRole(AuthToken authToken) {
+        Claims claims = authToken.getTokenClaims();
+        String role = claims.get(AUTHORITIES_KEY).toString();
+
+        if ("ROLE_GUEST".equals(role)) throw new GeneralException(Code.GUEST_DENIED_ACCESS);
+        else if ("ROLE_LIMITED_GUEST".equals(role)) throw new GeneralException(Code.GUEST_DENIED_ACCESS);
+    }
+
+
 }

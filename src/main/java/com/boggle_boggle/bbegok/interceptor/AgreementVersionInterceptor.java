@@ -20,6 +20,7 @@ import org.springframework.web.servlet.HandlerInterceptor;
 @Slf4j
 public class AgreementVersionInterceptor implements HandlerInterceptor {
 
+    /*
     private final TermsRepository termsRepository; // Redis에서 최신 약관 버전 확인을 위한 서비스
     private final AuthTokenProvider tokenProvider;
 
@@ -31,8 +32,6 @@ public class AgreementVersionInterceptor implements HandlerInterceptor {
         //약관검증
         String recentAgreedVersion = token.getTokenClaimsTermsVersion();
         String recentUpdatedVersion = termsRepository.getLatestTermsVersion();
-        log.debug("#recent agreed version : {}", recentAgreedVersion);
-        log.debug("#recent Updated version : {}",recentUpdatedVersion);
 
         //약관 동의 여부 자체가 토큰에 없다면
         if (recentAgreedVersion == null || recentAgreedVersion.equals("null")) {
@@ -45,7 +44,7 @@ public class AgreementVersionInterceptor implements HandlerInterceptor {
         }
 
         return true; // 계속해서 컨트롤러로 요청을 넘김
-    }
+    }*/
 
 }
 
