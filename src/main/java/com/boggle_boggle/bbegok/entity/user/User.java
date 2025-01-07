@@ -58,17 +58,19 @@ public class User {
     @NotNull
     private RoleType roleType;
 
-    @Column(name = "is_agree_to_terms")
-    @NotNull
-    private Boolean isAgreeToTerms = false;
-
     @Column(name = "created_at")
     @NotNull
     private LocalDateTime createdAt;
 
     @Column(name = "modified_at")
-    @NotNull
     private LocalDateTime modifiedAt;
+
+    @Column(name = "is_deleted")
+    @NotNull
+    private Boolean isDeleted = false;
+
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
 
 
     protected User(){}
@@ -103,8 +105,8 @@ public class User {
         this.userName = nickName;
     }
 
-    public void agreeToTerms(){
-        this.isAgreeToTerms = true;
-        this.roleType = RoleType.USER;
+    public void softDelete() {
+        this.isDeleted = true;
+        this.deletedAt = LocalDateTime.now();
     }
 }

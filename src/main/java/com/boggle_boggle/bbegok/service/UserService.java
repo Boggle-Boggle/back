@@ -11,6 +11,7 @@ import com.boggle_boggle.bbegok.exception.exception.GeneralException;
 import com.boggle_boggle.bbegok.repository.AgreeToTermsRepository;
 import com.boggle_boggle.bbegok.repository.TermsJpaRepository;
 import com.boggle_boggle.bbegok.repository.redis.TermsRepository;
+import com.boggle_boggle.bbegok.repository.user.UserRefreshTokenRepository;
 import com.boggle_boggle.bbegok.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -28,9 +29,17 @@ public class UserService {
     private final TermsRepository termsRepository;
     private final TermsJpaRepository termsJpaRepository;
     private final AgreeToTermsRepository agreeToTermsRepository;
+    private final UserRefreshTokenRepository userRefreshTokenRepository;
 
     public User getUser(String userId) {
         return userRepository.findByUserId(userId);
+    }
+
+    //Soft Delete를 위해 User컬럼 업데이트 및 토큰DB 삭제처리
+    public void deleteUser(String userId) {
+        User user = getUser(userId);
+        user.softDelete();
+        userRefreshTokenRepository.deleteByUser(user);
     }
 
     public void updateNicName(String userId, String name) {
@@ -106,4 +115,5 @@ public class UserService {
             }
         }
     }
+
 }
