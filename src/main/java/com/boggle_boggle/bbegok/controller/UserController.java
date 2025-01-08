@@ -22,7 +22,6 @@ public class UserController {
     private final UserService userService;
 
     //회원탈퇴
-    //닉네임 수정
     @PatchMapping("/")
     public DataResponseDto<Null> deleteUser(@AuthenticationPrincipal UserDetails userDetails) {
         userService.deleteUser(userDetails.getUsername());
@@ -54,7 +53,6 @@ public class UserController {
     @PutMapping("/terms")
     public DataResponseDto<Null> agreeToTerms(@RequestBody @Valid List<TermsAgreement> request,
                                               @AuthenticationPrincipal UserDetails userDetails) {
-        //약관 유효성 검사
         userService.agreeToTerms(request,userDetails.getUsername());
         return DataResponseDto.empty();
     }

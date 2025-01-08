@@ -53,7 +53,8 @@ public class UserService {
 
     //약관동의 및 권한 업데이트
     public void agreeToTerms(List<TermsAgreement> termsAgreementList, String userId) {
-        termsValid(termsAgreementList); //우효성 검사부터
+        termsValid(termsAgreementList);
+        //유효성검사 완료 = 요청이 현재약관에 대한 필수값을 만족하고있음.
 
         User user = getUser(userId);
         for(TermsAgreement ta : termsAgreementList) {
@@ -63,18 +64,19 @@ public class UserService {
             //이미 동의한 기록이 있는데 요청값이 false이면 해당 기록을 삭제
             //이미 동의한 기록이 없는데 요청값이 true이면 해당 기록을 추가
             Optional<AgreeToTerms> optionalAgreeToTerms = agreeToTermsRepository.findByUserAndTerms(user, terms);
-            optionalAgreeToTerms.ifPresent(agreeToTerms -> {
-                if(!ta.getIsAgree()) agreeToTermsRepository.delete(agreeToTerms);
-            });
-            if (optionalAgreeToTerms.isEmpty() && ta.getIsAgree()) {
-                agreeToTermsRepository.save(AgreeToTerms.createAgreeToTerms(user, terms));
-            }
+            optionalAgreeToTerms.ifPresentOrElse(
+                    agreeToTerms -> { // 이전에 동의한 경우, false면 동의 기록 삭제
+                        if (!ta.getIsAgree()) agreeToTermsRepository.delete(agreeToTerms);
+                    },
+                    () -> { // 이전에 동의하지 않은 경우, true면 동의기록 저장
+                        if (ta.getIsAgree()) agreeToTermsRepository.save(AgreeToTerms.createAgreeToTerms(user, terms));
+                    }
+            );
         }
 
-        //현재 최신 필수약관에 모두 동의한 상태라면 GUEST->USER로 변경
+        //GUEST->USER로 변경
         String latestVersion = termsRepository.getLatestTermsVersion();
-        user.updateRoleType(RoleType.USER);
-        user.updateAgreedVersion(latestVersion);
+        user.updateGuestToUser(latestVersion);
     }
 
     //최신 약관 조회(동의여부도 같이 전송)
@@ -109,31 +111,25 @@ public class UserService {
         return TermsResponse.from(latestVersion, termList);
     }
 
-    //필수약관에 동의하지 않으면 에러 전송/ 최신 필수약관에 모두 동의해야만 함.
+    //현시점 필수약관에 동의하지 않으면 에러 전송/ 최신 필수약관에 모두 동의해야만 함.
     public void termsValid(List<TermsAgreement> termsAgreementList) {
+        //현재 시점의 약관 로드
         String latestVersion = termsRepository.getLatestTermsVersion();
         List<Terms> latestTerms = termsJpaRepository.findByVersion(latestVersion);
-        Collections.sort(latestTerms, (o1, o2) -> {
-            return o1.getTermsSeq().compareTo(o2.getTermsSeq());
-        });
-        Collections.sort(termsAgreementList, (o1, o2) -> {
-            return o1.getId().compareTo(o2.getId());
-        });
+        latestTerms.sort(Comparator.comparing(Terms::getTermsSeq));
+        termsAgreementList.sort(Comparator.comparing(TermsAgreement::getId));
 
+        //요청객체 내용이 현재 약관을 전부 포함하는지 확인
         if(latestTerms.size() == termsAgreementList.size()) {
             for(int i=0; i<latestTerms.size(); i++){
-                if(latestTerms.get(i).getTermsSeq() != termsAgreementList.get(i).getId()) throw new GeneralException(Code.LATEST_TERMS_NOT_AGREED);
+                if(!Objects.equals(latestTerms.get(i).getTermsSeq(), termsAgreementList.get(i).getId())) {
+                    throw new GeneralException(Code.LATEST_TERMS_NOT_INCLUDED);
+                }else if(latestTerms.get(i).getIsMandatory() && !termsAgreementList.get(i).getIsAgree()) {
+                    //요청객체가 현재 약관에 포함되지만, 필수약관에 동의하지 않았을경우
+                    throw new GeneralException(Code.REQUIRED_TERMS_NOT_AGREED);
+                }
             }
-        } else throw new GeneralException(Code.LATEST_TERMS_NOT_AGREED);
-
-
-        for(TermsAgreement ta : termsAgreementList) {
-            Terms terms = termsJpaRepository.findById(ta.getId())
-                    .orElseThrow(() -> new GeneralException(Code.TERMS_NOT_FOUND));
-            if(terms.getIsMandatory() && !ta.getIsAgree()) {
-                throw new GeneralException(Code.TERMS_NOT_AGREED);
-            }
-        }
+        } else throw new GeneralException(Code.LATEST_TERMS_NOT_INCLUDED);
     }
 
 }

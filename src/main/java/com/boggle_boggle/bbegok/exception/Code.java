@@ -83,8 +83,8 @@ public enum Code {
     LIBRARY_NOT_FOUND(600001, HttpStatus.NOT_FOUND, "library not found"),
 
     TERMS_NOT_FOUND(700001, HttpStatus.NOT_FOUND, "terms not found"),
-    TERMS_NOT_AGREED(700002, HttpStatus.BAD_REQUEST, "Did not agree to the required terms"),
-    LATEST_TERMS_NOT_AGREED(700002, HttpStatus.BAD_REQUEST, "Did not agree to the required latest terms");
+    REQUIRED_TERMS_NOT_AGREED(700002, HttpStatus.BAD_REQUEST, "Did not agree to the required terms"),
+    LATEST_TERMS_NOT_INCLUDED(700003, HttpStatus.BAD_REQUEST, "Did not Include the required latest terms");
 
 
     private final Integer code;

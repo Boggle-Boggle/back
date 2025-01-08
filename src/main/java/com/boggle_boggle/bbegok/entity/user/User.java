@@ -113,11 +113,8 @@ public class User {
         this.deletedAt = LocalDateTime.now();
     }
 
-    public void updateRoleType(RoleType roleType) {
-        this.roleType = roleType;
-    }
-
-    public void updateAgreedVersion(String latestVersion) {
+    public void updateGuestToUser(String latestVersion) {
+        this.roleType = RoleType.USER;
         this.agreedVersion = latestVersion;
     }
 }
