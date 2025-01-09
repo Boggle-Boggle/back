@@ -105,10 +105,13 @@ public class NoteService {
 
 
     //== 사용할 기타 메소드
-
     public User getUser(String userId) {
-        User user = userRepository.findByUserId(userId);
-        if(user.getIsDeleted()) throw new GeneralException(Code.USER_ALREADY_WITHDRAWN);
+        User user = userRepository.findByUserIdAndIsDeleted(userId, false);
+        if(user == null) {
+            //탈퇴한 적 있는 회원
+            if(userRepository.countByUserIdAndIsDeleted(userId, true) > 0) throw new GeneralException(Code.USER_ALREADY_WITHDRAWN);
+            else throw new GeneralException(Code.USER_NOT_FOUND);
+        }
         return user;
     }
 
