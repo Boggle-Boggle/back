@@ -30,7 +30,7 @@ public class AccessTokenService {
                     new Date(now.getTime() + appProperties.getAuth().getTokenExpiry())
             );
         } else { //roleType == RoleType.USER -> 해당 user가 최신약관의 필수항목에 모두 동의하지 않았다면 LIMITED_USER를 반환함
-            User userEntity = userRepository.findByUserId(userId);
+            User userEntity = userRepository.findByUserIdAndIsDeleted(userId, false);
             String recentUpdatedVersion = termsRepository.getLatestTermsVersion();
 
             RoleType newRoleType;

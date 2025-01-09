@@ -5,6 +5,8 @@ import com.boggle_boggle.bbegok.dto.response.MyPageResponse;
 import com.boggle_boggle.bbegok.entity.ReadingRecord;
 import com.boggle_boggle.bbegok.entity.user.User;
 import com.boggle_boggle.bbegok.enums.ReadStatus;
+import com.boggle_boggle.bbegok.exception.Code;
+import com.boggle_boggle.bbegok.exception.exception.GeneralException;
 import com.boggle_boggle.bbegok.repository.NoteRepository;
 import com.boggle_boggle.bbegok.repository.ReadingRecordRepository;
 import com.boggle_boggle.bbegok.repository.user.UserRepository;
@@ -22,7 +24,9 @@ public class MyPageService {
     private final NoteRepository noteRepository;
 
     public User getUser(String userId) {
-        return userRepository.findByUserId(userId);
+        User user = userRepository.findByUserId(userId);
+        if(user.getIsDeleted()) throw new GeneralException(Code.USER_ALREADY_WITHDRAWN);
+        return user;
     }
 
     public MyPageResponse getMyPage(String userId) {

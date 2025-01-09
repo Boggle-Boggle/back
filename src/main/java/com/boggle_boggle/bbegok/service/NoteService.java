@@ -107,7 +107,9 @@ public class NoteService {
     //== 사용할 기타 메소드
 
     public User getUser(String userId) {
-        return userRepository.findByUserId(userId);
+        User user = userRepository.findByUserId(userId);
+        if(user.getIsDeleted()) throw new GeneralException(Code.USER_ALREADY_WITHDRAWN);
+        return user;
     }
 
     private ReadingRecord findReadingRecord(Long id, String userId){

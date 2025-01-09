@@ -42,6 +42,7 @@ public enum Code {
 
     // 사용자 관련 예외
     USER_NOT_FOUND(13000, HttpStatus.NOT_FOUND, "User not found"),
+    USER_ALREADY_WITHDRAWN(13001, HttpStatus.FORBIDDEN, "The user has already withdrawn from the service"),
     DUPLICATE_USERNAME(13001, HttpStatus.CONFLICT, "Username already exists"),
     INVALID_PASSWORD(13002, HttpStatus.BAD_REQUEST, "Invalid password format"),
 

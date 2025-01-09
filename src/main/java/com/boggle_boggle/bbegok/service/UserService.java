@@ -31,7 +31,9 @@ public class UserService {
     private final UserRefreshTokenRepository userRefreshTokenRepository;
 
     public User getUser(String userId) {
-        return userRepository.findByUserId(userId);
+        User user = userRepository.findByUserId(userId);
+        if(user.getIsDeleted()) throw new GeneralException(Code.USER_ALREADY_WITHDRAWN);
+        return user;
     }
 
     //Soft Delete를 위해 User컬럼 업데이트 및 토큰DB 삭제처리
