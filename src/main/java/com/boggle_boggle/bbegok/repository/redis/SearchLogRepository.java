@@ -24,8 +24,8 @@ public class SearchLogRepository {
 
     private final RedisTemplate<String, String> redisTemplate;
 
-    public void saveRecentSearchLog(String userId, String keyword) {
-        String key = KEY_PREFIX + userId;
+    public void saveRecentSearchLog(Long userSeq, String keyword) {
+        String key = KEY_PREFIX + userSeq;
 
         // 현재 시간을 점수로 설정
         long score = System.currentTimeMillis();
@@ -40,7 +40,7 @@ public class SearchLogRepository {
         }
     }
 
-    public List<String> getRecentSearchLogs(String userId) {
+    public List<String> getRecentSearchLogs(Long userId) {
         String key = KEY_PREFIX + userId;
 
         // 최근 검색어를 점수 기준으로 내림차순 조회
@@ -51,7 +51,7 @@ public class SearchLogRepository {
         return resultSet != null ? new ArrayList<>(resultSet) : Collections.emptyList();
     }
 
-    public void deleteRecentSearchLog(String userId, String keyword) {
+    public void deleteRecentSearchLog(Long userId, String keyword) {
         String key = KEY_PREFIX + userId;
 
         // 검색어 삭제
@@ -63,7 +63,7 @@ public class SearchLogRepository {
         }
     }
 
-    public void deleteAllRecentSearchLog(String userId) {
+    public void deleteAllRecentSearchLog(Long userId) {
         String key = KEY_PREFIX + userId;
 
         // 리스트 존재 여부 확인

@@ -24,7 +24,7 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userSeq;
 
-    @Column(name = "user_id", length = 64, unique = true)
+    @Column(name = "user_id", length = 64)
     @NotNull
     @Size(max = 64)
     private String userId;
@@ -111,6 +111,7 @@ public class User {
     public void softDelete() {
         this.isDeleted = true;
         this.deletedAt = LocalDateTime.now();
+        this.updateNickName(null);
     }
 
     public void updateGuestToUser(String latestVersion) {

@@ -47,7 +47,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
     private OAuth2User process(OAuth2UserRequest userRequest, OAuth2User user) {
         ProviderType providerType = ProviderType.valueOf(userRequest.getClientRegistration().getRegistrationId().toUpperCase());
         String userId = user.getName(); //OAuth2에서 제공하는 고유식별자
-        User savedUser = userRepository.findByUserId(userId);
+        User savedUser = userRepository.findByUserIdAndIsDeleted(userId, false);
 
         if (savedUser != null) { //서로 다른 인증제공자간 충돌을 방지
             if (providerType != savedUser.getProviderType()) {
@@ -58,10 +58,8 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             }
             //기존 가입자에게 셋팅정보가 없다면 생성
             if(userSettingsRepository.findByUser(savedUser) == null) userSettingsRepository.saveAndFlush(UserSettings.createUserSettings(savedUser));
-
-
-
-        } else { //가입한적 없다면 회원가입을 진행.
+        } else {
+            //가입한적 없다면 회원가입을 진행.
             savedUser = createUser(userId, providerType);
             userSettingsRepository.saveAndFlush(UserSettings.createUserSettings(savedUser));
         }

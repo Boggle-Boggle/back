@@ -41,7 +41,9 @@ public class LibraryService {
     private final ReadingRecordRepository readingRecordRepository;
 
     public User getUser(String userId) {
-        return userRepository.findByUserId(userId);
+        User user = userRepository.findByUserId(userId);
+        if(user.getIsDeleted()) throw new GeneralException(Code.USER_ALREADY_WITHDRAWN);
+        return user;
     }
 
     public Sort getSortWithReadingRecordToLibraryMapping(User user) {

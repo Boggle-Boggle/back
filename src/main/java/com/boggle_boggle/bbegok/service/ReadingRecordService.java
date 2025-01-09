@@ -36,7 +36,9 @@ public class ReadingRecordService {
     private final BookService bookService;
 
     public User getUser(String userId) {
-        return userRepository.findByUserId(userId);
+        User user = userRepository.findByUserId(userId);
+        if(user.getIsDeleted()) throw new GeneralException(Code.USER_ALREADY_WITHDRAWN);
+        return user;
     }
 
     private void validationNewReadingRecordRequest(NewReadingRecordRequest request) {

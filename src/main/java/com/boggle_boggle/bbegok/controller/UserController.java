@@ -22,7 +22,7 @@ public class UserController {
     private final UserService userService;
 
     //회원탈퇴
-    @PatchMapping("/")
+    @DeleteMapping
     public DataResponseDto<Null> deleteUser(@AuthenticationPrincipal UserDetails userDetails) {
         userService.deleteUser(userDetails.getUsername());
         return DataResponseDto.empty();
