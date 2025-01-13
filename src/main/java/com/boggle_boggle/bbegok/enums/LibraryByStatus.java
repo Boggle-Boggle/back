@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum LibraryByStatus {
     reading("읽는 중인 책"),
-    pending("읽고 있는 책"),
+    pending("읽고 싶은 책"),
     completed("다 읽은 책"),
     all("전체보기");
 

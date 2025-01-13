@@ -22,6 +22,17 @@ public interface ReadingRecordRepository extends JpaRepository<ReadingRecord, Lo
 
     Optional<ReadingRecord> findByreadingRecordSeqAndUserOrderByReadingRecordSeq(Long id, User user);
 
+    @Query(value = """
+    SELECT COUNT(DISTINCT r)
+    FROM ReadingRecord r
+    JOIN r.readDateList rd
+    WHERE r.user = :user
+      AND rd.status = :status
+    """)
+    int findTotalyReadingCnt(
+            @Param("user") User user,
+            @Param("status") ReadStatus status
+    );
 
     @Query(value = """
     SELECT COUNT(DISTINCT r)
@@ -46,11 +57,14 @@ public interface ReadingRecordRepository extends JpaRepository<ReadingRecord, Lo
     AND r.isBooksVisible = true
     AND (:year IS NULL OR EXTRACT(YEAR FROM rd.endReadDate) = :year)
     AND (:month IS NULL OR EXTRACT(MONTH FROM rd.endReadDate) = :month)
+    AND rd.status = :status
     """)
     List<ReadingRecord> findBooksByUserAndReadDate(
             @Param("user") User user,
             @Param("year") Integer year,
-            @Param("month") Integer month
+            @Param("month") Integer month,
+            @Param("status") ReadStatus status
+
     );
 
 

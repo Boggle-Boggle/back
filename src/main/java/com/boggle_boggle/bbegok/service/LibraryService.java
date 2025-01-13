@@ -136,7 +136,7 @@ public class LibraryService {
 
     public BookShelfResponse findBookshelfByEndDate(Integer year, Integer month, String userId) {
         User user = getUser(userId);
-        List<ReadingRecord> booksPage = readingRecordRepository.findBooksByUserAndReadDate(user, year, month);
+        List<ReadingRecord> booksPage = readingRecordRepository.findBooksByUserAndReadDate(user, year, month, ReadStatus.completed);
         return BookShelfResponse.fromPage(booksPage);
     }
 }
