@@ -190,23 +190,32 @@ public class ReadingRecordService {
     private void updateReadingRecord(UpdateReadingRecordRequest request, User user, ReadingRecord readingRecord) {
         if(request.getReadDateList().isPresent()) {
             if(request.getReadDateList().get() == null) throw new GeneralException(Code.BAD_REQUEST, "readDateIdList can't null");
+
+
             List<ReadDateAndIdDto> readDateAndIdDtoList = request.getReadDateList().get();
 
             //기존 ReadDate중에서 요청readDate에 없는경우 해당 readDate를 삭제해야하는데,
-            //1. id가 있으면 업데이트처리 -> 2. id가 없으면 새로운 회독정보 추가 -> 3. 원래 DB와 비교했을때 1에 해당하지 않은 정보들은 삭제
+            //1. id가 있으면 업데이트처리 -> 2. id가 없으면 새로운 회독정보 추가 -> 3. 원래 DB와 비교했을때 1,2에 해당하지 않은 정보들은 삭제
             List<ReadDate> readDateList = readingRecord.getReadDateList();
             Set<Long> set = new HashSet<>();
+
+            //(주의) readDateList가 빈 배열일 경우, 위시리스트 형태로 변경한다. (기존 회독정보 전부 삭제 -> 위시 ReadDate만 생성)
+            if(readDateAndIdDtoList.isEmpty()) {
+                ReadDate readDate = readDateRepository.save(ReadDate.createReadDate(readingRecord, null, null, ReadStatus.pending));
+                set.add(readDate.getReadDateSeq());
+            }
             for(ReadDateAndIdDto dto : readDateAndIdDtoList) {
-                if(dto.getReadDateId() != null) {
+                if(dto.getReadDateId() != null) { //날짜 업데이트 및 set에 저장
                     set.add(dto.getReadDateId());
                     ReadDate readDate = readDateRepository.findById(dto.getReadDateId())
                             .orElseThrow(()-> new GeneralException(Code.READ_DATE_NOT_FOUND));
                     readDate.update(dto.getStartReadDate(), dto.getEndReadDate(), dto.getStatus());
-                } else {
+                } else { //새로운 날짜 생성 및 set에 저장
                     ReadDate readDate = readDateRepository.save(ReadDate.createReadDate(readingRecord, dto.getStartReadDate(), dto.getEndReadDate(),dto.getStatus()));
                     set.add(readDate.getReadDateSeq());
                 }
             }
+
             Iterator<ReadDate> iterator = readDateList.iterator();
             while (iterator.hasNext()) {
                 ReadDate readDate = iterator.next();
@@ -216,6 +225,7 @@ public class ReadingRecordService {
                 iterator.remove(); // readDateList에서 안전하게 삭제
                 readDateRepository.delete(readDate); // ReadDate 삭제
             }
+
         }
         if(request.getLibraryIdList().isPresent()) {
             if(request.getLibraryIdList().get() == null) throw new GeneralException(Code.BAD_REQUEST, "libraryIdList can't null");
