@@ -43,6 +43,12 @@ public class UserController {
         return DataResponseDto.of(userService.isNicknameAvailable(userDetails.getUsername(), nickName));
     }
 
+    //권한확인
+    @GetMapping("/authorization")
+    public DataResponseDto<String> getAuthorization(@AuthenticationPrincipal UserDetails userDetails) {
+        return DataResponseDto.of(userService.getAuthorization(userDetails.getUsername()));
+    }
+
     //약관조회
     @GetMapping("/terms")
     public DataResponseDto<TermsResponse> getLatestTerms(@AuthenticationPrincipal UserDetails userDetails) {

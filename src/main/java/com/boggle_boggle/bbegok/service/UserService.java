@@ -57,6 +57,18 @@ public class UserService {
         else return userRepository.findByUserName(nickname).isEmpty();
     }
 
+    public String getAuthorization(String userId) {
+        User user = getUser(userId);
+        RoleType role = user.getRoleType();
+        String recentUpdatedVersion = termsRepository.getLatestTermsVersion();
+
+        if(role.equals(RoleType.USER)) {
+            if(user.getAgreedVersion()==null || !user.getAgreedVersion().equals(recentUpdatedVersion)) role = RoleType.LIMITED_USER;
+        }
+
+        return role.toString();
+    }
+
     //약관동의 및 권한 업데이트
     public void agreeToTerms(List<TermsAgreement> termsAgreementList, String userId) {
         termsValid(termsAgreementList);
