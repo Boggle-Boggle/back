@@ -46,10 +46,9 @@ aladin.server.url=${ALADIN_SERVER_URL}
 aladin.ttb.key=${ALADIN_TTB_KEY}
 
 # oauth
-spring.security.oauth2.client.provider.kakao.authorizationUri=https://kauth.kakao.com/oauth/authorize
-spring.security.oauth2.client.provider.kakao.tokenUri=https://kauth.kakao.com/oauth/token
-spring.security.oauth2.client.provider.kakao.userInfoUri=https://kapi.kakao.com/v2/user/me
-spring.security.oauth2.client.provider.kakao.userNameAttribute=id
+spring.security.oauth2.client.registration.google.clientId=${GOOGLE_CLIENT}
+spring.security.oauth2.client.registration.google.clientSecret=${GOOGLE_SECRET}
+spring.security.oauth2.client.registration.google.scope=email
 
 spring.security.oauth2.client.registration.kakao.clientId=${KAKAO_CLIENT}
 spring.security.oauth2.client.registration.kakao.clientSecret=${KAKAO_SECRET}
@@ -58,3 +57,9 @@ spring.security.oauth2.client.registration.kakao.authorizationGrantType=authoriz
 spring.security.oauth2.client.registration.kakao.redirectUri=https://bbaegok.duckdns.org:50443/backend/{action}/oauth2/code/{registrationId}
 #spring.security.oauth2.client.registration.kakao.redirectUri={baseUrl}/{action}/oauth2/code/{registrationId}
 spring.security.oauth2.client.registration.kakao.clientName=Kakao
+
+# provider
+spring.security.oauth2.client.provider.kakao.authorizationUri=https://kauth.kakao.com/oauth/authorize
+spring.security.oauth2.client.provider.kakao.tokenUri=https://kauth.kakao.com/oauth/token
+spring.security.oauth2.client.provider.kakao.userInfoUri=https://kapi.kakao.com/v2/user/me
+spring.security.oauth2.client.provider.kakao.userNameAttribute=id
