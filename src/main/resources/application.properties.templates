@@ -49,6 +49,7 @@ aladin.ttb.key=${ALADIN_TTB_KEY}
 spring.security.oauth2.client.registration.google.clientId=${GOOGLE_CLIENT}
 spring.security.oauth2.client.registration.google.clientSecret=${GOOGLE_SECRET}
 spring.security.oauth2.client.registration.google.scope=email
+spring.security.oauth2.client.registration.google.redirect-uri=https://${DOMAIN_NAME}:50443/backend/login/oauth2/code/google
 
 spring.security.oauth2.client.registration.kakao.clientId=${KAKAO_CLIENT}
 spring.security.oauth2.client.registration.kakao.clientSecret=${KAKAO_SECRET}
