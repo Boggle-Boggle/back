@@ -5,12 +5,17 @@ import com.boggle_boggle.bbegok.dto.base.DataResponseDto;
 import com.boggle_boggle.bbegok.dto.request.NickNameRequest;
 import com.boggle_boggle.bbegok.dto.response.TermsResponse;
 import com.boggle_boggle.bbegok.service.UserService;
+import com.boggle_boggle.bbegok.utils.CookieUtil;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Null;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+import static org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames.DEVICE_CODE;
+import static org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames.REFRESH_TOKEN;
 
 import java.util.List;
 
@@ -23,7 +28,9 @@ public class UserController {
 
     //회원탈퇴
     @DeleteMapping
-    public DataResponseDto<Null> deleteUser(@AuthenticationPrincipal UserDetails userDetails) {
+    public DataResponseDto<Null> deleteUser(HttpServletRequest request, HttpServletResponse response, @AuthenticationPrincipal UserDetails userDetails) {
+        CookieUtil.deleteCookie(request, response, REFRESH_TOKEN);
+        CookieUtil.deleteCookie(request, response, DEVICE_CODE);
         userService.deleteUser(userDetails.getUsername());
         return DataResponseDto.empty();
     }
