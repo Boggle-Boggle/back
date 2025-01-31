@@ -25,7 +25,7 @@ jobs:
         MYSQL_USER: ${{ secrets.MYSQL_USER }}
         MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
         JWT_SECRET: ${{ secrets.JWT_SECRET }}
-        DOMAIN_NAME: ${{ secrets.DOMAIN_NAME }}
+        ROOT_DOMAIN_NAME: ${{ secrets.ROOT_DOMAIN_NAME }}
         KAKAO_CLIENT: ${{ secrets.KAKAO_CLIENT }}
         KAKAO_SECRET: ${{ secrets.KAKAO_SECRET }}
         ALADIN_TTB_KEY: ${{ secrets.ALADIN_TTB_KEY }}

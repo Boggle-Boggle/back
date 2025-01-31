@@ -22,7 +22,7 @@ cors.allow-credentials=true
 # jwt secret key
 jwt.secret=${JWT_SECRET}
 app.auth.tokenSecret=${JWT_SECRET}
-bbaegok.domain=${DOMAIN_NAME}
+bbaegok.root-domain=${ROOT_DOMAIN_NAME}
 
 #30 min
 app.auth.tokenExpiry=2592000000

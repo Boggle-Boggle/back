@@ -16,11 +16,10 @@ import java.util.Optional;
 
 @Slf4j
 public class CookieUtil {
-    @Value("${bbaegok.domain}")
+    @Value("${bbaegok.root-domain}")
     private static String domain;
 
     public static Optional<Cookie> getCookie(HttpServletRequest request, String name) {
-
         Cookie[] cookies = request.getCookies();
         if (cookies != null && cookies.length > 0) {
             for (Cookie cookie : cookies) {
@@ -33,6 +32,19 @@ public class CookieUtil {
     }
 
     public static void addCookie(HttpServletResponse response, String name, String value, int maxAge) {
+        ResponseCookie cookie = ResponseCookie.from(name, value)
+                .path("/")
+                .domain(domain) // 루트도메인: bbaegok.store
+                .sameSite("Lax")
+                .httpOnly(true)
+                .maxAge(maxAge)
+                .secure(true)      // Secure 속성 추가 (HTTPS 필요)
+                .build();
+
+        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+    }
+
+    public static void addCookieSameSiteNone(HttpServletResponse response, String name, String value, int maxAge) {
         ResponseCookie cookie = ResponseCookie.from(name, value)
                 .path("/")
                 .domain(domain) // 도메인 설정
