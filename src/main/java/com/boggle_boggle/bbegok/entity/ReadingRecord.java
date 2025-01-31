@@ -16,6 +16,8 @@ import java.util.Optional;
 @Entity
 @Getter
 @ToString
+@Table(uniqueConstraints = @UniqueConstraint(
+        name = "uq_reading_record_user_book", columnNames = {"user_seq", "book_seq"}))
 public class ReadingRecord {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
