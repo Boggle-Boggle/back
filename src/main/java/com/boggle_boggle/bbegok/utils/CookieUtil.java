@@ -44,19 +44,6 @@ public class CookieUtil {
         response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
     }
 
-    public static void addCookieSameSiteNone(HttpServletResponse response, String name, String value, int maxAge) {
-        ResponseCookie cookie = ResponseCookie.from(name, value)
-                .path("/")
-                .domain(domain) // 도메인 설정
-                .sameSite("None")  // SameSite 속성 추가
-                .httpOnly(true)
-                .maxAge(maxAge)
-                .secure(true)      // Secure 속성 추가 (HTTPS 필요)
-                .build();
-
-        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
-    }
-
     public static void deleteCookie(HttpServletRequest request, HttpServletResponse response, String name) {
         Cookie[] cookies = request.getCookies();
         if (cookies != null && cookies.length > 0) {
@@ -65,7 +52,7 @@ public class CookieUtil {
                     ResponseCookie deleteCookie = ResponseCookie.from(name, "")
                             .path("/")
                             .domain(domain)
-                            .sameSite("None")
+                            .sameSite("Lax")
                             .httpOnly(true)
                             .secure(true)
                             .maxAge(0)
