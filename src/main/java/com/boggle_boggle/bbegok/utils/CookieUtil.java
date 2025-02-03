@@ -9,15 +9,22 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
+import org.springframework.stereotype.Component;
 import org.springframework.util.SerializationUtils;
 
 import java.util.Base64;
 import java.util.Optional;
 
 @Slf4j
+@Component
 public class CookieUtil {
-    @Value("${bbaegok.root-domain}")
     private static String domain;
+    private CookieUtil() {};
+
+    @Value("${bbaegok.root-domain}")
+    public void setDomain(String domain) {
+        CookieUtil.domain = domain;
+    }
 
     public static Optional<Cookie> getCookie(HttpServletRequest request, String name) {
         Cookie[] cookies = request.getCookies();
@@ -32,7 +39,6 @@ public class CookieUtil {
     }
 
     public static void addCookie(HttpServletResponse response, String name, String value, int maxAge) {
-        System.out.println("Cooooooooooooooooooookie : "+domain);
         ResponseCookie cookie = ResponseCookie.from(name, value)
                 .path("/")
                 .domain(domain) // 루트도메인: bbaegok.store
