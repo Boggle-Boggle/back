@@ -32,9 +32,10 @@ public class CookieUtil {
     }
 
     public static void addCookie(HttpServletResponse response, String name, String value, int maxAge) {
+        System.out.println("Cooooooooooooooooooookie : "+domain);
         ResponseCookie cookie = ResponseCookie.from(name, value)
                 .path("/")
-                .domain(".bbaegok.store") // 루트도메인: bbaegok.store
+                .domain(domain) // 루트도메인: bbaegok.store
                 .sameSite("Lax")
                 .httpOnly(true)
                 .maxAge(maxAge)
@@ -51,7 +52,7 @@ public class CookieUtil {
                 if (name.equals(cookie.getName())) {
                     ResponseCookie deleteCookie = ResponseCookie.from(name, "")
                             .path("/")
-                            .domain("."+domain)
+                            .domain(domain)
                             .sameSite("Lax")
                             .httpOnly(true)
                             .secure(true)
