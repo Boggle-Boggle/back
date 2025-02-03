@@ -34,7 +34,7 @@ public class CookieUtil {
     public static void addCookie(HttpServletResponse response, String name, String value, int maxAge) {
         ResponseCookie cookie = ResponseCookie.from(name, value)
                 .path("/")
-                .domain(domain) // 루트도메인: bbaegok.store
+                .domain(".bbaegok.store") // 루트도메인: bbaegok.store
                 .sameSite("Lax")
                 .httpOnly(true)
                 .maxAge(maxAge)
