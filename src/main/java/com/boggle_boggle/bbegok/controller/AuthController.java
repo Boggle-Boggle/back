@@ -41,7 +41,7 @@ public class AuthController {
     private final AppProperties appProperties;
     private final AuthTokenProvider tokenProvider;
     private final UserRefreshTokenRepository userRefreshTokenRepository;
-    private final UserRefreshTokenService clearRefreshToken;
+    private final UserRefreshTokenService userRefreshTokenService;
     private final AccessTokenService accessTokenService;
 
     private final static long THREE_DAYS_MSEC = 259200000;
@@ -95,30 +95,9 @@ public class AuthController {
 
     @PostMapping("/logout")
     public ResponseDto logout(HttpServletRequest request, HttpServletResponse response) {
-        // 1. 헤더에서 액세스 토큰 가져오기
-        String accessToken = request.getHeader("Authorization");
-        if (accessToken != null && accessToken.startsWith("Bearer ")) {
-            accessToken = accessToken.substring(7);
-        }
+        CookieUtil.getCookie(request, DEVICE_CODE)
+                .map(Cookie::getValue).ifPresent(userRefreshTokenService::deleteByDeviceId);
 
-        if (accessToken != null) {
-            AuthToken authToken = tokenProvider.convertAuthToken(accessToken);
-            Claims claims = null;
-            if (authToken.validate()) claims = authToken.getTokenClaims();
-            else claims = authToken.getExpiredTokenClaims();
-
-            if (claims != null) {
-                // 리프레시 토큰 삭제
-                String userId = claims.getSubject();
-                String deviceId = CookieUtil.getCookie(request, DEVICE_CODE).map(Cookie::getValue)
-                        .orElseThrow( () -> new GeneralException(Code.REFRESH_COOKIE_NOT_FOUND));
-
-                clearRefreshToken.deleteRefreshTokenByUserIdAndDeviceId(userId, deviceId);
-            }
-
-        }
-
-        // 쿠키에서 리프레시 토큰 및 deviceId 제거
         CookieUtil.deleteCookie(request, response, REFRESH_TOKEN);
         CookieUtil.deleteCookie(request, response, DEVICE_CODE);
 

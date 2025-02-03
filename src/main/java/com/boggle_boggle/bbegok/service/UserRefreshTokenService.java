@@ -16,4 +16,8 @@ public class UserRefreshTokenService {
     public void deleteRefreshTokenByUserIdAndDeviceId(String userId, String deviceId) {
         userRefreshTokenRepository.deleteByUser_UserIdAndDeviceId(userId, deviceId);
     }
+
+    public void deleteByDeviceId(String deviceId) {
+        userRefreshTokenRepository.deleteByDeviceId(deviceId);
+    }
 }
