@@ -65,7 +65,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: application-properties
-          path: ./src/main/resources/
+          path: ./src/main/resources
 
       - name: Set up JDK 17
         uses: actions/setup-java@v2
@@ -90,16 +90,19 @@ jobs:
     needs: build
     steps:
       - uses: actions/checkout@v2
+
       - name: Download JAR Artifact
         uses: actions/download-artifact@v4
         with:
           name: built-jar
           path: build/libs
+
       - name: Login to DockerHub
         uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
+
       - name: Build and push Docker image
         uses: docker/build-push-action@v3
         with:
@@ -156,7 +159,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: deployment-config
-          path: ./configuration/
+          path: ./configuration
 
       - name: Copy files to Raspberry Pi
         uses: appleboy/scp-action@master
