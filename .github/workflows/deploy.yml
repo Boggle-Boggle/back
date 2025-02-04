@@ -4,131 +4,165 @@ on:
     branches: [ main ]
 
 jobs:
-  build-and-deploy:
+  checkout:
+    name: Checkout Code
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+      - uses: actions/checkout@v2
 
-    #JDK 셋팅
-    - name: Set up JDK 17
-      uses: actions/setup-java@v2
-      with:
-        java-version: '17'
-        distribution: 'adopt'
+  setup-java:
+    name: Set up JDK 17
+    runs-on: ubuntu-latest
+    needs: checkout
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up JDK 17
+        uses: actions/setup-java@v2
+        with:
+          java-version: '17'
+          distribution: 'adopt'
 
-    # application.properties 생성
-    - name: Generate application.properties
-      run: |
-        envsubst < ./src/main/resources/application.properties.templates > ./src/main/resources/application.properties
-      env:
-        MYSQL_URL: ${{ secrets.MYSQL_URL }}
-        MYSQL_USER: ${{ secrets.MYSQL_USER }}
-        MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
-        JWT_SECRET: ${{ secrets.JWT_SECRET }}
-        ROOT_DOMAIN_NAME: ${{ secrets.ROOT_DOMAIN_NAME }}
-        DOMAIN_NAME: ${{ secrets.DOMAIN_NAME }}
-        KAKAO_CLIENT: ${{ secrets.KAKAO_CLIENT }}
-        KAKAO_SECRET: ${{ secrets.KAKAO_SECRET }}
-        ALADIN_TTB_KEY: ${{ secrets.ALADIN_TTB_KEY }}
-        ALADIN_SERVER_URL: ${{ secrets.ALADIN_SERVER_URL }}
-        REDIS_PREFIX: ${{secrets.REDIS_PREFIX}}
-        REDIS_PORT: ${{secrets.REDIS_PORT}}
-        REDIS_TERMS_KEY: ${{secrets.REDIS_TERMS_KEY}}
-        GOOGLE_CLIENT: ${{secrets.GOOGLE_CLIENT}}
-        GOOGLE_SECRET: ${{secrets.GOOGLE_SECRET}}
+  generate-properties:
+    name: Generate application.properties
+    runs-on: ubuntu-latest
+    needs: setup-java
+    steps:
+      - uses: actions/checkout@v2
+      - name: Generate application.properties
+        run: |
+          envsubst < ./src/main/resources/application.properties.templates > ./src/main/resources/application.properties
+        env:
+          MYSQL_URL: ${{ secrets.MYSQL_URL }}
+          MYSQL_USER: ${{ secrets.MYSQL_USER }}
+          MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          ROOT_DOMAIN_NAME: ${{ secrets.ROOT_DOMAIN_NAME }}
+          DOMAIN_NAME: ${{ secrets.DOMAIN_NAME }}
+          KAKAO_CLIENT: ${{ secrets.KAKAO_CLIENT }}
+          KAKAO_SECRET: ${{ secrets.KAKAO_SECRET }}
+          ALADIN_TTB_KEY: ${{ secrets.ALADIN_TTB_KEY }}
+          ALADIN_SERVER_URL: ${{ secrets.ALADIN_SERVER_URL }}
+          REDIS_PREFIX: ${{ secrets.REDIS_PREFIX }}
+          REDIS_PORT: ${{ secrets.REDIS_PORT }}
+          REDIS_TERMS_KEY: ${{ secrets.REDIS_TERMS_KEY }}
+          GOOGLE_CLIENT: ${{ secrets.GOOGLE_CLIENT }}
+          GOOGLE_SECRET: ${{ secrets.GOOGLE_SECRET }}
 
 
-    #프로젝트 빌드
-    - name: Build with Gradle  
-      run: |
-        chmod +x ./gradlew
-        ./gradlew build -x test
+  build:
+    name: Build with Gradle
+    runs-on: ubuntu-latest
+    needs: generate-properties
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build with Gradle
+        run: |
+          chmod +x ./gradlew
+          ./gradlew build -x test
 
-    #도커허브 로그인
-    - name: Login to DockerHub
-      uses: docker/login-action@v1
-      with:
-        username: ${{ secrets.DOCKERHUB_USERNAME }}
-        password: ${{ secrets.DOCKERHUB_TOKEN }}
+  docker:
+    name: Build and Push Docker Image
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - uses: actions/checkout@v2
+      - name: Login to DockerHub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/bbegok:latest
 
-    #도커이미지 빌드&푸쉬
-    - name: Build and push Docker image
-      uses: docker/build-push-action@v2
-      with:
-        context: .
-        push : true
-        tags: ${{ secrets.DOCKERHUB_USERNAME }}/bbegok:latest
+  prepare-deployment:
+    name: Prepare Deployment Files
+    runs-on: ubuntu-latest
+    needs: docker
+    steps:
+      - uses: actions/checkout@v2
+      - name: Create .env file
+        run: |
+          envsubst < ./configuration/.env.template > ./configuration/.env
+        env:
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+          DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+          MYSQL_URL: ${{ secrets.MYSQL_URL }}
+          MYSQL_USER: ${{ secrets.MYSQL_USER }}
+          MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
+          MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
+          DOMAIN_NAME: ${{ secrets.DOMAIN_NAME }}
+          SSL_CERT_PATH: ${{ secrets.SSL_CERT_PATH }}
+          SSL_CERTIFICATE: ${{ secrets.SSL_CERTIFICATE }}
+          SSL_CERTIFICATE_KEY: ${{ secrets.SSL_CERTIFICATE_KEY }}
+      - name: Create nginx.conf from template
+        run: |
+          envsubst '${DOMAIN_NAME} ${SSL_CERTIFICATE} ${SSL_CERTIFICATE_KEY}' < ./configuration/nginx.conf.template > ./configuration/nginx.conf
+        env:
+          DOMAIN_NAME: ${{ secrets.DOMAIN_NAME }}
+          SSL_CERTIFICATE: ${{ secrets.SSL_CERTIFICATE }}
+          SSL_CERTIFICATE_KEY: ${{ secrets.SSL_CERTIFICATE_KEY }}
 
-    #env 셋팅
-    - name: Create .env file
-      run: |
-        envsubst < ./configuration/.env.template > ./configuration/.env
-      env:
-        DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
-        DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
-        MYSQL_URL: ${{ secrets.MYSQL_URL }}
-        MYSQL_USER: ${{ secrets.MYSQL_USER }}
-        MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
-        MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
-        DOMAIN_NAME: ${{ secrets.DOMAIN_NAME }}
-        SSL_CERT_PATH: ${{ secrets.SSL_CERT_PATH }}
-        SSL_CERTIFICATE: ${{ secrets.SSL_CERTIFICATE }}
-        SSL_CERTIFICATE_KEY: ${{ secrets.SSL_CERTIFICATE_KEY }}
+  deploy:
+    name: Deploy to Raspberry Pi
+    runs-on: ubuntu-latest
+    needs: prepare-deployment
+    steps:
+      - uses: actions/checkout@v2
+      - name: Copy files to Raspberry Pi
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.PI_HOST }}
+          port: ${{ secrets.PI_PORT }}
+          username: ${{ secrets.PI_USERNAME }}
+          password: ${{ secrets.PI_PASSWORD }}
+          source: "./configuration/*"
+          target: "Project/bbegok/"
+          strip_components: 1
+      - name: Deploy to Raspberry Pi
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.PI_HOST }}
+          port: ${{ secrets.PI_PORT }}
+          username: ${{ secrets.PI_USERNAME }}
+          password: ${{ secrets.PI_PASSWORD }}
+          script: |
+            cd Project/bbegok/
+            docker-compose pull
+            docker-compose down
+            docker-compose up -d
+            docker image prune -f
 
-    #nginx.config 셋팅
-    - name: Create nginx.conf from template
-      run: |
-        envsubst '${DOMAIN_NAME} ${SSL_CERTIFICATE} ${SSL_CERTIFICATE_KEY}' < ./configuration/nginx.conf.template > ./configuration/nginx.conf
-      env:
-        DOMAIN_NAME: ${{ secrets.DOMAIN_NAME }}
-        SSL_CERTIFICATE: ${{ secrets.SSL_CERTIFICATE }}
-        SSL_CERTIFICATE_KEY: ${{ secrets.SSL_CERTIFICATE_KEY }}
+  notify-success:
+    name: Discord Webhook Notification on Success
+    runs-on: ubuntu-latest
+    needs: deploy
+    if: ${{ success() }}
+    steps:
+      - name: Send Success Discord Notification
+        uses: Ilshidur/action-discord@master
+        with:
+          args: |
+            ## **:tada: 빼곡서버 배포 SUCCESS!**
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
 
-    #configuration/이하의 파일을 서버로 복사
-    - name: Copy files to Raspberry Pi
-      uses: appleboy/scp-action@master
-      with:
-        host: ${{ secrets.PI_HOST }}
-        port: ${{ secrets.PI_PORT }}
-        username: ${{ secrets.PI_USERNAME }}
-        password: ${{ secrets.PI_PASSWORD }}
-        source: "./configuration/*"
-        target: "Project/bbegok/"
-        strip_components: 1
-        
-
-    #라즈베리파이 서버에 배포
-    - name: Deploy to Raspberry Pi
-      uses: appleboy/ssh-action@master
-      with:
-        host: ${{ secrets.PI_HOST }}
-        port: ${{ secrets.PI_PORT }}
-        username: ${{ secrets.PI_USERNAME }}
-        password: ${{ secrets.PI_PASSWORD }}
-        script: |
-          cd Project/bbegok/
-          docker-compose pull
-          docker-compose down
-          docker-compose up -d
-          docker image prune -f
-
-    - name: Discord Webhook when success
-      if: success()
-      env:
-        DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
-      uses: Ilshidur/action-discord@master
-      with:
-        args: |
-          ## **:tada: 빼곡서버 배포 SUCCESS!**
-
-    - name: Discord Webhook when fail
-      if: failure()
-      env:
-        DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
-      uses: Ilshidur/action-discord@master
-      with:
-        args: |
-          ## **:fire: 빼곡서버 배포 FAIL!**
-          **message**  |   ${{ github.event.head_commit.message }}
-          **commit**   |  ${{ github.sha }}
-          **go to log** |  ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+  notify-failure:
+    name: Discord Webhook Notification on Failure
+    runs-on: ubuntu-latest
+    needs: deploy
+    if: ${{ failure() }}
+    steps:
+      - name: Send Failure Discord Notification
+        uses: Ilshidur/action-discord@master
+        with:
+          args: |
+            ## **:fire: 빼곡서버 배포 FAIL!**
+            **message**  |   ${{ github.event.head_commit.message }}
+            **commit**   |  ${{ github.sha }}
+            **go to log** |  ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
