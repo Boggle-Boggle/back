@@ -2,6 +2,7 @@ package com.boggle_boggle.bbegok.service;
 
 import com.boggle_boggle.bbegok.dto.LibrariesDto;
 import com.boggle_boggle.bbegok.dto.LibraryBook;
+import com.boggle_boggle.bbegok.dto.ReadingRecordAndDateDTO;
 import com.boggle_boggle.bbegok.dto.RecordByStatusDto;
 import com.boggle_boggle.bbegok.dto.request.LibraryRequest;
 import com.boggle_boggle.bbegok.dto.response.BookShelfResponse;
@@ -136,7 +137,7 @@ public class LibraryService {
 
     public BookShelfResponse findBookshelfByEndDate(Integer year, Integer month, String userId) {
         User user = getUser(userId);
-        List<ReadingRecord> booksPage = readingRecordRepository.findBooksByUserAndReadDate(user, year, month, ReadStatus.completed);
+        List<ReadingRecordAndDateDTO> booksPage = readingRecordRepository.findBooksByUserAndReadDate(user, year, month, ReadStatus.completed);
         return BookShelfResponse.fromPage(booksPage);
     }
 }

@@ -1,6 +1,7 @@
 package com.boggle_boggle.bbegok.repository;
 
 import com.boggle_boggle.bbegok.dto.LibraryBook;
+import com.boggle_boggle.bbegok.dto.ReadingRecordAndDateDTO;
 import com.boggle_boggle.bbegok.dto.RecordByStatusDto;
 import com.boggle_boggle.bbegok.entity.Book;
 import com.boggle_boggle.bbegok.entity.Library;
@@ -44,13 +45,13 @@ public interface ReadingRecordRepository extends JpaRepository<ReadingRecord, Lo
       AND EXTRACT(MONTH FROM rd.endReadDate) = EXTRACT(MONTH FROM CURRENT_DATE)
     """)
     int findMonthlyReadingCnt(
-            @Param("user") User user,
-            @Param("status") ReadStatus status
-    );
+                    @Param("user") User user,
+                    @Param("status") ReadStatus status
+            );
 
 
     @Query(value = """
-    SELECT DISTINCT r
+    SELECT new com.boggle_boggle.bbegok.dto.ReadingRecordAndDateDTO(r, rd)
     FROM ReadingRecord r
     JOIN r.readDateList rd
     WHERE r.user = :user
@@ -58,8 +59,9 @@ public interface ReadingRecordRepository extends JpaRepository<ReadingRecord, Lo
     AND (:year IS NULL OR EXTRACT(YEAR FROM rd.endReadDate) = :year)
     AND (:month IS NULL OR EXTRACT(MONTH FROM rd.endReadDate) = :month)
     AND rd.status = :status
+    ORDER BY rd.endReadDate ASC, r.readingRecordSeq
     """)
-    List<ReadingRecord> findBooksByUserAndReadDate(
+    List<ReadingRecordAndDateDTO> findBooksByUserAndReadDate(
             @Param("user") User user,
             @Param("year") Integer year,
             @Param("month") Integer month,
