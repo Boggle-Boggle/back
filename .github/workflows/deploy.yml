@@ -4,30 +4,19 @@ on:
     branches: [ main ]
 
 jobs:
-  checkout:
-    name: Checkout Code
+  build-and-deploy:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
 
-  setup-java:
-    name: Set up JDK 17
-    runs-on: ubuntu-latest
-    needs: checkout
-    steps:
-      - uses: actions/checkout@v2
+      #JDK 셋팅
       - name: Set up JDK 17
         uses: actions/setup-java@v2
         with:
           java-version: '17'
           distribution: 'adopt'
 
-  generate-properties:
-    name: Generate application.properties
-    runs-on: ubuntu-latest
-    needs: setup-java
-    steps:
-      - uses: actions/checkout@v2
+      # application.properties 생성
       - name: Generate application.properties
         run: |
           envsubst < ./src/main/resources/application.properties.templates > ./src/main/resources/application.properties
@@ -42,81 +31,35 @@ jobs:
           KAKAO_SECRET: ${{ secrets.KAKAO_SECRET }}
           ALADIN_TTB_KEY: ${{ secrets.ALADIN_TTB_KEY }}
           ALADIN_SERVER_URL: ${{ secrets.ALADIN_SERVER_URL }}
-          REDIS_PREFIX: ${{ secrets.REDIS_PREFIX }}
-          REDIS_PORT: ${{ secrets.REDIS_PORT }}
-          REDIS_TERMS_KEY: ${{ secrets.REDIS_TERMS_KEY }}
-          GOOGLE_CLIENT: ${{ secrets.GOOGLE_CLIENT }}
-          GOOGLE_SECRET: ${{ secrets.GOOGLE_SECRET }}
+          REDIS_PREFIX: ${{secrets.REDIS_PREFIX}}
+          REDIS_PORT: ${{secrets.REDIS_PORT}}
+          REDIS_TERMS_KEY: ${{secrets.REDIS_TERMS_KEY}}
+          GOOGLE_CLIENT: ${{secrets.GOOGLE_CLIENT}}
+          GOOGLE_SECRET: ${{secrets.GOOGLE_SECRET}}
 
-      - name: Upload application.properties Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: application-properties
-          path: ./src/main/resources/application.properties
 
-  build:
-    name: Build with Gradle
-    runs-on: ubuntu-latest
-    needs: generate-properties
-    steps:
-      - uses: actions/checkout@v2
-
-      - name: Download application.properties Artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: application-properties
-          path: ./src/main/resources
-
-      - name: Set up JDK 17
-        uses: actions/setup-java@v2
-        with:
-          java-version: '17'
-          distribution: 'adopt'
-
+      #프로젝트 빌드
       - name: Build with Gradle
         run: |
           chmod +x ./gradlew
           ./gradlew build -x test
 
-      - name: Upload JAR Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: built-jar
-          path: build/libs/*.jar
-
-  docker:
-    name: Build and Push Docker Image
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
-      - uses: actions/checkout@v2
-
-      - name: Download JAR Artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: built-jar
-          path: build/libs
-
+      #도커허브 로그인
       - name: Login to DockerHub
-        uses: docker/login-action@v2
+        uses: docker/login-action@v1
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
+      #도커이미지 빌드&푸쉬
       - name: Build and push Docker image
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v2
         with:
           context: .
-          push: true
+          push : true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/bbegok:latest
 
-  prepare-deployment:
-    name: Prepare Deployment Files
-    runs-on: ubuntu-latest
-    needs: docker
-    steps:
-      - uses: actions/checkout@v2
-
+      #env 셋팅
       - name: Create .env file
         run: |
           envsubst < ./configuration/.env.template > ./configuration/.env
@@ -132,6 +75,7 @@ jobs:
           SSL_CERTIFICATE: ${{ secrets.SSL_CERTIFICATE }}
           SSL_CERTIFICATE_KEY: ${{ secrets.SSL_CERTIFICATE_KEY }}
 
+      #nginx.config 셋팅
       - name: Create nginx.conf from template
         run: |
           envsubst '${DOMAIN_NAME} ${SSL_CERTIFICATE} ${SSL_CERTIFICATE_KEY}' < ./configuration/nginx.conf.template > ./configuration/nginx.conf
@@ -140,27 +84,7 @@ jobs:
           SSL_CERTIFICATE: ${{ secrets.SSL_CERTIFICATE }}
           SSL_CERTIFICATE_KEY: ${{ secrets.SSL_CERTIFICATE_KEY }}
 
-      - name: Upload Deployment Configuration Artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: deployment-config
-          path: |
-            ./configuration/.env
-            ./configuration/nginx.conf
-
-  deploy:
-    name: Deploy to Raspberry Pi
-    runs-on: ubuntu-latest
-    needs: prepare-deployment
-    steps:
-      - uses: actions/checkout@v2
-
-      - name: Download Deployment Configuration Artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: deployment-config
-          path: ./configuration
-
+      #configuration/이하의 파일을 서버로 복사
       - name: Copy files to Raspberry Pi
         uses: appleboy/scp-action@master
         with:
@@ -172,6 +96,8 @@ jobs:
           target: "Project/bbegok/"
           strip_components: 1
 
+
+      #라즈베리파이 서버에 배포
       - name: Deploy to Raspberry Pi
         uses: appleboy/ssh-action@master
         with:
@@ -186,27 +112,19 @@ jobs:
             docker-compose up -d
             docker image prune -f
 
-  notify-success:
-    name: Discord Webhook Notification on Success
-    runs-on: ubuntu-latest
-    needs: deploy
-    if: ${{ success() }}
-    steps:
-      - name: Send Success Discord Notification
+      - name: Discord Webhook when success
+        if: success()
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
         uses: Ilshidur/action-discord@master
         with:
           args: |
             ## **:tada: 빼곡서버 배포 SUCCESS!**
+
+      - name: Discord Webhook when fail
+        if: failure()
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
-
-  notify-failure:
-    name: Discord Webhook Notification on Failure
-    runs-on: ubuntu-latest
-    needs: deploy
-    if: ${{ failure() }}
-    steps:
-      - name: Send Failure Discord Notification
         uses: Ilshidur/action-discord@master
         with:
           args: |
@@ -214,5 +132,3 @@ jobs:
             **message**  |   ${{ github.event.head_commit.message }}
             **commit**   |  ${{ github.sha }}
             **go to log** |  ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-        env:
-          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
