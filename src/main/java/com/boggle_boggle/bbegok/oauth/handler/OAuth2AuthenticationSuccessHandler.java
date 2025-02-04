@@ -94,40 +94,24 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 
         // refresh 토큰 설정
         long refreshTokenExpiry = appProperties.getAuth().getRefreshTokenExpiry();
-
         AuthToken refreshToken = tokenProvider.createAuthToken(
                 appProperties.getAuth().getTokenSecret(),
                 new Date(now.getTime() + refreshTokenExpiry)
         );
 
+        // 디바이스코드 생성 및 리프레쉬토큰 DB에 저장
+        String deviceId = UuidUtil.createUUID().toString();
+        User userEntity = userRepository.findByUserIdAndIsDeleted(userInfo.getId(), false);
+        userRefreshTokenRepository.saveAndFlush(UserRefreshToken.createUserRefreshToken(userEntity, refreshToken.getToken(), deviceId));
 
-        //쿠키가 있다면 -> 그값을 기반으로 DB 업데이트, 쿠키가 없다면 -> UUID 생성해 DB에 저장+deviceId를 쿠키에 저장
-        Optional<Cookie> optionalDeviceId = CookieUtil.getCookie(request, DEVICE_CODE);
-        String deviceId;
-        if (optionalDeviceId.isPresent()) deviceId = optionalDeviceId.get().getValue();
-        else deviceId = UuidUtil.createUUID().toString();
-
-        Optional<UserRefreshToken> userRefreshToken = userRefreshTokenRepository.findByUser_UserIdAndDeviceId(userInfo.getId(), deviceId);
-        if (userRefreshToken.isPresent()) userRefreshToken.get().updateRefreshToken(refreshToken.getToken());
-        else {
-            User userEntity = userRepository.findByUserIdAndIsDeleted(userInfo.getId(), false);
-            UserRefreshToken newUserRefreshToken = UserRefreshToken.createUserRefreshToken(userEntity,
-                    refreshToken.getToken(), deviceId);
-            userRefreshTokenRepository.saveAndFlush(newUserRefreshToken);
-
-            //새로운 디바이스코드를 쿠키에 저장
-            saveCookie(response, request, DEVICE_CODE, refreshTokenExpiry, deviceId);
-        }
-
-        //리프레쉬 토큰을 쿠키에 저장
+        //디바이스코드, 토큰을 쿠키에 저장
+        saveCookie(response, request, DEVICE_CODE, refreshTokenExpiry, deviceId);
         saveCookie(response, request, REFRESH_TOKEN, refreshTokenExpiry, refreshToken.getToken());
 
         return UriComponentsBuilder.fromUriString(targetUrl)
                 .queryParam("token", accessToken.getToken())
                 .build().toUriString();
     }
-
-
 
     protected void saveCookie(HttpServletResponse response, HttpServletRequest request, String cookieName, long tokenExpiry, String tokenValue) {
         int cookieMaxAge = (int) tokenExpiry / 60;
