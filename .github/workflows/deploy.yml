@@ -48,6 +48,11 @@ jobs:
           GOOGLE_CLIENT: ${{ secrets.GOOGLE_CLIENT }}
           GOOGLE_SECRET: ${{ secrets.GOOGLE_SECRET }}
 
+      - name: Upload application.properties Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: application-properties
+          path: ./src/main/resources/application.properties
 
   build:
     name: Build with Gradle
@@ -55,15 +60,24 @@ jobs:
     needs: generate-properties
     steps:
       - uses: actions/checkout@v2
+
+      - name: Download application.properties Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: application-properties
+          path: ./src/main/resources/
+
       - name: Set up JDK 17
         uses: actions/setup-java@v2
         with:
           java-version: '17'
           distribution: 'adopt'
+
       - name: Build with Gradle
         run: |
           chmod +x ./gradlew
           ./gradlew build -x test
+
       - name: Upload JAR Artifact
         uses: actions/upload-artifact@v4
         with:
@@ -99,6 +113,7 @@ jobs:
     needs: docker
     steps:
       - uses: actions/checkout@v2
+
       - name: Create .env file
         run: |
           envsubst < ./configuration/.env.template > ./configuration/.env
@@ -113,6 +128,7 @@ jobs:
           SSL_CERT_PATH: ${{ secrets.SSL_CERT_PATH }}
           SSL_CERTIFICATE: ${{ secrets.SSL_CERTIFICATE }}
           SSL_CERTIFICATE_KEY: ${{ secrets.SSL_CERTIFICATE_KEY }}
+
       - name: Create nginx.conf from template
         run: |
           envsubst '${DOMAIN_NAME} ${SSL_CERTIFICATE} ${SSL_CERTIFICATE_KEY}' < ./configuration/nginx.conf.template > ./configuration/nginx.conf
@@ -121,12 +137,27 @@ jobs:
           SSL_CERTIFICATE: ${{ secrets.SSL_CERTIFICATE }}
           SSL_CERTIFICATE_KEY: ${{ secrets.SSL_CERTIFICATE_KEY }}
 
+      - name: Upload Deployment Configuration Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: deployment-config
+          path: |
+            ./configuration/.env
+            ./configuration/nginx.conf
+
   deploy:
     name: Deploy to Raspberry Pi
     runs-on: ubuntu-latest
     needs: prepare-deployment
     steps:
       - uses: actions/checkout@v2
+
+      - name: Download Deployment Configuration Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: deployment-config
+          path: ./configuration/
+
       - name: Copy files to Raspberry Pi
         uses: appleboy/scp-action@master
         with:
@@ -137,6 +168,7 @@ jobs:
           source: "./configuration/*"
           target: "Project/bbegok/"
           strip_components: 1
+
       - name: Deploy to Raspberry Pi
         uses: appleboy/ssh-action@master
         with:
