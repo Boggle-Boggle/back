@@ -65,7 +65,7 @@ jobs:
           chmod +x ./gradlew
           ./gradlew build -x test
       - name: Upload JAR Artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: built-jar
           path: build/libs/*.jar
@@ -77,7 +77,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Download JAR Artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: built-jar
           path: build/libs
