@@ -30,9 +30,8 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
         AuthToken token = tokenProvider.convertAuthToken(tokenStr);
         
         if (token.validate()) {
-            //권한 검증
             Authentication authentication = tokenProvider.getAuthentication(token);
-            SecurityContextHolder.getContext().setAuthentication(authentication);
+            SecurityContextHolder.getContext().setAuthentication(authentication); //인증객체 셋팅
         }
 
         filterChain.doFilter(request, response);

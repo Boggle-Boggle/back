@@ -18,23 +18,23 @@ public class UserSettingsService {
     private final UserSettingsRepository userSettingsRepository;
     private final UserRepository userRepository;
 
-    public User getUser(String userId) {
-        User user = userRepository.findByUserIdAndIsDeleted(userId, false);
+    public User getUser(String userSeq) {
+        User user = userRepository.findByUserSeqAndIsDeleted(Long.valueOf(userSeq), false);
         if(user == null) {
             //탈퇴한 적 있는 회원
-            if(userRepository.countByUserIdAndIsDeleted(userId, true) > 0) throw new GeneralException(Code.USER_ALREADY_WITHDRAWN);
+            if(userRepository.countByUserSeqAndIsDeleted(Long.valueOf(userSeq), true) > 0) throw new GeneralException(Code.USER_ALREADY_WITHDRAWN);
             else throw new GeneralException(Code.USER_NOT_FOUND);
         }
         return user;
     }
 
-    public String getSortingType(String userId) {
-        User user = getUser(userId);
+    public String getSortingType(String userSeq) {
+        User user = getUser(userSeq);
         return userSettingsRepository.findByUser(user).getSortingType().toString();
     }
 
-    public void updateSortingType(String userId, SortingType sortingType) {
-        User user = getUser(userId);
+    public void updateSortingType(String userSeq, SortingType sortingType) {
+        User user = getUser(userSeq);
         UserSettings userSettings = userSettingsRepository.findByUser(user);
         userSettings.updateSortingType(sortingType);
     }

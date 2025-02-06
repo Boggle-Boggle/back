@@ -33,9 +33,9 @@ public class NoteService {
     private final UserRepository userRepository;
     private final BookService bookService;
 
-    public List<NotesByReadDateResponse> getNote(Long recordId, String userId) {
-        User user = getUser(userId);
-        ReadingRecord readingRecord = findReadingRecord(recordId, userId);
+    public List<NotesByReadDateResponse> getNote(Long recordId, String userSeq) {
+        User user = getUser(userSeq);
+        ReadingRecord readingRecord = findReadingRecord(recordId, userSeq);
 
         //현재 독서기록에 대한 모든 Note를 찾는다. 이때 readDateSeq별로 그룹바이 해야하고, readDateSeq순서대로 정렬(Null이면 제일 앞으로)
         List<Note> notes = noteRepository.findByReadingRecordAndReadingRecord_User(readingRecord, user);
@@ -82,22 +82,22 @@ public class NoteService {
         return groupedNotes;
     }
 
-    public Long saveNote(Long recordId, NewNoteRequest request, String userId) {
-        ReadingRecord readingRecord = findReadingRecord(recordId, userId);
+    public Long saveNote(Long recordId, NewNoteRequest request, String userSeq) {
+        ReadingRecord readingRecord = findReadingRecord(recordId, userSeq);
         Note note = Note.createNote(readingRecord);
         updateNote(note, request, readingRecord);
         return noteRepository.save(note).getNoteSeq();
     }
 
-    public void updateNote(Long recordId, Long noteId, NewNoteRequest request, String userId) {
-        ReadingRecord readingRecord = findReadingRecord(recordId, userId);
+    public void updateNote(Long recordId, Long noteId, NewNoteRequest request, String userSeq) {
+        ReadingRecord readingRecord = findReadingRecord(recordId, userSeq);
         Note note = noteRepository.findByNoteSeqAndReadingRecord(noteId, readingRecord)
                 .orElseThrow(() -> new GeneralException(Code.NOTE_NOT_FOUND));
         updateNote(note, request, readingRecord);
     }
 
-    public void deleteNote(Long recordId, Long noteId, String userId) {
-        ReadingRecord readingRecord = findReadingRecord(recordId, userId);
+    public void deleteNote(Long recordId, Long noteId, String userSeq) {
+        ReadingRecord readingRecord = findReadingRecord(recordId, userSeq);
         Note note = noteRepository.findByNoteSeqAndReadingRecord(noteId, readingRecord)
                 .orElseThrow(() -> new GeneralException(Code.NOTE_NOT_FOUND));
         noteRepository.delete(note);
@@ -105,18 +105,18 @@ public class NoteService {
 
 
     //== 사용할 기타 메소드
-    public User getUser(String userId) {
-        User user = userRepository.findByUserIdAndIsDeleted(userId, false);
+    public User getUser(String userSeq) {
+        User user = userRepository.findByUserSeqAndIsDeleted(Long.valueOf(userSeq), false);
         if(user == null) {
             //탈퇴한 적 있는 회원
-            if(userRepository.countByUserIdAndIsDeleted(userId, true) > 0) throw new GeneralException(Code.USER_ALREADY_WITHDRAWN);
+            if(userRepository.countByUserSeqAndIsDeleted(Long.valueOf(userSeq), true) > 0) throw new GeneralException(Code.USER_ALREADY_WITHDRAWN);
             else throw new GeneralException(Code.USER_NOT_FOUND);
         }
         return user;
     }
 
-    private ReadingRecord findReadingRecord(Long id, String userId){
-        User user = getUser(userId);
+    private ReadingRecord findReadingRecord(Long id, String userSeq){
+        User user = getUser(userSeq);
         return readingRecordRepository.findByreadingRecordSeqAndUserOrderByReadingRecordSeq(id, user)
                 .orElseThrow(() -> new GeneralException(Code.READING_RECORD_NOT_FOUND));
     }

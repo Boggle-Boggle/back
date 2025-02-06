@@ -41,11 +41,11 @@ public class LibraryService {
     private final ReadingRecordLibraryMappingRepository readingRecordLibraryMappingRepository;
     private final ReadingRecordRepository readingRecordRepository;
 
-    public User getUser(String userId) {
-        User user = userRepository.findByUserIdAndIsDeleted(userId, false);
+    public User getUser(String userSeq) {
+        User user = userRepository.findByUserSeqAndIsDeleted(Long.valueOf(userSeq), false);
         if(user == null) {
             //탈퇴한 적 있는 회원
-            if(userRepository.countByUserIdAndIsDeleted(userId, true) > 0) throw new GeneralException(Code.USER_ALREADY_WITHDRAWN);
+            if(userRepository.countByUserSeqAndIsDeleted(Long.valueOf(userSeq), true) > 0) throw new GeneralException(Code.USER_ALREADY_WITHDRAWN);
             else throw new GeneralException(Code.USER_NOT_FOUND);
         }
         return user;
@@ -73,35 +73,35 @@ public class LibraryService {
         }
     }
 
-    public LibraryResponse getLibraries(String userId) {
-        User user = getUser(userId);
+    public LibraryResponse getLibraries(String userSeq) {
+        User user = getUser(userSeq);
         List<LibrariesDto> librariesDtos = libraryRepository.findAllByUserWithBookCount(user);
         List<RecordByStatusDto> readingRecords = readingRecordRepository.countReadingRecordsByStatus(user);
         return LibraryResponse.ofDtos(librariesDtos, readingRecords);
     }
 
-    public void saveNewLibrary(LibraryRequest request, String userId) {
+    public void saveNewLibrary(LibraryRequest request, String userSeq) {
         // 중복 체크
-        if (libraryRepository.existsByLibraryNameAndUser(request.getLibraryName(),getUser(userId))) {
+        if (libraryRepository.existsByLibraryNameAndUser(request.getLibraryName(),getUser(userSeq))) {
             throw new GeneralException(Code.DUPLICATE_LIBRARY_NAME);
         }
 
-        Library newLibrary = Library.createLibrary(getUser(userId), request.getLibraryName());
+        Library newLibrary = Library.createLibrary(getUser(userSeq), request.getLibraryName());
         libraryRepository.save(newLibrary);
     }
 
 
-    public void deleteLibrary(Long libraryId, String userId) {
-        Library library = libraryRepository.findByUserAndLibrarySeq(getUser(userId), libraryId)
+    public void deleteLibrary(Long libraryId, String userSeq) {
+        Library library = libraryRepository.findByUserAndLibrarySeq(getUser(userSeq), libraryId)
                 .orElseThrow(() -> new GeneralException(Code.LIBRARY_NOT_FOUND));
 
         libraryRepository.delete(library);
     }
 
-    public LibraryBookListResponse findByLibraryId(Long libraryId, int pageNum, String userId, int pageSize, String keyword) {
-        Library library = libraryRepository.findByUserAndLibrarySeq(getUser(userId), libraryId)
+    public LibraryBookListResponse findByLibraryId(Long libraryId, int pageNum, String userSeq, int pageSize, String keyword) {
+        Library library = libraryRepository.findByUserAndLibrarySeq(getUser(userSeq), libraryId)
                 .orElseThrow(() -> new GeneralException(Code.LIBRARY_NOT_FOUND));
-        User user = getUser(userId);
+        User user = getUser(userSeq);
         Pageable pageable = PageRequest.of(pageNum-1, pageSize, getSortWithReadingRecordToLibraryMapping(user));
 
         Page<ReadingRecord> booksPage;
@@ -113,8 +113,8 @@ public class LibraryService {
         return LibraryBookListResponse.fromPage(booksPage);
     }
 
-    public LibraryBookListResponse findByStatus(ReadStatus status, int pageNum, String userId, int pageSize, String keyword) {
-        User user = getUser(userId);
+    public LibraryBookListResponse findByStatus(ReadStatus status, int pageNum, String userSeq, int pageSize, String keyword) {
+        User user = getUser(userSeq);
         Pageable pageable = PageRequest.of(pageNum-1, pageSize, getSortWithReadingRecord(user));
 
         Page<ReadingRecord> booksPage;
@@ -124,8 +124,8 @@ public class LibraryService {
         return LibraryBookListResponse.fromPage(booksPage);
     }
 
-    public LibraryBookListResponse findAll(int pageNum, String userId, int pageSize, String keyword) {
-        User user = getUser(userId);
+    public LibraryBookListResponse findAll(int pageNum, String userSeq, int pageSize, String keyword) {
+        User user = getUser(userSeq);
         Pageable pageable = PageRequest.of(pageNum-1, pageSize, getSortWithReadingRecord(user));
         Page<ReadingRecord> booksPage;
 
@@ -135,8 +135,8 @@ public class LibraryService {
     }
 
 
-    public BookShelfResponse findBookshelfByEndDate(Integer year, Integer month, String userId) {
-        User user = getUser(userId);
+    public BookShelfResponse findBookshelfByEndDate(Integer year, Integer month, String userSeq) {
+        User user = getUser(userSeq);
         List<ReadingRecordAndDateDTO> booksPage = readingRecordRepository.findBooksByUserAndReadDate(user, year, month, ReadStatus.completed);
         return BookShelfResponse.fromPage(booksPage);
     }

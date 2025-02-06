@@ -35,11 +35,11 @@ public class ReadingRecordService {
     private final UserRepository userRepository;
     private final BookService bookService;
 
-    public User getUser(String userId) {
-        User user = userRepository.findByUserIdAndIsDeleted(userId, false);
+    public User getUser(String userSeq) {
+        User user = userRepository.findByUserSeqAndIsDeleted(Long.valueOf(userSeq), false);
         if(user == null) {
             //탈퇴한 적 있는 회원
-            if(userRepository.countByUserIdAndIsDeleted(userId, true) > 0) throw new GeneralException(Code.USER_ALREADY_WITHDRAWN);
+            if(userRepository.countByUserSeqAndIsDeleted(Long.valueOf(userSeq), true) > 0) throw new GeneralException(Code.USER_ALREADY_WITHDRAWN);
             else throw new GeneralException(Code.USER_NOT_FOUND);
         }
         return user;
@@ -94,7 +94,7 @@ public class ReadingRecordService {
     }
 
 
-    public Long saveReadingRecord(NewReadingRecordRequest request, String userId) {
+    public Long saveReadingRecord(NewReadingRecordRequest request, String userSeq) {
         //유효성 검사
         validationNewReadingRecordRequest(request);
 
@@ -106,20 +106,20 @@ public class ReadingRecordService {
             book = bookRepository.save(Book.createBook(newBookData));
         }
         //해당 책에대한 독서기록이 이전에 있었는지 확인 -> 이전에 있었다면 에러
-        if(findReadingRecord(book.getIsbn(), userId) != null) throw new GeneralException(Code.READING_RECORD_ALREADY_EXIST);
+        if(findReadingRecord(book.getIsbn(), userSeq) != null) throw new GeneralException(Code.READING_RECORD_ALREADY_EXIST);
 
         //독서기록 저장 > 다대다(Library - mapping - readingRecord) 매핑 저장
         List<Library> libraries = new ArrayList<>();
         if(request.getLibraryIdList() != null && !request.getLibraryIdList().isEmpty()) {
             for (Long libraryId : request.getLibraryIdList()) {
-                Library library = findLibrary(userId, libraryId);
+                Library library = findLibrary(userSeq, libraryId);
                 if (library == null) throw new GeneralException(Code.LIBRARY_NOT_FOUND);
                 libraries.add(library);
             }
         }
 
         ReadingRecord readingRecord = ReadingRecord.createReadingRecord(
-                getUser(userId),
+                getUser(userSeq),
                 book,
                 request.getStartReadDate(),
                 request.getEndReadDate(),
@@ -134,25 +134,25 @@ public class ReadingRecordService {
     }
 
 
-    public ReadingRecordResponse getReadingRecord(Long id, String userId) {
-        ReadingRecord readingRecord = findReadingRecord(id, userId);
+    public ReadingRecordResponse getReadingRecord(Long id, String userSeq) {
+        ReadingRecord readingRecord = findReadingRecord(id, userSeq);
         return ReadingRecordResponse.fromEntity(readingRecord);
     }
 
-    public EditReadingRecordResponse getEditReadingRecord(Long readingRecordId, String userId) {
-        User user = getUser(userId);
-        ReadingRecord readingRecord = findReadingRecord(readingRecordId, userId);
+    public EditReadingRecordResponse getEditReadingRecord(Long readingRecordId, String userSeq) {
+        User user = getUser(userSeq);
+        ReadingRecord readingRecord = findReadingRecord(readingRecordId, userSeq);
         List<RecordLibraryListDto> recordLibraryListDtos = libraryRepository.findRecordLibraryListDtosInfoByUser(readingRecord, user);
         return EditReadingRecordResponse.from(readingRecord, recordLibraryListDtos);
     }
 
-    public Long getReadingRecordId(String isbn, String userId) {
-        ReadingRecord readingRecord = findReadingRecord(isbn, userId);
+    public Long getReadingRecordId(String isbn, String userSeq) {
+        ReadingRecord readingRecord = findReadingRecord(isbn, userSeq);
         if(readingRecord == null) return null;
         return readingRecord.getReadingRecordSeq();
     }
 
-    public void updateReadingRecord(Long id, UpdateReadingRecordRequest request, String userId) {
+    public void updateReadingRecord(Long id, UpdateReadingRecordRequest request, String userSeq) {
         //ReadDate에 대한 유효성 검사
         if(request.getReadDateList().isPresent()) {
             if(request.getReadDateList().get() == null) throw new GeneralException(Code.BAD_REQUEST, "readDateIdList can't null");
@@ -160,8 +160,8 @@ public class ReadingRecordService {
                 for(ReadDateAndIdDto readDateAndIdDto : request.getReadDateList().get()) validationReadDateAndIdDto(readDateAndIdDto);
             }
         }
-        ReadingRecord readingRecord = findReadingRecord(id, userId);
-        updateReadingRecord(request, getUser(userId), readingRecord);
+        ReadingRecord readingRecord = findReadingRecord(id, userSeq);
+        updateReadingRecord(request, getUser(userSeq), readingRecord);
     }
 
     public void deleteReadingRecord(Long id, String username) {
@@ -169,20 +169,20 @@ public class ReadingRecordService {
     }
 
 
-    private ReadingRecord findReadingRecord(String isbn, String userId){
+    private ReadingRecord findReadingRecord(String isbn, String userSeq){
         Book book = bookRepository.findByIsbn(isbn);
-        User user = getUser(userId);
+        User user = getUser(userSeq);
         return readingRecordRepository.findByUserAndBook(user, book);
     }
 
-    private ReadingRecord findReadingRecord(Long id, String userId){
-        User user = getUser(userId);
+    private ReadingRecord findReadingRecord(Long id, String userSeq){
+        User user = getUser(userSeq);
         return readingRecordRepository.findByreadingRecordSeqAndUserOrderByReadingRecordSeq(id, user)
                 .orElseThrow(() -> new GeneralException(Code.READING_RECORD_NOT_FOUND));
     }
 
-    private Library findLibrary(String userId, Long libraryId){
-        User user = getUser(userId);
+    private Library findLibrary(String userSeq, Long libraryId){
+        User user = getUser(userSeq);
         return libraryRepository.findByUserAndLibrarySeq(user, libraryId)
                 .orElseThrow(() -> new GeneralException(Code.LIBRARY_NOT_FOUND));
     }
@@ -234,7 +234,7 @@ public class ReadingRecordService {
             mappingRepository.deleteAll(readingRecord.getMappingList());
             List<Library> libraries = new ArrayList<>();
             for(Long libraryId : request.getLibraryIdList().get()) {
-                libraries.add(findLibrary(user.getUserId(), libraryId));
+                libraries.add(findLibrary(String.valueOf(user.getUserSeq()), libraryId));
             }
             readingRecord.addLibraries(libraries);
         }
@@ -246,8 +246,8 @@ public class ReadingRecordService {
 
     }
 
-    public List<ReadDateIndexDto> getReadDates(Long readingRecordId, String userId) {
-        List<ReadDate> readDateList = readDateRepository.findByReadingRecordAndStatusNotOrderByReadDateSeq(findReadingRecord(readingRecordId, userId), ReadStatus.pending);
+    public List<ReadDateIndexDto> getReadDates(Long readingRecordId, String userSeq) {
+        List<ReadDate> readDateList = readDateRepository.findByReadingRecordAndStatusNotOrderByReadDateSeq(findReadingRecord(readingRecordId, userSeq), ReadStatus.pending);
         return IntStream.range(0, readDateList.size())
                 .mapToObj(i -> new ReadDateIndexDto(readDateList.get(i), i))
                 .toList();

@@ -40,8 +40,8 @@ public class SearchLogRepository {
         }
     }
 
-    public List<String> getRecentSearchLogs(Long userId) {
-        String key = KEY_PREFIX + userId;
+    public List<String> getRecentSearchLogs(Long userSeq) {
+        String key = KEY_PREFIX + userSeq;
 
         // 최근 검색어를 점수 기준으로 내림차순 조회
         Set<String> resultSet = redisTemplate.opsForZSet()
@@ -51,8 +51,8 @@ public class SearchLogRepository {
         return resultSet != null ? new ArrayList<>(resultSet) : Collections.emptyList();
     }
 
-    public void deleteRecentSearchLog(Long userId, String keyword) {
-        String key = KEY_PREFIX + userId;
+    public void deleteRecentSearchLog(Long userSeq, String keyword) {
+        String key = KEY_PREFIX + userSeq;
 
         // 검색어 삭제
         Long removed = redisTemplate.opsForZSet().remove(key, keyword);
@@ -63,8 +63,8 @@ public class SearchLogRepository {
         }
     }
 
-    public void deleteAllRecentSearchLog(Long userId) {
-        String key = KEY_PREFIX + userId;
+    public void deleteAllRecentSearchLog(Long userSeq) {
+        String key = KEY_PREFIX + userSeq;
 
         // 리스트 존재 여부 확인
         Long size = redisTemplate.opsForZSet().size(key);
