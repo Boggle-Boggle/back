@@ -66,7 +66,7 @@ public class AuthController {
 
         //==유효한 Refresh token이며 DB에도 값이 있다면 access 재발급 로직 실행
         Date now = new Date();
-        AuthToken newAccessToken = accessTokenService.createAccessToken(userRefreshToken.getUserId(),
+        AuthToken newAccessToken = accessTokenService.createAccessToken(userRefreshToken.getUser(),
                                                                             userRefreshToken.getUser().getRoleType(),
                                                                             now);
 

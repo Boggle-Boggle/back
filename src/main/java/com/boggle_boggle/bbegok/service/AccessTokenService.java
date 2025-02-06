@@ -21,24 +21,23 @@ public class AccessTokenService {
     private final UserRepository userRepository;
     private final TermsRepository termsRepository; // Redis에서 최신 약관 버전 확인을 위한 서비스
 
-    public AuthToken createAccessToken(String userId, RoleType roleType, Date now) {
+    public AuthToken createAccessToken(User user, RoleType roleType, Date now) {
         AuthToken accessToken;
         if(roleType == RoleType.GUEST) {
             accessToken = tokenProvider.createAuthToken(
-                    userId,
+                    String.valueOf(user.getUserSeq()),
                     roleType.getCode(),
                     new Date(now.getTime() + appProperties.getAuth().getTokenExpiry())
             );
         } else { //roleType == RoleType.USER -> 해당 user가 최신약관의 필수항목에 모두 동의하지 않았다면 LIMITED_USER를 반환함
-            User userEntity = userRepository.findByUserIdAndIsDeleted(userId, false);
             String recentUpdatedVersion = termsRepository.getLatestTermsVersion();
 
             RoleType newRoleType;
-            if(userEntity.getAgreedVersion()!=null && userEntity.getAgreedVersion().equals(recentUpdatedVersion)) newRoleType = RoleType.USER;
+            if(user.getAgreedVersion()!=null && user.getAgreedVersion().equals(recentUpdatedVersion)) newRoleType = RoleType.USER;
             else newRoleType = RoleType.LIMITED_USER;
 
             accessToken = tokenProvider.createAuthToken(
-                    userId,
+                    String.valueOf(user.getUserSeq()),
                     newRoleType.getCode(),
                     new Date(now.getTime() + appProperties.getAuth().getTokenExpiry())
             );

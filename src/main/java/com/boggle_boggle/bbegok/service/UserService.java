@@ -30,35 +30,35 @@ public class UserService {
     private final AgreeToTermsRepository agreeToTermsRepository;
     private final UserRefreshTokenRepository userRefreshTokenRepository;
 
-    public User getUser(String userId) {
-        User user = userRepository.findByUserIdAndIsDeleted(userId, false);
+    public User getUser(String userSeq) {
+        User user = userRepository.findByUserSeqAndIsDeleted(Long.valueOf(userSeq), false);
         if(user == null) {
             //탈퇴한 적 있는 회원
-            if(userRepository.countByUserIdAndIsDeleted(userId, true) > 0) throw new GeneralException(Code.USER_ALREADY_WITHDRAWN);
+            if(userRepository.countByUserSeqAndIsDeleted(Long.valueOf(userSeq), true) > 0) throw new GeneralException(Code.USER_ALREADY_WITHDRAWN);
             else throw new GeneralException(Code.USER_NOT_FOUND);
         }
         return user;
     }
 
     //Soft Delete를 위해 User컬럼 업데이트 및 토큰DB 삭제처리
-    public void deleteUser(String userId) {
-        User user = getUser(userId);
+    public void deleteUser(String userSeq) {
+        User user = getUser(userSeq);
         user.softDelete();
         userRefreshTokenRepository.deleteByUser(user);
     }
 
-    public void updateNicName(String userId, String name) {
-        User user = getUser(userId);
+    public void updateNicName(String userSeq, String name) {
+        User user = getUser(userSeq);
         user.updateNickName(name);
     }
 
-    public boolean isNicknameAvailable(String userId, String nickname) {
-        if(getUser(userId).getUserName() != null && getUser(userId).getUserName().equals(nickname)) return true;
+    public boolean isNicknameAvailable(String userSeq, String nickname) {
+        if(getUser(userSeq).getUserName() != null && getUser(userSeq).getUserName().equals(nickname)) return true;
         else return userRepository.findByUserName(nickname).isEmpty();
     }
 
-    public String getAuthorization(String userId) {
-        User user = getUser(userId);
+    public String getAuthorization(String userSeq) {
+        User user = getUser(userSeq);
         RoleType role = user.getRoleType();
         String recentUpdatedVersion = termsRepository.getLatestTermsVersion();
 
@@ -70,11 +70,11 @@ public class UserService {
     }
 
     //약관동의 및 권한 업데이트
-    public void agreeToTerms(List<TermsAgreement> termsAgreementList, String userId) {
+    public void agreeToTerms(List<TermsAgreement> termsAgreementList, String userSeq) {
         termsValid(termsAgreementList);
         //유효성검사 완료 = 요청이 현재약관에 대한 필수값을 만족하고있음.
 
-        User user = getUser(userId);
+        User user = getUser(userSeq);
         for(TermsAgreement ta : termsAgreementList) {
             Terms terms = termsJpaRepository.findById(ta.getId())
                     .orElseThrow(() -> new GeneralException(Code.TERMS_NOT_FOUND));
@@ -98,10 +98,10 @@ public class UserService {
     }
 
     //최신 약관 조회(동의여부도 같이 전송)
-    public TermsResponse getLatestTerms(String userId) {
+    public TermsResponse getLatestTerms(String userSeq) {
         String latestVersion = termsRepository.getLatestTermsVersion();
         List<Terms> terms = termsJpaRepository.findByVersion(latestVersion);
-        User user = getUser(userId);
+        User user = getUser(userSeq);
         List<Term> termList = new ArrayList<>();
 
         for(Terms t : terms) {

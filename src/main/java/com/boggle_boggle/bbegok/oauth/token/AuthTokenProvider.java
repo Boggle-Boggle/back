@@ -45,25 +45,16 @@ public class AuthTokenProvider {
         return new AuthToken(token, key);
     }
 
-    //필터에서 권한정보 찾을떄 사용
     public Authentication getAuthentication(AuthToken authToken) {
-
         if(authToken.validate()) {
-
             Claims claims = authToken.getTokenClaims();
             Collection<? extends GrantedAuthority> authorities =
                     Arrays.stream(new String[]{claims.get(AUTHORITIES_KEY).toString()})
                             .map(SimpleGrantedAuthority::new)
                             .collect(Collectors.toList());
-
-            // log.debug("claims subject := [{}]", claims.getSubject());
-            // log.debug("claims AUTHORITIES_KEY := [{}]", claims.get(AUTHORITIES_KEY));
             User principal = new User(claims.getSubject(), "", authorities);
-
             return new UsernamePasswordAuthenticationToken(principal, authToken, authorities);
-        } else {
-            throw new TokenValidFailedException();
-        }
+        } else throw new TokenValidFailedException();
     }
 
     public RoleType getRoleType(AuthToken authToken) {

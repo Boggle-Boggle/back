@@ -89,8 +89,9 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         RoleType roleType = hasAuthority(authorities, RoleType.GUEST.getCode()) ? RoleType.GUEST : RoleType.USER;
 
         // access 토큰 설정 : GUEST는 그냥 저장, User의 경우 약관정보 확인 후 LIMITED_USER 또는 USER를 저장
+        User userEntity = userRepository.findByUserIdAndIsDeleted(userInfo.getId(), false);
         Date now = new Date();
-        AuthToken accessToken = accessTokenService.createAccessToken(userInfo.getId(), roleType, now);
+        AuthToken accessToken = accessTokenService.createAccessToken(userEntity, roleType, now);
 
         // refresh 토큰 설정
         long refreshTokenExpiry = appProperties.getAuth().getRefreshTokenExpiry();
@@ -101,7 +102,6 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 
         // 디바이스코드 생성 및 리프레쉬토큰 DB에 저장
         String deviceId = UuidUtil.createUUID().toString();
-        User userEntity = userRepository.findByUserIdAndIsDeleted(userInfo.getId(), false);
         userRefreshTokenRepository.saveAndFlush(UserRefreshToken.createUserRefreshToken(userEntity, refreshToken.getToken(), deviceId));
 
         //디바이스코드, 토큰을 쿠키에 저장

@@ -23,18 +23,18 @@ public class MyPageService {
     private final ReadingRecordRepository readingRecordRepository;
     private final NoteRepository noteRepository;
 
-    public User getUser(String userId) {
-        User user = userRepository.findByUserIdAndIsDeleted(userId, false);
+    public User getUser(String userSeq) {
+        User user = userRepository.findByUserSeqAndIsDeleted(Long.valueOf(userSeq), false);
         if(user == null) {
             //탈퇴한 적 있는 회원
-            if(userRepository.countByUserIdAndIsDeleted(userId, true) > 0) throw new GeneralException(Code.USER_ALREADY_WITHDRAWN);
+            if(userRepository.countByUserSeqAndIsDeleted(Long.valueOf(userSeq), true) > 0) throw new GeneralException(Code.USER_ALREADY_WITHDRAWN);
             else throw new GeneralException(Code.USER_NOT_FOUND);
         }
         return user;
     }
 
-    public MyPageResponse getMyPage(String userId) {
-        User user = getUser(userId);
+    public MyPageResponse getMyPage(String userSeq) {
+        User user = getUser(userSeq);
         //총 읽은 권수 - ReadingRecord 갯수
         int totalReadingCnt = readingRecordRepository.findTotalyReadingCnt(user, ReadStatus.completed);
         //이번달 읽은 권수 - 이번달에 다 읽은 ReadingRecord 갯수(상태 상관없이 둘다?)
