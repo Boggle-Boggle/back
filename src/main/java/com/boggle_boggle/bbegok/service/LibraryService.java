@@ -77,7 +77,8 @@ public class LibraryService {
         User user = getUser(userSeq);
         List<LibrariesDto> librariesDtos = libraryRepository.findAllByUserWithBookCount(user);
         List<RecordByStatusDto> readingRecords = readingRecordRepository.countReadingRecordsByStatus(user);
-        return LibraryResponse.ofDtos(librariesDtos, readingRecords);
+        RecordByStatusDto readingRecordIsAll = readingRecordRepository.countReadingRecordsByStatusIsAll(user);
+        return LibraryResponse.ofDtos(librariesDtos, readingRecords, readingRecordIsAll);
     }
 
     public void saveNewLibrary(LibraryRequest request, String userSeq) {

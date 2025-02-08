@@ -29,6 +29,12 @@ public class RecordByStatusDto {
         this.bookCount = bookCount;
     }
 
+    public RecordByStatusDto(Long bookCount) {
+        this.status = LibraryByStatus.all;
+        this.libraryName = status.getLibraryName();
+        this.bookCount = bookCount;
+    }
+
     public RecordByStatusDto(LibraryByStatus libraryByStatus, Long bookCount) {
         this.status = libraryByStatus;
         this.libraryName = libraryByStatus.getLibraryName();

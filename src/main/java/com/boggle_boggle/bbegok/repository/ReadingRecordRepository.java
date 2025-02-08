@@ -84,13 +84,20 @@ public interface ReadingRecordRepository extends JpaRepository<ReadingRecord, Lo
     );
 
     @Query("""
-    SELECT DISTINCT new com.boggle_boggle.bbegok.dto.RecordByStatusDto(rd.status, COUNT(r))
+    SELECT new com.boggle_boggle.bbegok.dto.RecordByStatusDto(rd.status, COUNT(DISTINCT r))
     FROM ReadingRecord r
     JOIN r.readDateList rd
     WHERE r.user = :user
     GROUP BY rd.status
     """)
     List<RecordByStatusDto> countReadingRecordsByStatus(@Param("user") User user);
+
+    @Query("""
+    SELECT new com.boggle_boggle.bbegok.dto.RecordByStatusDto(COUNT(DISTINCT r))
+    FROM ReadingRecord r
+    WHERE r.user = :user
+    """)
+    RecordByStatusDto countReadingRecordsByStatusIsAll(@Param("user") User user);
 
 
     @Query("""
