@@ -71,7 +71,7 @@ public interface ReadingRecordRepository extends JpaRepository<ReadingRecord, Lo
 
 
     @Query("""
-    SELECT r
+    SELECT DISTINCT r
     FROM ReadingRecord r
     JOIN r.readDateList rd
     WHERE rd.status = :status
@@ -101,7 +101,7 @@ public interface ReadingRecordRepository extends JpaRepository<ReadingRecord, Lo
 
 
     @Query("""
-    SELECT r
+    SELECT DISTINCT r
     FROM ReadingRecord r
     JOIN r.readDateList rd
     WHERE rd.status = :status
@@ -113,7 +113,7 @@ public interface ReadingRecordRepository extends JpaRepository<ReadingRecord, Lo
 
 
     @Query("""
-    SELECT r
+    SELECT DISTINCT r
     FROM ReadingRecord r
     WHERE r.user = :user
     """)
@@ -123,7 +123,7 @@ public interface ReadingRecordRepository extends JpaRepository<ReadingRecord, Lo
     );
 
     @Query("""
-    SELECT r
+    SELECT DISTINCT r
     FROM ReadingRecord r
     WHERE r.user = :user
     AND LOWER(r.book.title) LIKE LOWER(CONCAT('%', :keyword, '%'))
@@ -134,5 +134,4 @@ public interface ReadingRecordRepository extends JpaRepository<ReadingRecord, Lo
             Pageable pageable
     );
 
-    List<ReadingRecord> findByUser(User user);
 }
