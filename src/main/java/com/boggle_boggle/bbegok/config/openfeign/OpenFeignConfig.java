@@ -1,6 +1,5 @@
 package com.boggle_boggle.bbegok.config.openfeign;
 
-import com.nimbusds.jose.shaded.gson.GsonBuilder;
 import feign.gson.GsonDecoder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.openfeign.EnableFeignClients;

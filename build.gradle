@@ -54,6 +54,10 @@ dependencies {
 	implementation 'io.jsonwebtoken:jjwt-jackson:0.11.5'
 	implementation 'org.glassfish.jaxb:jaxb-runtime:4.0.2'
 
+	// Apple login
+	implementation 'com.nimbusds:nimbus-jose-jwt:3.10'
+	implementation 'org.bouncycastle:bcpkix-jdk18on:1.72'
+
 	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 
 	implementation 'org.projectlombok:lombok'

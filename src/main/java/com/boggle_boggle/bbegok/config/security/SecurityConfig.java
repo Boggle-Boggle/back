@@ -92,11 +92,11 @@ public class SecurityConfig {
                 //OAuth2 로그인 요청 처리
                 .oauth2Login(oauth2 -> oauth2
                         .authorizationEndpoint(authorization -> authorization
-                                .baseUri("/oauth2/authorization")
+                                .baseUri("/oauth2/authorization") //이 엔드포인트 요청에 대해 아래에 쿠키로 요청데이터저장
                                 .authorizationRequestRepository(oAuth2AuthorizationRequestBasedOnCookieRepository()))
                         .redirectionEndpoint(redirection -> redirection
-                                .baseUri("/*/oauth2/code/*"))
-                        .userInfoEndpoint(userInfo -> userInfo
+                                .baseUri("/*/oauth2/code/*")) //각 인증페이지로 리디렉션된 요청을 처리, 액세스토큰 교환
+                        .userInfoEndpoint(userInfo -> userInfo //사용자 정보 획득
                                 .userService(oAuth2UserService))
                         .successHandler(oAuth2AuthenticationSuccessHandler())
                         .failureHandler(oAuth2AuthenticationFailureHandler()));
