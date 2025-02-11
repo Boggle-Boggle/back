@@ -4,11 +4,9 @@ import com.boggle_boggle.bbegok.oauth.info.OAuth2UserInfo;
 
 import java.util.Map;
 
-public class GoogleOAuth2UserInfo extends OAuth2UserInfo {
+public class AppleOAuth2UserInfo extends OAuth2UserInfo {
 
-    public GoogleOAuth2UserInfo(Map<String, Object> attributes) {
-        super(attributes);
-    }
+    public AppleOAuth2UserInfo(Map<String, Object> attributes) { super(attributes); }
 
     @Override
     public String getId() {

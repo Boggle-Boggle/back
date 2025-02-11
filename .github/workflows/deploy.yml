@@ -36,8 +36,15 @@ jobs:
           REDIS_TERMS_KEY: ${{secrets.REDIS_TERMS_KEY}}
           GOOGLE_CLIENT: ${{secrets.GOOGLE_CLIENT}}
           GOOGLE_SECRET: ${{secrets.GOOGLE_SECRET}}
+          APPLE_AUD : ${{secrets.APPLE_AUD}}
+          APPLE_TEAM_ID : ${{secrets.APPLE_TEAM_ID}}
+          APPLE_KEY_ID : ${{secrets.APPLE_KEY_ID}}
 
-
+      # AuthKey.p8 파일 생성
+      - name: Create AuthKey.p8
+        run: |
+          echo "${{ secrets.APPLE_AUTH_KEY }}" > ./src/main/resources/key/AuthKey.p8
+          
       #프로젝트 빌드
       - name: Build with Gradle
         run: |

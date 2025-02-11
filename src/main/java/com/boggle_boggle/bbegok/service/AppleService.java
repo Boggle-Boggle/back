@@ -1,0 +1,31 @@
+package com.boggle_boggle.bbegok.service;
+
+import com.boggle_boggle.bbegok.config.properties.AppleProperties;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.nimbusds.jwt.ReadOnlyJWTClaimsSet;
+import com.nimbusds.jwt.SignedJWT;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import net.minidev.json.JSONObject;
+import net.minidev.json.parser.JSONParser;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.stereotype.Service;
+
+@Slf4j
+@Service
+@RequiredArgsConstructor
+@EnableConfigurationProperties({ AppleProperties.class })
+public class AppleService {
+    private final AppleProperties appleProperties;
+
+    public String getAppleLoginUrl(String redirectUri) {
+        String loginUrl = appleProperties.getIss() + "/auth/authorize"
+                + "?client_id=" + appleProperties.getClientId()
+                + "&redirect_uri=" + appleProperties.getRedirectUri()
+                + "&response_type=code%20id_token&scope=name%20email&response_mode=form_post";
+
+        log.info("애플 로그인 URL 반환 : "+loginUrl);
+        return loginUrl;
+    }
+
+}

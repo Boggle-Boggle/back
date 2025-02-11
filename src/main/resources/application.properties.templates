@@ -46,22 +46,30 @@ redis.terms.key=${REDIS_TERMS_KEY}
 aladin.server.url=${ALADIN_SERVER_URL}
 aladin.ttb.key=${ALADIN_TTB_KEY}
 
-# oauth
+#google
 spring.security.oauth2.client.registration.google.clientId=${GOOGLE_CLIENT}
 spring.security.oauth2.client.registration.google.clientSecret=${GOOGLE_SECRET}
 spring.security.oauth2.client.registration.google.scope=email
 spring.security.oauth2.client.registration.google.redirect-uri=https://${DOMAIN_NAME}:50443/backend/login/oauth2/code/google
 
+#kakao
 spring.security.oauth2.client.registration.kakao.clientId=${KAKAO_CLIENT}
 spring.security.oauth2.client.registration.kakao.clientSecret=${KAKAO_SECRET}
 spring.security.oauth2.client.registration.kakao.client-authentication-method=client_secret_post
 spring.security.oauth2.client.registration.kakao.authorizationGrantType=authorization_code
 spring.security.oauth2.client.registration.kakao.redirectUri=https://${DOMAIN_NAME}:50443/backend/{action}/oauth2/code/{registrationId}
-#spring.security.oauth2.client.registration.kakao.redirectUri={baseUrl}/{action}/oauth2/code/{registrationId}
 spring.security.oauth2.client.registration.kakao.clientName=Kakao
-
-# provider
 spring.security.oauth2.client.provider.kakao.authorizationUri=https://kauth.kakao.com/oauth/authorize
 spring.security.oauth2.client.provider.kakao.tokenUri=https://kauth.kakao.com/oauth/token
 spring.security.oauth2.client.provider.kakao.userInfoUri=https://kapi.kakao.com/v2/user/me
 spring.security.oauth2.client.provider.kakao.userNameAttribute=id
+
+#apple
+apple.auth.token-url=https://appleid.apple.com/auth/token
+apple.auth.public-key-url=https://appleid.apple.com/auth/keys
+apple.redirect-uri=https://${DOMAIN_NAME}:50443/backend/login/oauth2/code/apple
+apple.iss=https://appleid.apple.com
+apple.aud=${APPLE_AUD}
+apple.team-id=${APPLE_TEAM_ID}
+apple.key-id=${APPLE_KEY_ID}
+apple.key-path=classpath:/key/AuthKey.p8
