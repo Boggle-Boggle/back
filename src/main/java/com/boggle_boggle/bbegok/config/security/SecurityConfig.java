@@ -76,7 +76,7 @@ public class SecurityConfig {
                         
                         //애플로그인 관련 요청 허용
                         .requestMatchers("/oauth2/apple/**").permitAll()
-                        .requestMatchers("/login/oauth2/code/apple/**").permitAll()
+                        .requestMatchers("/oauth2/callback/apple/**").permitAll()
 
                         //guest : 약관동의, 닉네임 수정 API에만 접근 가능
                         .requestMatchers("/user/**").hasAnyAuthority(RoleType.GUEST.getCode(),RoleType.USER.getCode(),RoleType.LIMITED_USER.getCode())

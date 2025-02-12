@@ -29,7 +29,7 @@ public class AppleController {
         response.sendRedirect(appleService.getAppleLoginUrl(redirectUri));
     }
 
-    @PostMapping("/login/oauth2/code/apple")
+    @PostMapping("/oauth2/callback/apple")
     public void callback(HttpServletRequest request, HttpServletResponse response) throws IOException {
         User user = appleService.process(request.getParameter("code"));
 
