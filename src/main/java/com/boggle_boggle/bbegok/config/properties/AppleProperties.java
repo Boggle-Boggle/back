@@ -25,10 +25,10 @@ public class AppleProperties {
     private String iss;
     private String aud;
 
-    public String getAppleLoginUrl(String redirectUri) {
+    public String getAppleLoginUrl() {
         return iss + "/auth/authorize"
-                + "?client_id=" + keyId
-                + "&redirect_uri=" + redirectUri
+                + "?client_id=" + aud
+                + "&redirect_uri=" + this.redirectUri
                 + "&response_type=code%20id_token&scope=name%20email&response_mode=form_post";
     }
 }
