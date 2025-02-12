@@ -17,7 +17,7 @@ logging.level.com.boggle_boggle.bbegok=DEBUG
 bbaegok.root-domain=${ROOT_DOMAIN_NAME}
 
 # cors
-cors.allowed-origins=https://localhost:5173,https://${ROOT_DOMAIN_NAME}
+cors.allowed-origins=https://localhost:5173,https://${ROOT_DOMAIN_NAME},https://appleid.apple.com
 cors.allowed-methods=GET,POST,PUT,PATCH,DELETE,OPTIONS
 cors.allowed-headers=*
 cors.allow-credentials=true

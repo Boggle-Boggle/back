@@ -28,14 +28,7 @@ import java.util.Map;
 @Component
 @ConfigurationProperties(prefix = "apple")
 public class AppleProperties {
-    @Getter
-    @Setter
-    public static class Auth {
-        private String tokenUrl;
-        private String publicKeyUrl;
-    }
 
-    private Auth auth = new Auth();
     private String teamId;
     private String keyId;
     private String keyPath;
