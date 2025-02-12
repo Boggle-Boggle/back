@@ -19,7 +19,7 @@ public class AppleController {
 
     private final AppleService appleService;
 
-    @GetMapping("/oauth2/authorization/apple")
+    @GetMapping("/oauth2/apple")
     public void loginRequest(HttpServletResponse response,
                              @RequestParam(value = "redirect_uri", required = true) String redirectUri) throws IOException {
         response.sendRedirect(appleService.getAppleLoginUrl(redirectUri));
