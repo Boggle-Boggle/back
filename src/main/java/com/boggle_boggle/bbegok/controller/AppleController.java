@@ -33,14 +33,9 @@ public class AppleController {
 
     @PostMapping("/oauth2/callback/apple")
     public void callback(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        log.debug("# callback() method start!!");
-        log.debug("# callback code Parameter: {}", request.getParameter("code"));
         User user = appleService.process(request.getParameter("code"));
-        log.debug("# user : {}", user.getUserSeq());
-
         if(user != null) {
             String accessToken = appleService.loginSuccess(request, response, user);
-            log.debug("# access token : {}", user.getUserSeq());
             redirectStrategy.sendRedirect(request, response, appleService.determineSuccessRedirectUrl(accessToken, request.getParameter("state")));
         }
         else throw new GeneralException();
