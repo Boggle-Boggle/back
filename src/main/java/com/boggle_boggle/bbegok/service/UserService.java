@@ -60,9 +60,8 @@ public class UserService {
     public String getAuthorization(String userSeq) {
         User user = getUser(userSeq);
         RoleType role = user.getRoleType();
-        String recentUpdatedVersion = termsRepository.getLatestTermsVersion();
-
         if(role.equals(RoleType.USER)) {
+            String recentUpdatedVersion = termsRepository.getLatestTermsVersion();
             if(user.getAgreedVersion()==null || !user.getAgreedVersion().equals(recentUpdatedVersion)) role = RoleType.LIMITED_USER;
         }
 

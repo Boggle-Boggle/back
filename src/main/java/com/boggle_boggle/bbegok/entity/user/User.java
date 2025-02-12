@@ -37,6 +37,10 @@ public class User {
     @Size(max = 128)
     private String password;
 
+    @JsonIgnore
+    @Column(name = "access_token", length = 512)
+    private String accessToken;
+
     @Column(name = "email", length = 512, unique = true, nullable = true)
     @Size(max = 512)
     private String email;
@@ -101,6 +105,18 @@ public class User {
             @NotNull RoleType roleType,
             @NotNull LocalDateTime createdAt,
             @NotNull LocalDateTime modifiedAt){
+        return new User(userId, emailVerifiedYn, providerType, roleType, createdAt, modifiedAt);
+    }
+
+    public static User createUser(
+            @NotNull String userId,
+            @NotNull String emailVerifiedYn,
+            @NotNull ProviderType providerType,
+            @NotNull RoleType roleType,
+            @NotNull LocalDateTime createdAt,
+            @NotNull LocalDateTime modifiedAt,
+            @NotNull String accessToken
+    ){
         return new User(userId, emailVerifiedYn, providerType, roleType, createdAt, modifiedAt);
     }
 
