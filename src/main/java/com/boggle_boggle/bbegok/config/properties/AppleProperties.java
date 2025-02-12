@@ -5,7 +5,6 @@ import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
-@Getter
 @Setter
 @Component
 @ConfigurationProperties(prefix = "apple")
@@ -23,8 +22,13 @@ public class AppleProperties {
     private String keyPath;
     private String clientId;
     private String redirectUri;
-    //private String authTokenUrl;
-    //private String authPublicKeyUrl;
     private String iss;
     private String aud;
+
+    public String getAppleLoginUrl(String redirectUri) {
+        return iss + "/auth/authorize"
+                + "?client_id=" + keyId
+                + "&redirect_uri=" + redirectUri
+                + "&response_type=code%20id_token&scope=name%20email&response_mode=form_post";
+    }
 }

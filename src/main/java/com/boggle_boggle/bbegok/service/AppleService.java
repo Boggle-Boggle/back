@@ -19,10 +19,7 @@ public class AppleService {
     private final AppleProperties appleProperties;
 
     public String getAppleLoginUrl(String redirectUri) {
-        String loginUrl = appleProperties.getIss() + "/auth/authorize"
-                + "?client_id=" + appleProperties.getClientId()
-                + "&redirect_uri=" + appleProperties.getRedirectUri()
-                + "&response_type=code%20id_token&scope=name%20email&response_mode=form_post";
+        String loginUrl = appleProperties.getAppleLoginUrl(redirectUri);
 
         log.info("애플 로그인 URL 반환 : "+loginUrl);
         return loginUrl;
