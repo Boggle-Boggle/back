@@ -8,8 +8,6 @@ import com.boggle_boggle.bbegok.entity.user.UserSettings;
 import com.boggle_boggle.bbegok.oauth.entity.ProviderType;
 import com.boggle_boggle.bbegok.oauth.entity.RoleType;
 import com.boggle_boggle.bbegok.oauth.exception.OAuthProviderMissMatchException;
-import com.boggle_boggle.bbegok.oauth.handler.OAuth2AuthenticationSuccessHandler;
-import com.boggle_boggle.bbegok.oauth.repository.OAuth2AuthorizationRequestBasedOnCookieRepository;
 import com.boggle_boggle.bbegok.oauth.token.AuthToken;
 import com.boggle_boggle.bbegok.oauth.token.AuthTokenProvider;
 import com.boggle_boggle.bbegok.repository.user.UserRefreshTokenRepository;
@@ -19,32 +17,21 @@ import com.boggle_boggle.bbegok.utils.CookieUtil;
 import com.boggle_boggle.bbegok.utils.UuidUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import com.nimbusds.jwt.ReadOnlyJWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
 import net.minidev.json.parser.ParseException;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
-import java.net.http.HttpHeaders;
 import java.time.LocalDateTime;
-import java.util.Collections;
 import java.util.Date;
 
 import static org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames.DEVICE_CODE;
@@ -71,8 +58,10 @@ public class AppleService {
         log.debug("# process() method start!!");
         User savedUser = null;
         try {
-            JsonObject jsonObj = (JsonObject) JsonParser.parseString(appleProperties.generateAuthToken(code));
+            JSONParser jsonParser = new JSONParser();
+            JSONObject jsonObj = (JSONObject) jsonParser.parse(appleProperties.generateAuthToken(code));
             String accessToken = String.valueOf(jsonObj.get("access_token"));
+
             log.debug("# process() access token => {}",accessToken);
 
             // ID TOKEN을 통해 회원 고유 식별자 받기
@@ -82,7 +71,7 @@ public class AppleService {
             log.debug("# process() getPayload ... ");
 
             ObjectMapper objectMapper = new ObjectMapper();
-            JsonObject payload = objectMapper.readValue(getPayload.toJSONObject().toJSONString(), JsonObject.class);
+            JSONObject payload = objectMapper.readValue(getPayload.toJSONObject().toJSONString(), JSONObject.class);
 
             log.debug("# process() payload ... ");
 
@@ -106,7 +95,7 @@ public class AppleService {
 
         } catch (JsonProcessingException e) {
             throw new RuntimeException("Failed to parse json data");
-        } catch (IOException | java.text.ParseException e) {
+        } catch (IOException | java.text.ParseException | ParseException e) {
             throw new RuntimeException(e);
         }
     }
