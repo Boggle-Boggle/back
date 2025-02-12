@@ -1,5 +1,6 @@
 package com.boggle_boggle.bbegok.controller;
 
+import com.boggle_boggle.bbegok.dto.base.DataResponseDto;
 import com.boggle_boggle.bbegok.service.AppleService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -24,4 +25,6 @@ public class AppleController {
                              @RequestParam(value = "redirect_uri", required = true) String redirectUri) throws IOException {
         response.sendRedirect(appleService.getAppleLoginUrl(redirectUri));
     }
+
+
 }

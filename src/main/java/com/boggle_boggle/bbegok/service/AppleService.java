@@ -19,8 +19,7 @@ public class AppleService {
     private final AppleProperties appleProperties;
 
     public String getAppleLoginUrl(String redirectUri) {
-        String loginUrl = appleProperties.getAppleLoginUrl();
-        return loginUrl;
+        return appleProperties.getAppleLoginUrl(redirectUri);
     }
 
 }

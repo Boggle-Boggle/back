@@ -73,7 +73,10 @@ public class SecurityConfig {
                         .requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
                         //인증 관련 API는 모든 요청이 허용
                         .requestMatchers("/auth/**").permitAll()
+                        
+                        //애플로그인 관련 요청 허용
                         .requestMatchers("/oauth2/apple/**").permitAll()
+                        .requestMatchers("/login/oauth2/code/apple/**").permitAll()
 
                         //guest : 약관동의, 닉네임 수정 API에만 접근 가능
                         .requestMatchers("/user/**").hasAnyAuthority(RoleType.GUEST.getCode(),RoleType.USER.getCode(),RoleType.LIMITED_USER.getCode())
