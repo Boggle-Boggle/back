@@ -68,19 +68,26 @@ public class AppleService {
     }
 
     public User process(String code) {
+        log.debug("# process() method start!!");
         User savedUser = null;
         try {
             JsonObject jsonObj = (JsonObject) JsonParser.parseString(appleProperties.generateAuthToken(code));
             String accessToken = String.valueOf(jsonObj.get("access_token"));
+            log.debug("# process() access token => {}",accessToken);
 
             // ID TOKEN을 통해 회원 고유 식별자 받기
             SignedJWT signedJWT = SignedJWT.parse(String.valueOf(jsonObj.get("id_token")));
             ReadOnlyJWTClaimsSet getPayload = signedJWT.getJWTClaimsSet();
 
+            log.debug("# process() getPayload ... ");
+
             ObjectMapper objectMapper = new ObjectMapper();
             JsonObject payload = objectMapper.readValue(getPayload.toJSONObject().toJSONString(), JsonObject.class);
 
+            log.debug("# process() payload ... ");
+
             String userId = String.valueOf(payload.get("sub"));
+            log.debug("# process() userId(sub) => {}",userId);
             savedUser = userRepository.findByUserIdAndIsDeleted(userId, false);
 
             if (savedUser != null) { //서로 다른 인증제공자간 충돌을 방지
