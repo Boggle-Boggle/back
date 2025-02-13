@@ -73,3 +73,7 @@ apple.aud=${APPLE_AUD}
 apple.team-id=${APPLE_TEAM_ID}
 apple.key-id=${APPLE_KEY_ID}
 apple.key-path=classpath:/key/AuthKey.p8
+
+apple.revoke-url=https://appleid.apple.com/auth/revoke
+google.revoke-url=https://accounts.google.com/o/oauth2/revoke
+kakao.revoke-url=https://kapi.kakao.com/v1/user/unlink
