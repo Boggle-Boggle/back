@@ -6,7 +6,9 @@ import com.boggle_boggle.bbegok.exception.exception.GeneralException;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
@@ -17,13 +19,19 @@ import java.nio.file.AccessDeniedException;
 @RestControllerAdvice(annotations = {RestController.class})
 public class ExceptionHandler extends ResponseEntityExceptionHandler {
 
-    /** 유효성 검사 실패 처리
-     */
+    /** 유효성 검사 실패 처리 (RequestBody - @Valid) */
+    @Override
+    protected ResponseEntity<Object> handleMethodArgumentNotValid(
+            MethodArgumentNotValidException ex, HttpHeaders headers,
+            HttpStatusCode status, WebRequest request) {
+        return handleExceptionInternal(ex, Code.VALIDATION_ERROR, request);
+    }
+
+    /** 유효성 검사 실패 처리 (RequestParam, PathVariable - @Validated) */
     @org.springframework.web.bind.annotation.ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<Object> validation(ConstraintViolationException e, WebRequest request) {
         return handleExceptionInternal(e, Code.VALIDATION_ERROR, request);
     }
-
     /** 사용자 정의 예외 실패 처리
      */
     @org.springframework.web.bind.annotation.ExceptionHandler
