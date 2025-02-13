@@ -82,13 +82,20 @@ public class LibraryService {
     }
 
     public void saveNewLibrary(LibraryRequest request, String userSeq) {
-        // 중복 체크
-        if (libraryRepository.existsByLibraryNameAndUser(request.getLibraryName(),getUser(userSeq))) {
-            throw new GeneralException(Code.DUPLICATE_LIBRARY_NAME);
-        }
+        if(!isLibraryNameAvailable(userSeq, request.getLibraryName())) throw new GeneralException(Code.BAD_REQUEST);
 
-        Library newLibrary = Library.createLibrary(getUser(userSeq), request.getLibraryName());
+        String stripedLibraryName = request.getLibraryName().strip();
+        Library newLibrary = Library.createLibrary(getUser(userSeq), stripedLibraryName);
         libraryRepository.save(newLibrary);
+    }
+
+    public boolean isLibraryNameAvailable(String userSeq, String nickname) {
+        if(nickname == null) return false;
+        nickname = nickname.strip();
+        if(nickname.length()>15 || nickname.isEmpty()) return false;
+        if (libraryRepository.existsByLibraryNameAndUser(nickname,getUser(userSeq))) return false;
+
+        return true;
     }
 
 

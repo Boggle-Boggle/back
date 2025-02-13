@@ -55,10 +55,10 @@ public class UserService {
     }
 
     public boolean isNicknameAvailable(String userSeq, String nickname) {
-        if(nickname == null) throw new GeneralException(Code.BAD_REQUEST);
+        if(nickname == null) return false;
 
         nickname = nickname.strip();
-        if(nickname.length()>12 || nickname.isEmpty()) throw new GeneralException(Code.BAD_REQUEST);
+        if(nickname.length()>12 || nickname.isEmpty()) return false;
 
         if(getUser(userSeq).getUserName() != null && getUser(userSeq).getUserName().equals(nickname)) return true;
         else return userRepository.findByUserName(nickname).isEmpty();
