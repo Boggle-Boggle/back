@@ -4,6 +4,7 @@ import com.boggle_boggle.bbegok.dto.TermsAgreement;
 import com.boggle_boggle.bbegok.dto.base.DataResponseDto;
 import com.boggle_boggle.bbegok.dto.request.NickNameRequest;
 import com.boggle_boggle.bbegok.dto.response.TermsResponse;
+import com.boggle_boggle.bbegok.service.RevokeService;
 import com.boggle_boggle.bbegok.service.UserService;
 import com.boggle_boggle.bbegok.utils.CookieUtil;
 import jakarta.servlet.http.HttpServletRequest;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import static org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames.DEVICE_CODE;
 import static org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames.REFRESH_TOKEN;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -24,14 +26,15 @@ import java.util.List;
 @RequestMapping("/user")
 public class UserController {
 
+    private final RevokeService revokeService;
     private final UserService userService;
 
     //회원탈퇴
+    // @DeleteMapping("/oauth2/revoke")
     @DeleteMapping
-    public DataResponseDto<Null> deleteUser(HttpServletRequest request, HttpServletResponse response, @AuthenticationPrincipal UserDetails userDetails) {
-        CookieUtil.deleteCookie(request, response, REFRESH_TOKEN);
-        CookieUtil.deleteCookie(request, response, DEVICE_CODE);
-        userService.deleteUser(userDetails.getUsername());
+    public DataResponseDto<Void> deleteUser(HttpServletRequest request, HttpServletResponse response, @AuthenticationPrincipal UserDetails userDetails) throws IOException {
+        revokeService.deleteAccount(userDetails.getUsername());
+        //userService.deleteUser(request, response, userDetails.getUsername());
         return DataResponseDto.empty();
     }
 

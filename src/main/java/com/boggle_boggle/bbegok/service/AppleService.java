@@ -78,6 +78,7 @@ public class AppleService {
                                     " account. Please use your " + savedUser.getProviderType() + " account to login."
                     );
                 }
+                savedUser.updateAccessToken(accessToken);
             } else {
                 savedUser = createAppleUser(userId,accessToken);
                 userSettingsRepository.saveAndFlush(UserSettings.createUserSettings(savedUser));

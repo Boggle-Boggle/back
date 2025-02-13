@@ -19,7 +19,7 @@ public class Library {
     @JoinColumn(name = "user_seq")
     private User user;
 
-    @Column(name = "library_name", nullable = false)
+    @Column(name = "library_name", nullable = false, length = 15)
     private String libraryName;
 
     @OneToMany(mappedBy = "library", cascade = CascadeType.ALL, orphanRemoval = true)

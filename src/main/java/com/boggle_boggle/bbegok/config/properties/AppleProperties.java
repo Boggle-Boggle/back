@@ -25,16 +25,24 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Setter
+@Getter
 @Component
 @ConfigurationProperties(prefix = "apple")
 public class AppleProperties {
-
     private String teamId;
     private String keyId;
     private String keyPath;
     private String redirectUri;
     private String iss;
     private String aud; //client-id
+    private Auth auth;
+
+    @Setter
+    public static class Auth {
+        private String tokenUrl; //토큰을 획득하기 위해 앱에 전달된 권한 부여 코드 확인
+        private String publicKeyUrl;
+        private String revokeUrl;
+    }
 
     public String getAppleLoginUrl(String redirectUri) {
         return iss + "/auth/authorize"
@@ -42,6 +50,14 @@ public class AppleProperties {
                 + "&redirect_uri=" + this.redirectUri
                 + "&response_type=code%20id_token&scope=name%20email&response_mode=form_post"
                 + "&state=" + redirectUri;
+    }
+
+
+    public String getAppleRevokeData(String accessToken) throws IOException {
+        return "client_id="  + aud
+                +"&client_secret=" + createClientSecretKey()
+                +"&token=" + accessToken
+                +"&token_type_hint=access_token";
     }
 
     public String generateAuthToken(String code) throws IOException {
