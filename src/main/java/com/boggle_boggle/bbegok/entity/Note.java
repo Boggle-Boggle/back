@@ -29,16 +29,16 @@ public class Note {
     private ReadingRecord readingRecord;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "read_date_seq", nullable = true)
+    @JoinColumn(name = "read_date_seq")
     private ReadDate readDate;
 
-    @Column(name = "title", length = 30)
+    @Column(name = "title", length = 50)
     private String title;
 
-    @Column(name = "content", length = 255)
+    @Column(name = "content", length = 1024)
     private String content;
 
-    @Column(name = "page", nullable = true)
+    @Column(name = "page")
     private Integer page;
 
     @Embedded

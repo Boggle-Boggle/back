@@ -24,12 +24,13 @@ public class NewNoteRequest {
 
     private JsonNullable<LocalDateTime> selectedDate = JsonNullable.undefined();
 
-    @Size(max = 30)
+    @Size(max = 50)
     private JsonNullable<String> title = JsonNullable.undefined();
 
-    @Size(max = 255)
+    @Size(max = 1024)
     private JsonNullable<String> content = JsonNullable.undefined();
 
+    @Size(min = 1, max = 99999)
     private JsonNullable<Integer> page = JsonNullable.undefined();
 
     private JsonNullable<PagesDto> pages = JsonNullable.undefined();
