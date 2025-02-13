@@ -6,6 +6,7 @@ import com.boggle_boggle.bbegok.dto.request.DeleteRecentSearchRequest;
 import com.boggle_boggle.bbegok.dto.request.RecentSearchRequest;
 import com.boggle_boggle.bbegok.dto.response.SearchLogListResponse;
 import com.boggle_boggle.bbegok.service.SearchLogService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -29,7 +30,7 @@ public class RedisController {
     //최근검색어 저장
     @PostMapping
     public DataResponseDto<Void> saveRecentSearchLogs(@AuthenticationPrincipal UserDetails userDetails,
-                                                        @RequestBody RecentSearchRequest request) {
+                                                       @Valid @RequestBody RecentSearchRequest request) {
         SearchLogService.saveRecentSearchLogs(userDetails.getUsername(), request.getKeyword());
         return DataResponseDto.empty();
     }
@@ -37,7 +38,7 @@ public class RedisController {
     //최근검색어 삭제
     @DeleteMapping
     public DataResponseDto<Void> deleteRecentSearchLogs(@AuthenticationPrincipal UserDetails userDetails,
-                                                      @RequestBody DeleteRecentSearchRequest request) {
+                                                      @Valid @RequestBody DeleteRecentSearchRequest request) {
         SearchLogService.deleteRecentSearchLog(userDetails.getUsername(), request.getKeyword());
         return DataResponseDto.empty();
     }

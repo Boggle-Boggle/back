@@ -9,7 +9,7 @@ import lombok.ToString;
 @Getter
 @ToString
 public class RecentSearchRequest {
-    @NotBlank
-    @Size(min = 1, max = 255)
+    @NotNull
+    @Size(min = 1, max = 100)
     private String keyword;
 }
