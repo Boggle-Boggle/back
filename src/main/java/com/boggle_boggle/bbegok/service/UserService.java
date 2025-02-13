@@ -48,11 +48,18 @@ public class UserService {
     }
 
     public void updateNicName(String userSeq, String name) {
+        if(!isNicknameAvailable(userSeq, name)) throw new GeneralException(Code.BAD_REQUEST);
+        name = name.strip();
         User user = getUser(userSeq);
         user.updateNickName(name);
     }
 
     public boolean isNicknameAvailable(String userSeq, String nickname) {
+        if(nickname == null) return false;
+
+        nickname = nickname.strip();
+        if(nickname.length()>12 || nickname.isEmpty()) return false;
+
         if(getUser(userSeq).getUserName() != null && getUser(userSeq).getUserName().equals(nickname)) return true;
         else return userRepository.findByUserName(nickname).isEmpty();
     }

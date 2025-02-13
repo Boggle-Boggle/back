@@ -19,7 +19,7 @@ public class Terms {
     @Column(name = "title", nullable = false)
     private String title;
 
-    @Column(name = "content", length = 1000, nullable = false)
+    @Column(name = "content", nullable = false)
     private String content;
 
     @Column(name = "version", nullable = false)

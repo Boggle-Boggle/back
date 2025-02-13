@@ -5,6 +5,8 @@ import com.boggle_boggle.bbegok.config.openfeign.OpenFeignConfig;
 import com.boggle_boggle.bbegok.dto.OriginSearchBookList;
 import com.boggle_boggle.bbegok.dto.response.BookDetailResponse;
 import com.boggle_boggle.bbegok.dto.response.SearchBookListResponse;
+import com.boggle_boggle.bbegok.exception.Code;
+import com.boggle_boggle.bbegok.exception.exception.GeneralException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,6 +18,8 @@ public class BookService {
     private final OpenFeignConfig openFeignConfig;
 
     public SearchBookListResponse getSearchBookList(String query, int pageNum){
+        if(query == null || query.isEmpty() || query.length()>100) throw new GeneralException(Code.BAD_REQUEST);
+
         return SearchBookListResponse.fromOriginData(
                 aladinClient.searchItems(
                     openFeignConfig.getTtbKey(),

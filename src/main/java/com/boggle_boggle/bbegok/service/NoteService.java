@@ -82,7 +82,20 @@ public class NoteService {
         return groupedNotes;
     }
 
+    public boolean validateNote(NewNoteRequest request) {
+        if(!request.getTitle().isPresent() && !request.getTitle().isPresent()) return false;
+        if(request.getPages().isPresent()) {
+            if(request.getPages().get() != null) {
+                if((request.getPages().get().getStartPage() < 1 || request.getPages().get().getStartPage()>99999)) return false;
+                if((request.getPages().get().getEndPage() < 1 || request.getPages().get().getEndPage()>99999)) return false;
+            }
+        }
+        return true;
+    }
+
     public Long saveNote(Long recordId, NewNoteRequest request, String userSeq) {
+        if(!validateNote(request)) throw new GeneralException(Code.BAD_REQUEST);
+
         ReadingRecord readingRecord = findReadingRecord(recordId, userSeq);
         Note note = Note.createNote(readingRecord);
         updateNote(note, request, readingRecord);
@@ -90,6 +103,7 @@ public class NoteService {
     }
 
     public void updateNote(Long recordId, Long noteId, NewNoteRequest request, String userSeq) {
+        if(!validateNote(request)) throw new GeneralException(Code.BAD_REQUEST);
         ReadingRecord readingRecord = findReadingRecord(recordId, userSeq);
         Note note = noteRepository.findByNoteSeqAndReadingRecord(noteId, readingRecord)
                 .orElseThrow(() -> new GeneralException(Code.NOTE_NOT_FOUND));

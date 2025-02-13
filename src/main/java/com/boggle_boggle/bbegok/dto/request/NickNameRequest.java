@@ -8,6 +8,7 @@ import lombok.Getter;
 @Getter
 public class NickNameRequest {
     @NotBlank
-    @Size(max = 20)
+    @NotNull
+    @Size(max = 12)
     private String nickname;
 }

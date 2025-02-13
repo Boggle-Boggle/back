@@ -1,6 +1,7 @@
 package com.boggle_boggle.bbegok.dto.request;
 
 import com.boggle_boggle.bbegok.enums.ReadStatus;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,7 +16,7 @@ import java.util.List;
 @NoArgsConstructor
 @ToString
 public class NewReadingRecordRequest {
-    @NotNull
+    @NotNull @NotBlank
     private String isbn;
     @NotNull
     private ReadStatus readStatus;
