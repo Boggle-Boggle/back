@@ -93,6 +93,16 @@ public class NoteService {
         return true;
     }
 
+    public boolean validateUpdateNote(NewNoteRequest request) {
+        if(request.getPages().isPresent()) {
+            if(request.getPages().get() != null) {
+                if((request.getPages().get().getStartPage() < 1 || request.getPages().get().getStartPage()>99999)) return false;
+                if((request.getPages().get().getEndPage() < 1 || request.getPages().get().getEndPage()>99999)) return false;
+            }
+        }
+        return true;
+    }
+
     public Long saveNote(Long recordId, NewNoteRequest request, String userSeq) {
         if(!validateNote(request)) throw new GeneralException(Code.BAD_REQUEST);
 
@@ -103,7 +113,7 @@ public class NoteService {
     }
 
     public void updateNote(Long recordId, Long noteId, NewNoteRequest request, String userSeq) {
-        if(!validateNote(request)) throw new GeneralException(Code.BAD_REQUEST);
+        if(!validateUpdateNote(request)) throw new GeneralException(Code.BAD_REQUEST);
         ReadingRecord readingRecord = findReadingRecord(recordId, userSeq);
         Note note = noteRepository.findByNoteSeqAndReadingRecord(noteId, readingRecord)
                 .orElseThrow(() -> new GeneralException(Code.NOTE_NOT_FOUND));
