@@ -14,11 +14,17 @@ import com.boggle_boggle.bbegok.repository.TermsJpaRepository;
 import com.boggle_boggle.bbegok.repository.redis.TermsRepository;
 import com.boggle_boggle.bbegok.repository.user.UserRefreshTokenRepository;
 import com.boggle_boggle.bbegok.repository.user.UserRepository;
+import com.boggle_boggle.bbegok.utils.CookieUtil;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+
+import static org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames.DEVICE_CODE;
+import static org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames.REFRESH_TOKEN;
 
 @Service
 @RequiredArgsConstructor
@@ -41,7 +47,10 @@ public class UserService {
     }
 
     //Soft Delete를 위해 User컬럼 업데이트 및 토큰DB 삭제처리
-    public void deleteUser(String userSeq) {
+    public void deleteUser(HttpServletRequest request, HttpServletResponse response, String userSeq) {
+        CookieUtil.deleteCookie(request, response, REFRESH_TOKEN);
+        CookieUtil.deleteCookie(request, response, DEVICE_CODE);
+
         User user = getUser(userSeq);
         user.softDelete();
         userRefreshTokenRepository.deleteByUser(user);

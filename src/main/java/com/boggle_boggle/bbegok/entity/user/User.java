@@ -29,7 +29,7 @@ public class User {
     @Size(max = 64)
     private String userId;
 
-    @Column(name = "user_name", unique = true, length = 20)
+    @Column(name = "user_name", unique = true, length = 12)
     private String userName = null;
 
     @JsonIgnore
@@ -39,7 +39,7 @@ public class User {
 
     @JsonIgnore
     @Column(name = "access_token", length = 512)
-    private String accessToken;
+    private String oauth2AccessToken;
 
     @Column(name = "email", length = 512, unique = true, nullable = true)
     @Size(max = 512)
@@ -98,6 +98,24 @@ public class User {
     }
 
 
+    protected User(
+            String userId,
+            String emailVerifiedYn,
+            ProviderType providerType,
+            RoleType roleType,
+            LocalDateTime createdAt,
+            LocalDateTime modifiedAt,
+            String accessToken) {
+        this.userId = userId;
+        this.emailVerifiedYn = emailVerifiedYn;
+        this.providerType = providerType;
+        this.roleType = roleType;
+        this.createdAt = createdAt;
+        this.modifiedAt = modifiedAt;
+        this.oauth2AccessToken = accessToken;
+    }
+
+
     public static User createUser(
             @NotNull String userId,
             @NotNull String emailVerifiedYn,
@@ -117,7 +135,7 @@ public class User {
             @NotNull LocalDateTime modifiedAt,
             @NotNull String accessToken
     ){
-        return new User(userId, emailVerifiedYn, providerType, roleType, createdAt, modifiedAt);
+        return new User(userId, emailVerifiedYn, providerType, roleType, createdAt, modifiedAt, accessToken);
     }
 
     public void updateNickName(String nickName){
@@ -133,5 +151,9 @@ public class User {
     public void updateGuestToUser(String latestVersion) {
         this.roleType = RoleType.USER;
         this.agreedVersion = latestVersion;
+    }
+
+    public void updateAccessToken(String accessToken) {
+        this.oauth2AccessToken = accessToken;
     }
 }
