@@ -30,11 +30,11 @@ public class UserController {
     private final UserService userService;
 
     //회원탈퇴
-    // @DeleteMapping("/oauth2/revoke")
     @DeleteMapping
     public DataResponseDto<Void> deleteUser(HttpServletRequest request, HttpServletResponse response, @AuthenticationPrincipal UserDetails userDetails) throws IOException {
         revokeService.deleteAccount(userDetails.getUsername());
-        //userService.deleteUser(request, response, userDetails.getUsername());
+        CookieUtil.deleteCookie(request, response, REFRESH_TOKEN);
+        CookieUtil.deleteCookie(request, response, DEVICE_CODE);
         return DataResponseDto.empty();
     }
 

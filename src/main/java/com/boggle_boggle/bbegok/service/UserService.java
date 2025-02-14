@@ -46,16 +46,6 @@ public class UserService {
         return user;
     }
 
-    //Soft Delete를 위해 User컬럼 업데이트 및 토큰DB 삭제처리
-    public void deleteUser(HttpServletRequest request, HttpServletResponse response, String userSeq) {
-        CookieUtil.deleteCookie(request, response, REFRESH_TOKEN);
-        CookieUtil.deleteCookie(request, response, DEVICE_CODE);
-
-        User user = getUser(userSeq);
-        user.softDelete();
-        userRefreshTokenRepository.deleteByUser(user);
-    }
-
     public void updateNicName(String userSeq, String name) {
         if(!isNicknameAvailable(userSeq, name)) throw new GeneralException(Code.BAD_REQUEST);
         name = name.strip();
