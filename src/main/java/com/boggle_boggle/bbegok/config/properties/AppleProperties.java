@@ -35,14 +35,8 @@ public class AppleProperties {
     private String redirectUri;
     private String iss;
     private String aud; //client-id
-    private Auth auth;
-
-    @Setter
-    public static class Auth {
-        private String tokenUrl; //토큰을 획득하기 위해 앱에 전달된 권한 부여 코드 확인
-        private String publicKeyUrl;
-        private String revokeUrl;
-    }
+    private String tokenUrl; //토큰을 획득하기 위해 앱에 전달된 권한 부여 코드 확인
+    private String publicKeyUrl;
 
     public String getAppleLoginUrl(String redirectUri) {
         return iss + "/auth/authorize"
@@ -67,7 +61,8 @@ public class AppleProperties {
         params.add("grant_type", "authorization_code");
         params.add("client_id", aud);
         params.add("client_secret", createClientSecretKey());
-        params.add("code", code);
+        params.add("code", code); //authorization_code
+
         params.add("redirect_uri", redirectUri);
 
         RestTemplate restTemplate = new RestTemplate();
@@ -79,7 +74,7 @@ public class AppleProperties {
 
         try {
             ResponseEntity<String> response = restTemplate.exchange(
-                    iss + "/auth/token",
+                    tokenUrl,
                     HttpMethod.POST,
                     httpEntity,
                     String.class
