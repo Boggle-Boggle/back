@@ -38,8 +38,12 @@ public class User {
     private String password;
 
     @JsonIgnore
-    @Column(name = "access_token", length = 512)
+    @Column(name = "oauth2_access_token", length = 512)
     private String oauth2AccessToken;
+
+    @JsonIgnore
+    @Column(name = "oauth2_refresh_token", length = 512)
+    private String oauth2RefreshToken;
 
     @Column(name = "email", length = 512, unique = true, nullable = true)
     @Size(max = 512)
@@ -105,7 +109,8 @@ public class User {
             RoleType roleType,
             LocalDateTime createdAt,
             LocalDateTime modifiedAt,
-            String accessToken) {
+            String accessToken,
+            String refreshToken) {
         this.userId = userId;
         this.emailVerifiedYn = emailVerifiedYn;
         this.providerType = providerType;
@@ -113,6 +118,7 @@ public class User {
         this.createdAt = createdAt;
         this.modifiedAt = modifiedAt;
         this.oauth2AccessToken = accessToken;
+        this.oauth2RefreshToken = refreshToken;
     }
 
 
@@ -133,9 +139,10 @@ public class User {
             @NotNull RoleType roleType,
             @NotNull LocalDateTime createdAt,
             @NotNull LocalDateTime modifiedAt,
-            @NotNull String accessToken
+            @NotNull String accessToken,
+            @NotNull String refreshToken
     ){
-        return new User(userId, emailVerifiedYn, providerType, roleType, createdAt, modifiedAt, accessToken);
+        return new User(userId, emailVerifiedYn, providerType, roleType, createdAt, modifiedAt, accessToken, refreshToken);
     }
 
     public void updateNickName(String nickName){
@@ -153,7 +160,8 @@ public class User {
         this.agreedVersion = latestVersion;
     }
 
-    public void updateAccessToken(String accessToken) {
+    public void updateAccessToken(String accessToken, String refreshToken) {
         this.oauth2AccessToken = accessToken;
+        this.oauth2RefreshToken = refreshToken;
     }
 }

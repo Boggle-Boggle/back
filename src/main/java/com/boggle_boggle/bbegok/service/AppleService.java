@@ -60,9 +60,7 @@ public class AppleService {
             JSONParser jsonParser = new JSONParser();
             JSONObject jsonObj = (JSONObject) jsonParser.parse(appleProperties.generateAuthToken(code));
             String accessToken = String.valueOf(jsonObj.get("access_token"));
-            String refresh_token  = String.valueOf(jsonObj.get("refresh_token"));
-            log.debug("%%%%%access_token : {}",accessToken);
-            log.debug("%%%%%refresh_token : {}",refresh_token);
+            String refreshToken  = String.valueOf(jsonObj.get("refresh_token"));
 
             // ID TOKEN을 통해 회원 고유 식별자 받기
             SignedJWT signedJWT = SignedJWT.parse(String.valueOf(jsonObj.get("id_token")));
@@ -81,9 +79,9 @@ public class AppleService {
                                     " account. Please use your " + savedUser.getProviderType() + " account to login."
                     );
                 }
-                savedUser.updateAccessToken(accessToken);
+                savedUser.updateAccessToken(accessToken, refreshToken);
             } else {
-                savedUser = createAppleUser(userId,accessToken);
+                savedUser = createAppleUser(userId,accessToken, refreshToken);
                 userSettingsRepository.saveAndFlush(UserSettings.createUserSettings(savedUser));
             }
 
@@ -125,7 +123,7 @@ public class AppleService {
                 .build().toUriString();
     }
 
-    private User createAppleUser(String userId, String accessToken) {
+    private User createAppleUser(String userId, String accessToken, String refreshToken) {
         log.debug("# ACCESS TOKEN =>>>>> {}",accessToken);
         LocalDateTime now = LocalDateTime.now();
         User user = User.createUser(
@@ -135,7 +133,8 @@ public class AppleService {
                 RoleType.GUEST,
                 now,
                 now,
-                accessToken
+                accessToken,
+                refreshToken
         );
 
         return userRepository.saveAndFlush(user);

@@ -50,13 +50,13 @@ public class RevokeService {
 
         switch (user.getProviderType()) {
             case APPLE -> deleteAppleAccount(user);
-            case GOOGLE -> deleteGoogleAccount(user);
-            case KAKAO -> deleteKakaoAccount(user);
+            //case GOOGLE -> deleteGoogleAccount(user);
+            //case KAKAO -> deleteKakaoAccount(user);
         }
     }
 
     public void deleteAppleAccount(User user) throws IOException {
-        String data = appleProperties.getAppleRevokeData(user.getOauth2AccessToken());
+        String data = appleProperties.getAppleRevokeData(user.getOauth2RefreshToken());
         sendRevokeRequest(data, ProviderType.APPLE, null);
     }
 

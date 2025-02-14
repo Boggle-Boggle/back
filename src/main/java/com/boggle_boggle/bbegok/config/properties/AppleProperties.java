@@ -49,11 +49,11 @@ public class AppleProperties {
     }
 
 
-    public String getAppleRevokeData(String accessToken) throws IOException {
+    public String getAppleRevokeData(String refreshToken) throws IOException {
         return "client_id="  + aud
                 +"&client_secret=" + createClientSecretKey()
-                +"&token=" + accessToken
-                +"&token_type_hint=access_token";
+                +"&token=" + refreshToken
+                +"&token_type_hint=refresh_token";
     }
 
     public String generateAuthToken(String code) throws IOException {
