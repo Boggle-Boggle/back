@@ -4,6 +4,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.asn1.pkcs.PrivateKeyInfo;
 import org.bouncycastle.openssl.PEMParser;
 import org.bouncycastle.openssl.jcajce.JcaPEMKeyConverter;
@@ -27,6 +28,7 @@ import java.util.Map;
 @Setter
 @Getter
 @Component
+@Slf4j
 @ConfigurationProperties(prefix = "apple")
 public class AppleProperties {
     private String teamId;
@@ -79,7 +81,9 @@ public class AppleProperties {
                     httpEntity,
                     String.class
             );
-            return response.getBody();
+            String resp = response.getBody();
+            log.debug("%%%%%%%%%%%%% properties : {} ",resp);
+            return resp;
         } catch (HttpClientErrorException e) {
             throw new IllegalArgumentException("Apple Auth Token Error");
         }
