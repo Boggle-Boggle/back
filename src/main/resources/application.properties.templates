@@ -65,14 +65,14 @@ spring.security.oauth2.client.provider.kakao.userInfoUri=https://kapi.kakao.com/
 spring.security.oauth2.client.provider.kakao.userNameAttribute=id
 
 #apple
-apple.auth.token-url=https://appleid.apple.com/auth/token
-apple.auth.public-key-url=https://appleid.apple.com/auth/keys
+apple.token-url=https://appleid.apple.com/auth/token
+apple.public-key-url=https://appleid.apple.com/auth/keys
 apple.redirect-uri=https://${DOMAIN_NAME}:50443/backend/oauth2/callback/apple
 apple.iss=https://appleid.apple.com
 apple.aud=${APPLE_AUD}
 apple.team-id=${APPLE_TEAM_ID}
 apple.key-id=${APPLE_KEY_ID}
-apple.key-path=classpath:/key/AuthKey.p8
+apple.key-path=key/AuthKey.p8
 
 apple.revoke-url=https://appleid.apple.com/auth/revoke
 google.revoke-url=https://accounts.google.com/o/oauth2/revoke
