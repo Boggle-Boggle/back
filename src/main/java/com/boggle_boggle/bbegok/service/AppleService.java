@@ -60,7 +60,7 @@ public class AppleService {
             JSONParser jsonParser = new JSONParser();
             JSONObject jsonObj = (JSONObject) jsonParser.parse(appleProperties.generateAuthToken(code));
             String accessToken = String.valueOf(jsonObj.get("access_token"));
-            String refresh_token  = String.valueOf(jsonObj.get("refresh_token "));
+            String refresh_token  = String.valueOf(jsonObj.get("refresh_token"));
             log.debug("%%%%%access_token : {}",accessToken);
             log.debug("%%%%%refresh_token : {}",refresh_token);
 
