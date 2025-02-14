@@ -8,6 +8,7 @@ import com.boggle_boggle.bbegok.oauth.entity.ProviderType;
 import com.boggle_boggle.bbegok.repository.user.UserRefreshTokenRepository;
 import com.boggle_boggle.bbegok.repository.user.UserRepository;
 import com.boggle_boggle.bbegok.utils.CookieUtil;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,6 +26,7 @@ import static org.springframework.security.oauth2.core.endpoint.OAuth2ParameterN
 @Slf4j
 @RequiredArgsConstructor
 @Service
+@Transactional
 public class RevokeService {
     private final UserRepository userRepository;
     private final AppleProperties appleProperties;
