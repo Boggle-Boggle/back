@@ -19,6 +19,8 @@ import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.time.LocalDateTime;
 
 /** 사용자가 로그인을 시도할때 loadUser를 사용
@@ -69,7 +71,8 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         return UserPrincipal.create(savedUser, user.getAttributes());
     }
 
-    private void updateUser(User user, OAuth2UserInfo userInfo) {
+    @Transactional
+    public void updateUser(User user, OAuth2UserInfo userInfo) {
         log.debug("### OAUTH2 EMAIL <1> : {}", userInfo.getEmail());
         if(userInfo.getEmail() == null) return;
         if(user.getEmail() == null || (!user.getEmail().equals(userInfo.getEmail()))) {
