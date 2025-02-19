@@ -46,8 +46,8 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
     private OAuth2User process(OAuth2UserRequest userRequest, OAuth2User user) {
         ProviderType providerType = ProviderType.valueOf(userRequest.getClientRegistration().getRegistrationId().toUpperCase());
-        String userId = user.getName(); //OAuth2에서 제공하는 고유식별자
-        User savedUser = userRepository.findByUserIdAndIsDeleted(userId, false);
+        OAuth2UserInfo userInfo = OAuth2UserInfoFactory.getOAuth2UserInfo(providerType, user.getAttributes());
+        User savedUser = userRepository.findByUserIdAndIsDeleted(userInfo.getId(), false);
 
         if (savedUser != null) { //서로 다른 인증제공자간 충돌을 방지
             if (providerType != savedUser.getProviderType()) {
@@ -56,11 +56,10 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                                 " account. Please use your " + savedUser.getProviderType() + " account to login."
                 );
             }
-            //기존 가입자에게 셋팅정보가 없다면 생성
-            if(userSettingsRepository.findByUser(savedUser) == null) userSettingsRepository.saveAndFlush(UserSettings.createUserSettings(savedUser));
+            updateUser(savedUser, userInfo);
         } else {
             //가입한적 없다면 회원가입을 진행.
-            savedUser = createUser(userId, providerType);
+            savedUser = createUser(userInfo, providerType);
             userSettingsRepository.saveAndFlush(UserSettings.createUserSettings(savedUser));
         }
 
@@ -68,15 +67,18 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         return UserPrincipal.create(savedUser, user.getAttributes());
     }
 
-    private User createUser(String userId, ProviderType providerType) {
-        LocalDateTime now = LocalDateTime.now();
+    private void updateUser(User user, OAuth2UserInfo userInfo) {
+        if (userInfo.getEmail() != null && !user.getEmail().equals(userInfo.getEmail())) {
+            user.updateEmail(userInfo.getEmail());
+        }
+    }
+
+    private User createUser(OAuth2UserInfo userInfo, ProviderType providerType) {
         User user = User.createUser(
-                userId,
-                "Y",
+                userInfo.getId(),
                 providerType,
-                RoleType.GUEST,
-                now,
-                now
+                userInfo.getEmail(),
+                RoleType.GUEST
         );
 
         return userRepository.saveAndFlush(user);

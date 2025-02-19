@@ -1,4 +1,4 @@
-package com.boggle_boggle.bbegok.service;
+package com.boggle_boggle.bbegok.oauth.service;
 
 import com.boggle_boggle.bbegok.config.properties.AppleProperties;
 import com.boggle_boggle.bbegok.entity.user.User;
@@ -7,7 +7,6 @@ import com.boggle_boggle.bbegok.exception.exception.GeneralException;
 import com.boggle_boggle.bbegok.oauth.entity.ProviderType;
 import com.boggle_boggle.bbegok.repository.user.UserRefreshTokenRepository;
 import com.boggle_boggle.bbegok.repository.user.UserRepository;
-import com.boggle_boggle.bbegok.utils.CookieUtil;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,11 +16,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
-import java.security.AuthProvider;
-import java.util.Optional;
-
-import static org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames.DEVICE_CODE;
-import static org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames.REFRESH_TOKEN;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -31,7 +25,6 @@ public class RevokeService {
     private final UserRepository userRepository;
     private final AppleProperties appleProperties;
     private final UserRefreshTokenRepository userRefreshTokenRepository;
-    private final AppleService appleService;
 
     @Value("${apple.revoke-url}")
     String appleRevokeUrl;

@@ -59,6 +59,7 @@ spring.security.oauth2.client.registration.kakao.client-authentication-method=cl
 spring.security.oauth2.client.registration.kakao.authorizationGrantType=authorization_code
 spring.security.oauth2.client.registration.kakao.redirectUri=https://${DOMAIN_NAME}:50443/backend/{action}/oauth2/code/{registrationId}
 spring.security.oauth2.client.registration.kakao.clientName=Kakao
+spring.security.oauth2.client.registration.kakao.scope=account_email
 spring.security.oauth2.client.provider.kakao.authorizationUri=https://kauth.kakao.com/oauth/authorize
 spring.security.oauth2.client.provider.kakao.tokenUri=https://kauth.kakao.com/oauth/token
 spring.security.oauth2.client.provider.kakao.userInfoUri=https://kapi.kakao.com/v2/user/me

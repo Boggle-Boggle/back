@@ -1,9 +1,8 @@
 package com.boggle_boggle.bbegok.controller;
 
-import com.boggle_boggle.bbegok.dto.base.DataResponseDto;
 import com.boggle_boggle.bbegok.entity.user.User;
 import com.boggle_boggle.bbegok.exception.exception.GeneralException;
-import com.boggle_boggle.bbegok.service.AppleService;
+import com.boggle_boggle.bbegok.oauth.service.AppleService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;

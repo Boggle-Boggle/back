@@ -4,7 +4,7 @@ import com.boggle_boggle.bbegok.dto.TermsAgreement;
 import com.boggle_boggle.bbegok.dto.base.DataResponseDto;
 import com.boggle_boggle.bbegok.dto.request.NickNameRequest;
 import com.boggle_boggle.bbegok.dto.response.TermsResponse;
-import com.boggle_boggle.bbegok.service.RevokeService;
+import com.boggle_boggle.bbegok.oauth.service.RevokeService;
 import com.boggle_boggle.bbegok.service.UserService;
 import com.boggle_boggle.bbegok.utils.CookieUtil;
 import jakarta.servlet.http.HttpServletRequest;

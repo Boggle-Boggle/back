@@ -10,6 +10,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import net.minidev.json.annotate.JsonIgnore;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 
@@ -33,11 +35,6 @@ public class User {
     private String userName = null;
 
     @JsonIgnore
-    @Column(name = "password", length = 128)
-    @Size(max = 128)
-    private String password;
-
-    @JsonIgnore
     @Column(name = "oauth2_access_token", length = 512)
     private String oauth2AccessToken;
 
@@ -45,16 +42,9 @@ public class User {
     @Column(name = "oauth2_refresh_token", length = 512)
     private String oauth2RefreshToken;
 
-    @Column(name = "email", length = 512, unique = true, nullable = true)
+    @Column(name = "email", length = 512)
     @Size(max = 512)
     private String email;
-
-    @Column(name = "email_verified_yn", length = 1)
-    @Size(min = 1, max = 1)
-    private String emailVerifiedYn;
-
-    @Column(name = "profile_image_url", length = 512, nullable = true)
-    private String profileImageUrl = null;
 
     @Column(name = "provider_type", length = 20)
     @Enumerated(EnumType.STRING)
@@ -69,12 +59,14 @@ public class User {
     @Column(name = "agreed_version", length = 10)
     private String agreedVersion;
 
-    @Column(name = "created_at")
+    @CreationTimestamp
+    @Column(updatable = false, name = "created_at")
     @NotNull
-    private LocalDateTime createdAt;
+    private LocalDateTime createdAt = LocalDateTime.now();
 
-    @Column(name = "modified_at")
-    private LocalDateTime modifiedAt;
+    @UpdateTimestamp
+    @Column(name = "modified_at", insertable = false)
+    private LocalDateTime modifiedAt = LocalDateTime.now();
 
     @Column(name = "is_deleted")
     @NotNull
@@ -88,61 +80,48 @@ public class User {
 
     protected User(
             String userId,
-            String emailVerifiedYn,
             ProviderType providerType,
-            RoleType roleType,
-            LocalDateTime createdAt,
-            LocalDateTime modifiedAt) {
+            String email,
+            RoleType roleType) {
         this.userId = userId;
-        this.emailVerifiedYn = emailVerifiedYn;
         this.providerType = providerType;
         this.roleType = roleType;
-        this.createdAt = createdAt;
-        this.modifiedAt = modifiedAt;
+        this.email = email;
     }
 
 
     protected User(
             String userId,
-            String emailVerifiedYn,
             ProviderType providerType,
+            String email,
             RoleType roleType,
-            LocalDateTime createdAt,
-            LocalDateTime modifiedAt,
             String accessToken,
             String refreshToken) {
         this.userId = userId;
-        this.emailVerifiedYn = emailVerifiedYn;
         this.providerType = providerType;
+        this.email = email;
         this.roleType = roleType;
-        this.createdAt = createdAt;
-        this.modifiedAt = modifiedAt;
         this.oauth2AccessToken = accessToken;
         this.oauth2RefreshToken = refreshToken;
     }
 
-
     public static User createUser(
             @NotNull String userId,
-            @NotNull String emailVerifiedYn,
             @NotNull ProviderType providerType,
-            @NotNull RoleType roleType,
-            @NotNull LocalDateTime createdAt,
-            @NotNull LocalDateTime modifiedAt){
-        return new User(userId, emailVerifiedYn, providerType, roleType, createdAt, modifiedAt);
+            String email,
+            @NotNull RoleType roleType){
+        return new User(userId, providerType, email, roleType);
     }
 
     public static User createUser(
             @NotNull String userId,
-            @NotNull String emailVerifiedYn,
             @NotNull ProviderType providerType,
+            String email,
             @NotNull RoleType roleType,
-            @NotNull LocalDateTime createdAt,
-            @NotNull LocalDateTime modifiedAt,
             @NotNull String accessToken,
             @NotNull String refreshToken
     ){
-        return new User(userId, emailVerifiedYn, providerType, roleType, createdAt, modifiedAt, accessToken, refreshToken);
+        return new User(userId, providerType, email, roleType, accessToken, refreshToken);
     }
 
     public void updateNickName(String nickName){
@@ -160,8 +139,12 @@ public class User {
         this.agreedVersion = latestVersion;
     }
 
-    public void updateAccessToken(String accessToken, String refreshToken) {
+    public void updateToken(String accessToken, String refreshToken) {
         this.oauth2AccessToken = accessToken;
         this.oauth2RefreshToken = refreshToken;
+    }
+
+    public void updateEmail(String email) {
+        this.email = email;
     }
 }

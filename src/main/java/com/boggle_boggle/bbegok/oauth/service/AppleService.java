@@ -1,4 +1,4 @@
-package com.boggle_boggle.bbegok.service;
+package com.boggle_boggle.bbegok.oauth.service;
 
 import com.boggle_boggle.bbegok.config.properties.AppProperties;
 import com.boggle_boggle.bbegok.config.properties.AppleProperties;
@@ -8,11 +8,13 @@ import com.boggle_boggle.bbegok.entity.user.UserSettings;
 import com.boggle_boggle.bbegok.oauth.entity.ProviderType;
 import com.boggle_boggle.bbegok.oauth.entity.RoleType;
 import com.boggle_boggle.bbegok.oauth.exception.OAuthProviderMissMatchException;
+import com.boggle_boggle.bbegok.oauth.info.OAuth2UserInfo;
 import com.boggle_boggle.bbegok.oauth.token.AuthToken;
 import com.boggle_boggle.bbegok.oauth.token.AuthTokenProvider;
 import com.boggle_boggle.bbegok.repository.user.UserRefreshTokenRepository;
 import com.boggle_boggle.bbegok.repository.user.UserRepository;
 import com.boggle_boggle.bbegok.repository.user.UserSettingsRepository;
+import com.boggle_boggle.bbegok.service.AccessTokenService;
 import com.boggle_boggle.bbegok.utils.CookieUtil;
 import com.boggle_boggle.bbegok.utils.UuidUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -27,6 +29,7 @@ import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
 import net.minidev.json.parser.ParseException;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -70,6 +73,8 @@ public class AppleService {
             JSONObject payload = objectMapper.readValue(getPayload.toJSONObject().toJSONString(), JSONObject.class);
 
             String userId = String.valueOf(payload.get("sub"));
+            String userEmail = String.valueOf(payload.get("email"));
+
             savedUser = userRepository.findByUserIdAndIsDeleted(userId, false);
 
             if (savedUser != null) { //서로 다른 인증제공자간 충돌을 방지
@@ -79,9 +84,10 @@ public class AppleService {
                                     " account. Please use your " + savedUser.getProviderType() + " account to login."
                     );
                 }
-                savedUser.updateAccessToken(accessToken, refreshToken);
+                savedUser.updateToken(accessToken, refreshToken);
+                savedUser.updateEmail(userEmail);
             } else {
-                savedUser = createAppleUser(userId,accessToken, refreshToken);
+                savedUser = createAppleUser(userId, userEmail, accessToken, refreshToken);
                 userSettingsRepository.saveAndFlush(UserSettings.createUserSettings(savedUser));
             }
 
@@ -123,16 +129,13 @@ public class AppleService {
                 .build().toUriString();
     }
 
-    private User createAppleUser(String userId, String accessToken, String refreshToken) {
-        log.debug("# ACCESS TOKEN =>>>>> {}",accessToken);
+    private User createAppleUser(String userId, String userEmail, String accessToken, String refreshToken) {
         LocalDateTime now = LocalDateTime.now();
         User user = User.createUser(
                 userId,
-                "Y",
                 ProviderType.APPLE,
+                userEmail,
                 RoleType.GUEST,
-                now,
-                now,
                 accessToken,
                 refreshToken
         );
