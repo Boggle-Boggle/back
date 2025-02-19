@@ -48,7 +48,8 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         }
     }
 
-    private OAuth2User process(OAuth2UserRequest userRequest, OAuth2User user) {
+    @Transactional
+    protected OAuth2User process(OAuth2UserRequest userRequest, OAuth2User user) {
         ProviderType providerType = ProviderType.valueOf(userRequest.getClientRegistration().getRegistrationId().toUpperCase());
         OAuth2UserInfo userInfo = OAuth2UserInfoFactory.getOAuth2UserInfo(providerType, user.getAttributes());
         User savedUser = userRepository.findByUserIdAndIsDeleted(userInfo.getId(), false);
@@ -71,7 +72,6 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         return UserPrincipal.create(savedUser, user.getAttributes());
     }
 
-    @Transactional
     public void updateUser(User user, OAuth2UserInfo userInfo) {
         log.debug("### OAUTH2 EMAIL <1> : {}", userInfo.getEmail());
         if(userInfo.getEmail() == null) return;
