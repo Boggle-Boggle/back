@@ -72,6 +72,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         return UserPrincipal.create(savedUser, user.getAttributes());
     }
 
+    @Transactional
     public void updateUser(User user, OAuth2UserInfo userInfo) {
         log.debug("### OAUTH2 EMAIL <1> : {}", userInfo.getEmail());
         if(userInfo.getEmail() == null) return;
