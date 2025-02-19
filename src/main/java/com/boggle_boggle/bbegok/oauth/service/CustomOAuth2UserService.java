@@ -70,9 +70,13 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
     }
 
     private void updateUser(User user, OAuth2UserInfo userInfo) {
-        log.debug("### OAUTH2 EMAIL : {}", userInfo.getEmail());
+        log.debug("### OAUTH2 EMAIL <1> : {}", userInfo.getEmail());
         if(userInfo.getEmail() == null) return;
-        if(user.getEmail() == null || (!user.getEmail().equals(userInfo.getEmail()))) user.updateEmail(userInfo.getEmail());
+        if(user.getEmail() == null || (!user.getEmail().equals(userInfo.getEmail()))) {
+            log.debug("### OAUTH2 EMAIL <2> : {}을 {}로 update", user.getEmail(), userInfo.getEmail());
+            user.updateEmail(userInfo.getEmail());
+        }
+        else log.debug("### OAUTH2 EMAIL <2> not update/....");
     }
 
     private User createUser(OAuth2UserInfo userInfo, ProviderType providerType) {
