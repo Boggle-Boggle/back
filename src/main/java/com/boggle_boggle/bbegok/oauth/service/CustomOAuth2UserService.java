@@ -48,7 +48,6 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         }
     }
 
-    @Transactional
     protected OAuth2User process(OAuth2UserRequest userRequest, OAuth2User user) {
         ProviderType providerType = ProviderType.valueOf(userRequest.getClientRegistration().getRegistrationId().toUpperCase());
         OAuth2UserInfo userInfo = OAuth2UserInfoFactory.getOAuth2UserInfo(providerType, user.getAttributes());
@@ -61,7 +60,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                                 " account. Please use your " + savedUser.getProviderType() + " account to login."
                 );
             }
-            updateUser(savedUser, userInfo);
+            updateUser(userInfo);
         } else {
             //가입한적 없다면 회원가입을 진행.
             savedUser = createUser(userInfo, providerType);
@@ -73,7 +72,8 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
     }
 
     @Transactional
-    public void updateUser(User user, OAuth2UserInfo userInfo) {
+    public void updateUser( OAuth2UserInfo userInfo) {
+        User user = userRepository.findByUserIdAndIsDeleted(userInfo.getId(), false);
         log.debug("### OAUTH2 EMAIL <1> : {}", userInfo.getEmail());
         if(userInfo.getEmail() == null) return;
         if(user.getEmail() == null || (!user.getEmail().equals(userInfo.getEmail()))) {
