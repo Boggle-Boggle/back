@@ -71,9 +71,8 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
     private void updateUser(User user, OAuth2UserInfo userInfo) {
         log.debug("### OAUTH2 EMAIL : {}", userInfo.getEmail());
-        if ((userInfo.getEmail() != null && user.getEmail() != null) && !user.getEmail().equals(userInfo.getEmail())) {
-            user.updateEmail(userInfo.getEmail());
-        }
+        if(userInfo.getEmail() == null) return;
+        if(user.getEmail() == null || (!user.getEmail().equals(userInfo.getEmail()))) user.updateEmail(userInfo.getEmail());
     }
 
     private User createUser(OAuth2UserInfo userInfo, ProviderType providerType) {
