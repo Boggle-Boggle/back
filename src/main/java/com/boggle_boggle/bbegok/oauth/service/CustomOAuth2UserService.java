@@ -48,6 +48,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         }
     }
 
+    @Transactional
     protected OAuth2User process(OAuth2UserRequest userRequest, OAuth2User user) {
         ProviderType providerType = ProviderType.valueOf(userRequest.getClientRegistration().getRegistrationId().toUpperCase());
         OAuth2UserInfo userInfo = OAuth2UserInfoFactory.getOAuth2UserInfo(providerType, user.getAttributes());
@@ -60,7 +61,15 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                                 " account. Please use your " + savedUser.getProviderType() + " account to login."
                 );
             }
-            updateUser(userInfo);
+            //이메일을 업데이트
+            log.debug("### OAUTH2 EMAIL <1> : {}", userInfo.getEmail());
+            if(userInfo.getEmail() != null) {
+                if(savedUser.getEmail() == null || (!savedUser.getEmail().equals(userInfo.getEmail()))) {
+                    log.debug("### OAUTH2 EMAIL <2> : {}을 {}로 update", savedUser.getEmail(), userInfo.getEmail());
+                    savedUser.updateEmail(userInfo.getEmail());
+                }
+            }
+
         } else {
             //가입한적 없다면 회원가입을 진행.
             savedUser = createUser(userInfo, providerType);
@@ -71,17 +80,6 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         return UserPrincipal.create(savedUser, user.getAttributes());
     }
 
-    @Transactional
-    public void updateUser( OAuth2UserInfo userInfo) {
-        User user = userRepository.findByUserIdAndIsDeleted(userInfo.getId(), false);
-        log.debug("### OAUTH2 EMAIL <1> : {}", userInfo.getEmail());
-        if(userInfo.getEmail() == null) return;
-        if(user.getEmail() == null || (!user.getEmail().equals(userInfo.getEmail()))) {
-            log.debug("### OAUTH2 EMAIL <2> : {}을 {}로 update", user.getEmail(), userInfo.getEmail());
-            user.updateEmail(userInfo.getEmail());
-        }
-        else log.debug("### OAUTH2 EMAIL <2> not update/....");
-    }
 
     private User createUser(OAuth2UserInfo userInfo, ProviderType providerType) {
         User user = User.createUser(
