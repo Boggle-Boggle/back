@@ -11,6 +11,7 @@ import com.boggle_boggle.bbegok.oauth.info.OAuth2UserInfoFactory;
 import com.boggle_boggle.bbegok.repository.user.UserRepository;
 import com.boggle_boggle.bbegok.repository.user.UserSettingsRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
@@ -25,6 +26,7 @@ import java.time.LocalDateTime;
  */
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
     private final UserRepository userRepository;
@@ -68,7 +70,8 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
     }
 
     private void updateUser(User user, OAuth2UserInfo userInfo) {
-        if (userInfo.getEmail() != null && !user.getEmail().equals(userInfo.getEmail())) {
+        log.debug("### OAUTH2 EMAIL : {}", userInfo.getEmail());
+        if ((userInfo.getEmail() != null && user.getEmail() != null) && !user.getEmail().equals(userInfo.getEmail())) {
             user.updateEmail(userInfo.getEmail());
         }
     }
