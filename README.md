@@ -62,7 +62,7 @@ E북이나 도서관을 이용하는 독서가들에게 **'나만의 책장'을 
 </br>
 
 ## 📚 시스템 아키텍처
-<img src="https://github.com/user-attachments/assets/c85d70e2-652b-4e62-b0ea-73cafb13505a" width="650">
+<img src="https://github.com/user-attachments/assets/5f591bc2-de39-45ec-8d19-2664715d781c" width="650">
 
 사용자 확대에 따라 서버를 이전해야할 가능성이 있어 서버이전에도 유연하게 대응하는 CI/CD 아키텍처를 구축했습니다.
 GithubActions의 Secrets를 통해 모든 환경변수를 관리함으로써 환경변수파일, nginx와 dockercompose의 설정파일 등 직접 수정하고 이전해야했던 파일들을 동적으로 생성해 자동으로 이전되도록 자동화 했습니다.
