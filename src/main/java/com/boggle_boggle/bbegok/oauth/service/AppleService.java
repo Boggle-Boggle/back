@@ -28,8 +28,8 @@ import lombok.extern.slf4j.Slf4j;
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
 import net.minidev.json.parser.ParseException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -52,6 +52,8 @@ public class AppleService {
     private final AuthTokenProvider tokenProvider;
     private final AppProperties appProperties;
     private final UserRefreshTokenRepository userRefreshTokenRepository;
+    @Value("${bbaegok.root-domain}")
+    private String domain;
 
     public String getAppleLoginUrl(String redirectUri) {
         return appleProperties.getAppleLoginUrl(redirectUri);
@@ -148,7 +150,7 @@ public class AppleService {
 
     protected void saveCookie(HttpServletResponse response, HttpServletRequest request, String cookieName, long tokenExpiry, String tokenValue) {
         int cookieMaxAge = (int) tokenExpiry / 60;
-        CookieUtil.deleteCookie(request, response, cookieName);
-        CookieUtil.addCookie(response, cookieName, tokenValue, cookieMaxAge);
+        CookieUtil.deleteCookie(request, response, cookieName, domain);
+        CookieUtil.addCookie(response, cookieName, tokenValue, cookieMaxAge, domain);
     }
 }

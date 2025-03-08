@@ -12,6 +12,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Null;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
@@ -28,13 +29,15 @@ public class UserController {
 
     private final RevokeService revokeService;
     private final UserService userService;
+    @Value("${bbaegok.root-domain}")
+    private String domain;
 
     //회원탈퇴
     @DeleteMapping
     public DataResponseDto<Void> deleteUser(HttpServletRequest request, HttpServletResponse response, @AuthenticationPrincipal UserDetails userDetails) throws IOException {
         revokeService.deleteAccount(userDetails.getUsername());
-        CookieUtil.deleteCookie(request, response, REFRESH_TOKEN);
-        CookieUtil.deleteCookie(request, response, DEVICE_CODE);
+        CookieUtil.deleteCookie(request, response, REFRESH_TOKEN,domain);
+        CookieUtil.deleteCookie(request, response, DEVICE_CODE,domain);
         return DataResponseDto.empty();
     }
 

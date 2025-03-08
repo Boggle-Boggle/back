@@ -23,6 +23,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
@@ -43,8 +44,10 @@ public class AuthController {
     private final UserRefreshTokenRepository userRefreshTokenRepository;
     private final UserRefreshTokenService userRefreshTokenService;
     private final AccessTokenService accessTokenService;
-
     private final static long THREE_DAYS_MSEC = 259200000;
+
+    @Value("${bbaegok.root-domain}")
+    private String domain;
 
     @GetMapping("/refresh")
     public ResponseDto refreshToken (HttpServletRequest request, HttpServletResponse response) {
@@ -86,8 +89,8 @@ public class AuthController {
             userRefreshToken.setRefreshToken(authRefreshToken.getToken());
 
             int cookieMaxAge = (int) refreshTokenExpiry / 60;
-            CookieUtil.deleteCookie(request, response, REFRESH_TOKEN);
-            CookieUtil.addCookie(response, REFRESH_TOKEN, authRefreshToken.getToken(), cookieMaxAge);
+            CookieUtil.deleteCookie(request, response, REFRESH_TOKEN, domain);
+            CookieUtil.addCookie(response, REFRESH_TOKEN, authRefreshToken.getToken(), cookieMaxAge, domain);
         }
 
         return DataResponseDto.of(newAccessToken.getToken(), "New access token generated successfully");
@@ -98,8 +101,8 @@ public class AuthController {
         CookieUtil.getCookie(request, DEVICE_CODE)
                 .map(Cookie::getValue).ifPresent(userRefreshTokenService::deleteByDeviceId);
 
-        CookieUtil.deleteCookie(request, response, REFRESH_TOKEN);
-        CookieUtil.deleteCookie(request, response, DEVICE_CODE);
+        CookieUtil.deleteCookie(request, response, REFRESH_TOKEN, domain);
+        CookieUtil.deleteCookie(request, response, DEVICE_CODE, domain);
 
         return DataResponseDto.of(null, "Logout successful.");
     }

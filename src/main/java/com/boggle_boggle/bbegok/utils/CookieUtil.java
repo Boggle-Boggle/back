@@ -18,13 +18,6 @@ import java.util.Optional;
 @Slf4j
 @Component
 public class CookieUtil {
-    private static String domain;
-    private CookieUtil() {};
-
-    @Value("${bbaegok.root-domain}")
-    public void setDomain(String domain) {
-        CookieUtil.domain = domain;
-    }
 
     public static Optional<Cookie> getCookie(HttpServletRequest request, String name) {
         Cookie[] cookies = request.getCookies();
@@ -38,7 +31,7 @@ public class CookieUtil {
         return Optional.empty();
     }
 
-    public static void addCookie(HttpServletResponse response, String name, String value, int maxAge) {
+    public static void addCookie(HttpServletResponse response, String name, String value, int maxAge, String domain) {
         ResponseCookie cookie = ResponseCookie.from(name, value)
                 .path("/")
                 .domain(domain) // 루트도메인: bbaegok.store
@@ -51,7 +44,7 @@ public class CookieUtil {
         response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
     }
 
-    public static void deleteCookie(HttpServletRequest request, HttpServletResponse response, String name) {
+    public static void deleteCookie(HttpServletRequest request, HttpServletResponse response, String name, String domain) {
         Cookie[] cookies = request.getCookies();
         if (cookies != null && cookies.length > 0) {
             for (Cookie cookie : cookies) {
