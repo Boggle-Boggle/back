@@ -83,7 +83,7 @@ GithubActions의 Secrets를 통해 모든 환경변수를 관리함으로써 환
 `Java 17`,  `SpringBoot 3.2.4`,  `JPA`,  `MySQL 8.0.41`, `Redis`
 
 > **CI/CD & Infra** </br>
-`GithubAtions`, `Docker`, `Docker-compose`, `NginX`, `portainer`
+`GithubActions`, `Docker`, `Docker-compose`, `NginX`, `portainer`
 
 > **Frontend** </br>
 `React`, `React Native`, `TypeScript`, `TanstackQuery`, `Tailwind`, `Three.js`
