@@ -35,10 +35,7 @@ public class AppleController {
                          @RequestParam(value = "code", required = true) String code,
                          @RequestParam(value = "state", required = true) String state) throws IOException {
         User user = appleService.process(code);
-        if(user != null) {
-            String accessToken = appleService.loginSuccess(request, response, user);
-            redirectStrategy.sendRedirect(request, response, appleService.determineSuccessRedirectUrl(accessToken, state));
-        }
-        else throw new GeneralException();
+        String accessToken = appleService.loginSuccess(request, response, user);
+        redirectStrategy.sendRedirect(request, response, appleService.determineSuccessRedirectUrl(accessToken, state));
     }
 }

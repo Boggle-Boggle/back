@@ -89,13 +89,16 @@ public class AppleService {
             } else {
                 savedUser = createAppleUser(userId, userEmail, accessToken, refreshToken);
                 userSettingsRepository.saveAndFlush(UserSettings.createUserSettings(savedUser));
+                log.info("APPLE 회원가입 발생 : {}", userEmail);
             }
 
             return savedUser;
 
         } catch (JsonProcessingException e) {
+            log.error("APPLE 회원가입중 파싱 에러 발생");
             throw new RuntimeException("Failed to parse json data");
         } catch (IOException | java.text.ParseException | ParseException e) {
+            log.error("APPLE 회원가입중 기타 에러 발생");
             throw new RuntimeException(e);
         }
     }

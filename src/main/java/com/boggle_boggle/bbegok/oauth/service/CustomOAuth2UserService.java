@@ -66,6 +66,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             //가입한적 없다면 회원가입을 진행.
             savedUser = createUser(userInfo, providerType);
             userSettingsRepository.saveAndFlush(UserSettings.createUserSettings(savedUser));
+            log.info("{} 회원가입 발생 : {}", providerType, userInfo.getEmail());
         }
 
         //이미 가입한 유저라면 가입한 유저, 회원가입했다면 회원가입할 유저의 정보를 리턴
