@@ -32,7 +32,6 @@ public class OAuth2AuthorizationRequestBasedOnCookieRepository implements Author
     //OAuth2 인증 요청 객체를 쿠키에 저장
     @Override
     public void saveAuthorizationRequest(OAuth2AuthorizationRequest authorizationRequest, HttpServletRequest request, HttpServletResponse response) {
-        log.info("[테스트] domain 주입 : {}", domain);
         if (authorizationRequest == null) {
             CookieUtil.deleteCookie(request, response, OAUTH2_AUTHORIZATION_REQUEST_COOKIE_NAME, domain);
             CookieUtil.deleteCookie(request, response, REDIRECT_URI_PARAM_COOKIE_NAME, domain);
