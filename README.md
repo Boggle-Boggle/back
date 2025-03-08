@@ -14,7 +14,7 @@ E북이나 도서관을 이용하는 독서가들에게 **'나만의 책장'을 
 
 ![그래픽이미지 최종](https://github.com/user-attachments/assets/ff6d473b-857a-4130-a4cf-72ebc3550e45)
 
-- [[알파테스트 진행중] Google 플레이스토어 바로가기](https://play.google.com/store/apps/details?id=bbaegok.app)
+- [Google 플레이스토어 바로가기](https://play.google.com/store/apps/details?id=bbaegok.app&hl=ko)
 - [심사 진행중] Apple 앱스토어
 <details>
   <summary><b>테스트 계정</b></summary>
