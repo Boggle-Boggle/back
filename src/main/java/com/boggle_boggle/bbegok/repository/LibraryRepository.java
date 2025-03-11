@@ -8,11 +8,12 @@ import com.boggle_boggle.bbegok.entity.user.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
 import javax.swing.text.html.Option;
 import java.util.List;
 import java.util.Optional;
-
+@Repository
 public interface LibraryRepository extends JpaRepository<Library, Long> {
     // 서재 목록 및 해당 서재의 책 갯수 조회
     @Query("SELECT new com.boggle_boggle.bbegok.dto.LibrariesDto(l.librarySeq, l.libraryName, COUNT(rlm))" +
