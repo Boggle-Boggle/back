@@ -43,7 +43,7 @@ public class UserController {
 
     //닉네임 수정
     @PatchMapping("/nickname")
-    public DataResponseDto<Null> updateNickname(@AuthenticationPrincipal UserDetails userDetails,
+    public DataResponseDto<Void> updateNickname(@AuthenticationPrincipal UserDetails userDetails,
                                                 @Valid @RequestBody NickNameRequest request) {
         userService.updateNicName(userDetails.getUsername(), request.getNickname());
         return DataResponseDto.empty();
@@ -70,7 +70,7 @@ public class UserController {
     
     //약관동의
     @PutMapping("/terms")
-    public DataResponseDto<Null> agreeToTerms(@RequestBody @Valid List<TermsAgreement> request,
+    public DataResponseDto<Void> agreeToTerms(@RequestBody @Valid List<TermsAgreement> request,
                                               @AuthenticationPrincipal UserDetails userDetails) {
         userService.agreeToTerms(request,userDetails.getUsername());
         return DataResponseDto.empty();
