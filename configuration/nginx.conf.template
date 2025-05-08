@@ -11,6 +11,18 @@ http {
         server portainer:9000;
     }
 
+    server {
+        listen 8880;
+        server_name api.bbaegok.store;
+
+        location /.well-known/acme-challenge/ {
+            root /var/www/html;
+        }
+
+        location / {
+            return 301 https://$host$request_uri;
+        }
+    }
 
     server {
         listen 443 ssl;
