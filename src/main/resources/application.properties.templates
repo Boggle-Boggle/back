@@ -6,6 +6,7 @@ spring.datasource.url=${MYSQL_URL}
 spring.datasource.username=${MYSQL_USER}
 spring.datasource.password=${MYSQL_ROOT_PASSWORD}
 
+spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQL8Dialect
 spring.jpa.show-sql=false
 spring.jpa.hibernate.ddl-auto=update
 
