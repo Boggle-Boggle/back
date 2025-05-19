@@ -12,4 +12,4 @@ ADD https://dtdg.co/latest-java-tracer dd-java-agent.jar
 EXPOSE 8080
 
 #앱 실행시 Datadog APM 연결
-ENTRYPOINT ["java", "-javaagent:/app/dd-java-agent.jar", "-Ddd.service=bbegok", "-Ddd.env=prod", "-Ddd.version=1.0", "-Ddd.agent.host=host.docker.internal", "-Ddd.trace.agent.port=8126", "-jar", "app.jar"]
+ENTRYPOINT ["java", "-javaagent:/app/dd-java-agent.jar", "-Ddd.service=bbegok", "-Ddd.env=prod", "-Ddd.version=1.0", "-Ddd.agent.host=172.17.0.1", "-Ddd.trace.agent.port=8126", "-jar", "app.jar"]
