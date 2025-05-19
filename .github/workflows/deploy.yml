@@ -60,10 +60,11 @@ jobs:
 
       #도커이미지 빌드&푸쉬
       - name: Build and push Docker image
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v3
         with:
           context: .
           push : true
+          platforms: linux/arm64
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/bbegok:latest
 
       #env 셋팅

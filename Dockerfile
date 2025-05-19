@@ -5,7 +5,8 @@ WORKDIR /app
 #앱 JAR 복사
 COPY build/libs/*.jar app.jar
 
-RUN apt-get update && apt-get install -y curl
+RUN apt-get update || (cat /etc/apt/sources.list && exit 1)
+RUN apt-get install -y curl
 RUN curl -L -o dd-java-agent.jar https://dtdg.co/latest-java-tracer
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
