@@ -51,7 +51,6 @@ services:
 
   datadog:
     image: gcr.io/datadoghq/agent:latest
-    container_name: datadog-agent
     environment:
       - DD_API_KEY=${DD_API_KEY}
       - DD_SITE=us5.datadoghq.com
