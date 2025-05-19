@@ -5,11 +5,12 @@ WORKDIR /app
 #앱 JAR 복사
 COPY build/libs/*.jar app.jar
 
-#Datadog Agent 다운로드
-ADD https://dtdg.co/latest-java-tracer dd-java-agent.jar
+RUN apt-get update && apt-get install -y curl && \
+    curl -L -o dd-java-agent.jar https://dtdg.co/latest-java-tracer && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
 
 #8080포트 오픈
 EXPOSE 8080
 
 #앱 실행시 Datadog APM 연결
-ENTRYPOINT ["java", "-javaagent:/app/dd-java-agent.jar", "-Ddd.service=bbegok", "-Ddd.env=prod", "-Ddd.version=1.0", "-Ddd.agent.host=172.17.0.1", "-Ddd.trace.agent.port=8126", "-jar", "app.jar"]
+ENTRYPOINT ["java", "-javaagent:/app/dd-java-agent.jar", "-Ddd.service=bbegok", "-Ddd.env=prod", "-Ddd.version=1.0", "-Ddd.agent.host=datadog", "-Ddd.trace.agent.port=8126", "-jar", "app.jar"]

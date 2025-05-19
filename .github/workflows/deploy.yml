@@ -81,6 +81,7 @@ jobs:
           SSL_CERT_PATH: ${{ secrets.SSL_CERT_PATH }}
           SSL_CERTIFICATE: ${{ secrets.SSL_CERTIFICATE }}
           SSL_CERTIFICATE_KEY: ${{ secrets.SSL_CERTIFICATE_KEY }}
+          DD_API_KEY: ${{ secrets.DD_API_KEY }}
 
       #nginx.config 셋팅
       - name: Create nginx.conf from template

@@ -47,6 +47,25 @@ services:
       - redis-data:/data
     command: ["redis-server", "--appendonly", "yes"]
 
+
+  datadog:
+    image: gcr.io/datadoghq/agent:latest
+    container_name: datadog-agent
+    environment:
+      - DD_API_KEY=${DD_API_KEY}
+      - DD_SITE=us5.datadoghq.com
+      - DD_API_HOST=https://api.us5.datadoghq.com
+      - DD_APM_ENABLED=true
+      - DD_LOGS_ENABLED=true
+      - DD_PROCESS_AGENT_ENABLED=true
+    ports:
+      - "8126:8126"  # APM
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /proc/:/host/proc/:ro
+      - /sys/fs/cgroup:/host/sys/fs/cgroup:ro
+    restart: unless-stopped
+
 volumes:
   mysql-data:
   portainer_data:
