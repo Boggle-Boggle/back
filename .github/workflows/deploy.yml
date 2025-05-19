@@ -65,6 +65,7 @@ jobs:
           context: .
           push : true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/bbegok:latest
+          platforms: linux/arm64
 
       #env 셋팅
       - name: Create .env file
