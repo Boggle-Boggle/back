@@ -5,9 +5,9 @@ WORKDIR /app
 #앱 JAR 복사
 COPY build/libs/*.jar app.jar
 
-RUN apt-get update && apt-get install -y curl && \
-    curl -L -o dd-java-agent.jar https://dtdg.co/latest-java-tracer && \
-    apt-get clean && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y curl
+RUN curl -L -o dd-java-agent.jar https://dtdg.co/latest-java-tracer
+RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
 #8080포트 오픈
 EXPOSE 8080
