@@ -102,7 +102,7 @@ jobs:
           username: ${{ secrets.PI_USERNAME }}
           password: ${{ secrets.PI_PASSWORD }}
           source: "./configuration/*"
-          target: "Project/bbegok/"
+          target: "Project/bbaegok/prod/"
           strip_components: 1
 
 
@@ -115,7 +115,7 @@ jobs:
           username: ${{ secrets.PI_USERNAME }}
           password: ${{ secrets.PI_PASSWORD }}
           script: |
-            cd Project/bbegok/
+            cd Project/bbaegok/prod/
             docker-compose pull
             docker-compose down
             docker-compose up -d
