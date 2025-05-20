@@ -21,9 +21,9 @@ services:
       - "3306:3306"
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      MYSQL_DATABASE: bbegok
-      MYSQL_USER: ${MYSQL_USER}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_DATABASE: bbaegok
+      #MYSQL_USER: ${MYSQL_USER}
+      #MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     volumes:
       - mysql-data:/var/lib/mysql
 
@@ -58,19 +58,22 @@ services:
       - DD_APM_ENABLED=true
       - DD_LOGS_ENABLED=true
       - DD_PROCESS_AGENT_ENABLED=true
+      - DD_CONTAINER_COLLECT_ALL=true
     ports:
       - "8126:8126"  # APM
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - /proc/:/host/proc/:ro
       - /sys/fs/cgroup:/host/sys/fs/cgroup:ro
+      - ./datadog/conf.d/mysql.d/conf.yaml:/etc/datadog-agent/conf.d/mysql.d/conf.yaml:ro
+      - ./datadog/conf.d/redisdb.d/conf.yaml:/etc/datadog-agent/conf.d/redisdb.d/conf.yaml:ro
     restart: unless-stopped
 
 volumes:
   mysql-data:
   portainer_data:
   redis-data:
-  
+
 x-dockerhub-auth: &dockerhub-auth
   username: ${DOCKERHUB_USERNAME}
   password: ${DOCKERHUB_TOKEN}
