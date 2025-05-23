@@ -81,6 +81,8 @@ services:
     environment:
       - MB_DB_FILE=/metabase-data/metabase.db
       - MB_SITE_URL=${ANALYTICS_DOMAIN_NAME}
+    depends_on:
+      - db
     volumes:
       - metabase-data:/metabase-data
 
