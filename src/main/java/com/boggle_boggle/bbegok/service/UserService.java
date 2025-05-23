@@ -2,29 +2,26 @@ package com.boggle_boggle.bbegok.service;
 
 import com.boggle_boggle.bbegok.dto.Term;
 import com.boggle_boggle.bbegok.dto.TermsAgreement;
+import com.boggle_boggle.bbegok.dto.request.WithdrawReasonRequest;
 import com.boggle_boggle.bbegok.dto.response.TermsResponse;
 import com.boggle_boggle.bbegok.entity.AgreeToTerms;
 import com.boggle_boggle.bbegok.entity.Terms;
+import com.boggle_boggle.bbegok.entity.WithdrawReason;
 import com.boggle_boggle.bbegok.entity.user.User;
 import com.boggle_boggle.bbegok.exception.Code;
 import com.boggle_boggle.bbegok.exception.exception.GeneralException;
 import com.boggle_boggle.bbegok.oauth.entity.RoleType;
 import com.boggle_boggle.bbegok.repository.AgreeToTermsRepository;
 import com.boggle_boggle.bbegok.repository.TermsJpaRepository;
+import com.boggle_boggle.bbegok.repository.WithdrawReasonRepository;
 import com.boggle_boggle.bbegok.repository.redis.TermsRepository;
 import com.boggle_boggle.bbegok.repository.user.UserRefreshTokenRepository;
 import com.boggle_boggle.bbegok.repository.user.UserRepository;
-import com.boggle_boggle.bbegok.utils.CookieUtil;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
-
-import static org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames.DEVICE_CODE;
-import static org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames.REFRESH_TOKEN;
 
 @Service
 @RequiredArgsConstructor

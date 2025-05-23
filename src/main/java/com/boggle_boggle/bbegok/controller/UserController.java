@@ -3,6 +3,7 @@ package com.boggle_boggle.bbegok.controller;
 import com.boggle_boggle.bbegok.dto.TermsAgreement;
 import com.boggle_boggle.bbegok.dto.base.DataResponseDto;
 import com.boggle_boggle.bbegok.dto.request.NickNameRequest;
+import com.boggle_boggle.bbegok.dto.request.WithdrawReasonRequest;
 import com.boggle_boggle.bbegok.dto.response.TermsResponse;
 import com.boggle_boggle.bbegok.oauth.service.RevokeService;
 import com.boggle_boggle.bbegok.service.UserService;
@@ -10,7 +11,6 @@ import com.boggle_boggle.bbegok.utils.CookieUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.Null;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -32,10 +32,11 @@ public class UserController {
     @Value("${bbaegok.root-domain}")
     private String domain;
 
-    //회원탈퇴
     @DeleteMapping
-    public DataResponseDto<Void> deleteUser(HttpServletRequest request, HttpServletResponse response, @AuthenticationPrincipal UserDetails userDetails) throws IOException {
-        revokeService.deleteAccount(userDetails.getUsername());
+    public DataResponseDto<Void> deleteUser(HttpServletRequest request, HttpServletResponse response,
+                                            @Valid @RequestBody WithdrawReasonRequest withdrawReasonRequest,
+                                            @AuthenticationPrincipal UserDetails userDetails) throws IOException {
+        revokeService.deleteAccount(userDetails.getUsername(), withdrawReasonRequest);
         CookieUtil.deleteCookie(request, response, REFRESH_TOKEN,domain);
         CookieUtil.deleteCookie(request, response, DEVICE_CODE,domain);
         return DataResponseDto.empty();
