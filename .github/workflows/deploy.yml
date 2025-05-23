@@ -83,6 +83,7 @@ jobs:
           SSL_CERTIFICATE: ${{ secrets.SSL_CERTIFICATE }}
           SSL_CERTIFICATE_KEY: ${{ secrets.SSL_CERTIFICATE_KEY }}
           DD_API_KEY: ${{ secrets.DD_API_KEY }}
+          ANALYTICS_DOMAIN_NAME : ${{secrets.ANALYTICS_DOMAIN_NAME}}
 
       #nginx.config 셋팅
       - name: Create nginx.conf from template
@@ -92,6 +93,7 @@ jobs:
           DOMAIN_NAME: ${{ secrets.DOMAIN_NAME }}
           SSL_CERTIFICATE: ${{ secrets.SSL_CERTIFICATE }}
           SSL_CERTIFICATE_KEY: ${{ secrets.SSL_CERTIFICATE_KEY }}
+          ANALYTICS_DOMAIN_NAME : ${{secrets.ANALYTICS_DOMAIN_NAME}}
 
       #configuration/이하의 파일을 서버로 복사
       - name: Copy files to Raspberry Pi
@@ -119,7 +121,6 @@ jobs:
             docker-compose pull
             docker-compose down
             docker-compose up -d
-            docker image prune -f
 
       - name: Discord Webhook when success
         if: success()
