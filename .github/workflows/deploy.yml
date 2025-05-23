@@ -128,9 +128,10 @@ jobs:
 
             echo "Current active app: $CURRENT"
             echo "Deploying next app: $NEXT"
-            
+
             export ACTIVE_COLOR=$NEXT
             envsubst '${ACTIVE_COLOR}' < nginx.conf > nginx_final.conf
+            ACTIVE_COLOR=$NEXT envsubst '${ACTIVE_COLOR}' < nginx.conf > nginx_final.conf
             mv nginx_final.conf nginx.conf
             
             docker-compose pull app_${NEXT}
