@@ -3,8 +3,12 @@ events {
 }
 
 http {
-    upstream spring_app { #docker-compose에서 정의한 서비스
-        server app:8080;
+    upstream spring_app_blue {
+        server app_blue:8080;
+    }
+
+    upstream spring_app_green {
+        server app_green:8080;
     }
 
     upstream portainer_app {
@@ -38,7 +42,7 @@ http {
 
         location /backend/ { #모든 요청을 Spring으로 프록시
             rewrite ^/backend/(.*) /$1 break;
-            proxy_pass http://spring_app/;
+            proxy_pass http://spring_app_${ACTIVE_COLOR}/;
             proxy_set_header Host $host;
             proxy_set_header X-Real-IP $remote_addr;
             proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
