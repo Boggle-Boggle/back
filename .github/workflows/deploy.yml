@@ -88,7 +88,7 @@ jobs:
       #nginx.config 셋팅
       - name: Create nginx.conf from template
         run: |
-          envsubst < ./configuration/nginx.conf.template > ./configuration/nginx.conf
+          envsubst '${DOMAIN_NAME} ${SSL_CERTIFICATE} ${SSL_CERTIFICATE_KEY} ${ANALYTICS_DOMAIN_NAME}' < ./configuration/nginx.conf.template > ./configuration/nginx.conf
         env:
           DOMAIN_NAME: ${{ secrets.DOMAIN_NAME }}
           SSL_CERTIFICATE: ${{ secrets.SSL_CERTIFICATE }}
