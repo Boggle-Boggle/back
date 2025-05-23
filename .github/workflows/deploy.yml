@@ -118,9 +118,8 @@ jobs:
           password: ${{ secrets.PI_PASSWORD }}
           script: |
             cd Project/bbaegok/prod/
-            docker-compose pull
-            docker-compose down
-            docker-compose up -d
+            docker-compose pull app
+            docker-compose up -d app
 
       - name: Discord Webhook when success
         if: success()
