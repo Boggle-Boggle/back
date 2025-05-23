@@ -88,6 +88,7 @@ volumes:
   mysql-data:
   portainer_data:
   redis-data:
+  metabase-data:
 
 x-dockerhub-auth:
   username: ${DOCKERHUB_USERNAME}
