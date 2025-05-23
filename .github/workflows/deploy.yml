@@ -107,9 +107,7 @@ jobs:
           target: "Project/bbaegok/prod/"
           strip_components: 1
 
-
-      #라즈베리파이 서버에 배포
-      - name: Deploy to Raspberry Pi
+      - name: Deploy Blue-Green to Raspberry Pi
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.PI_HOST }}
@@ -118,8 +116,31 @@ jobs:
           password: ${{ secrets.PI_PASSWORD }}
           script: |
             cd Project/bbaegok/prod/
-            docker-compose pull app
-            docker-compose up -d app
+
+            # 현재 실행중인 app color 확인
+            if docker ps --filter "name=app_blue" --filter "status=running" | grep app_blue; then
+              CURRENT="blue"
+              NEXT="green"
+            else
+              CURRENT="green"
+              NEXT="blue"
+            fi
+
+            echo "Current active app: $CURRENT"
+            echo "Deploying next app: $NEXT"
+
+            docker-compose pull app_${NEXT}
+            docker-compose up -d app_${NEXT}
+
+            # nginx.conf 템플릿 복사 및 ACTIVE_COLOR 치환
+            envsubst '${ACTIVE_COLOR} ${DOMAIN_NAME} ${SSL_CERTIFICATE} ${SSL_CERTIFICATE_KEY}' < ./configuration/nginx.conf.template > ./configuration/nginx.conf
+            sed -i "s/\${ACTIVE_COLOR}/$NEXT/g" ./configuration/nginx.conf
+
+            docker cp ./configuration/nginx.conf nginx:/etc/nginx/nginx.conf
+            docker exec nginx nginx -s reload
+
+            docker-compose stop app_${CURRENT}
+
 
       - name: Discord Webhook when success
         if: success()
