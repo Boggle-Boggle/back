@@ -89,6 +89,6 @@ volumes:
   portainer_data:
   redis-data:
 
-x-dockerhub-auth: &dockerhub-auth
+x-dockerhub-auth:
   username: ${DOCKERHUB_USERNAME}
   password: ${DOCKERHUB_TOKEN}
