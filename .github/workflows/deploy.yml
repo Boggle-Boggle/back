@@ -128,16 +128,15 @@ jobs:
 
             echo "Current active app: $CURRENT"
             echo "Deploying next app: $NEXT"
-
+            
+            export ACTIVE_COLOR=$NEXT
+            envsubst '${ACTIVE_COLOR}' < nginx.conf > nginx_final.conf
+            mv nginx_final.conf nginx.conf
+            
             docker-compose pull app_${NEXT}
             docker-compose up -d app_${NEXT}
 
-            # nginx.conf 템플릿 복사 및 ACTIVE_COLOR 치환
-            envsubst '${ACTIVE_COLOR} ${DOMAIN_NAME} ${SSL_CERTIFICATE} ${SSL_CERTIFICATE_KEY}' < ./configuration/nginx.conf.template > ./configuration/nginx.conf
-            sed -i "s/\${ACTIVE_COLOR}/$NEXT/g" ./configuration/nginx.conf
-
-            docker cp ./configuration/nginx.conf nginx:/etc/nginx/nginx.conf
-            docker exec nginx nginx -s reload
+            docker exec prod-nginx-1 nginx -s reload   # 설정 reload만 해줌
 
             docker-compose stop app_${CURRENT}
 
