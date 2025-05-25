@@ -1,10 +1,13 @@
 package com.boggle_boggle.bbegok.oauth.service;
 
 import com.boggle_boggle.bbegok.config.properties.AppleProperties;
+import com.boggle_boggle.bbegok.dto.request.WithdrawReasonRequest;
+import com.boggle_boggle.bbegok.entity.WithdrawReason;
 import com.boggle_boggle.bbegok.entity.user.User;
 import com.boggle_boggle.bbegok.exception.Code;
 import com.boggle_boggle.bbegok.exception.exception.GeneralException;
 import com.boggle_boggle.bbegok.oauth.entity.ProviderType;
+import com.boggle_boggle.bbegok.repository.WithdrawReasonRepository;
 import com.boggle_boggle.bbegok.repository.user.UserRefreshTokenRepository;
 import com.boggle_boggle.bbegok.repository.user.UserRepository;
 import jakarta.transaction.Transactional;
@@ -25,6 +28,7 @@ public class RevokeService {
     private final UserRepository userRepository;
     private final AppleProperties appleProperties;
     private final UserRefreshTokenRepository userRefreshTokenRepository;
+    private final WithdrawReasonRepository WithdrawReasonRepository;
 
     @Value("${apple.revoke-url}")
     String appleRevokeUrl;
@@ -33,12 +37,18 @@ public class RevokeService {
     @Value("${kakao.revoke-url}")
     String kakaoRevokeUrl;
 
+    //(0) 탈퇴사유 저장
     //(1) User 삭제
     //(2) 인증서버의 액세스토큰 무효화
     //(3) 쿠키제거
 
-    public void deleteAccount(String userId) throws IOException {
-        User user = getUser(userId);
+    public void deleteAccount(String userSeq, WithdrawReasonRequest request) throws IOException {
+        User user = getUser(userSeq);
+        
+        //탈퇴사유 저장
+        WithdrawReasonRepository.save(new WithdrawReason(user, request.getWithdrawType(), request.getWithdrawText()));
+
+        //User삭제
         deleteUser(user);
 
         switch (user.getProviderType()) {

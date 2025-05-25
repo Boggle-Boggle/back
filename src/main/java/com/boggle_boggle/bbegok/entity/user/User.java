@@ -34,6 +34,9 @@ public class User {
     @Column(name = "user_name", unique = true, length = 12)
     private String userName = null;
 
+    @Column(name = "withdraw_user_name", length = 12)
+    private String withdrawUserName = null;
+
     @JsonIgnore
     @Column(name = "oauth2_access_token", length = 512)
     private String oauth2AccessToken;
@@ -128,10 +131,15 @@ public class User {
         this.userName = nickName;
     }
 
+    public void updateWithdrawNickName(String nickName){
+        this.withdrawUserName = nickName;
+    }
+
     public void softDelete() {
+        this.updateWithdrawNickName(this.userName);
+        this.updateNickName(null);
         this.isDeleted = true;
         this.deletedAt = LocalDateTime.now();
-        this.updateNickName(null);
     }
 
     public void updateGuestToUser(String latestVersion) {
