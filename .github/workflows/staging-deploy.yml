@@ -79,11 +79,9 @@ jobs:
           port: ${{ secrets.PI_PORT }}
           username: ${{ secrets.PI_USERNAME }}
           password: ${{ secrets.PI_PASSWORD }}
-          source: |
-            ./configuration/staging/.env
-            ./configuration/staging/docker-compose.yml
-            ./configuration/staging/nginx.conf
+          source: "./configuration/staging/*"
           target: "Project/bbaegok/staging/"
+          strip_components: 1
 
       # 스테이징 서버에 배포
       - name: Deploy to Raspberry Pi (Staging)
