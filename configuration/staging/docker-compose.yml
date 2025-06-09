@@ -5,8 +5,8 @@ services:
     platform: linux/arm64
     ports:
       - "8090:8080"
-    environment:
-      - ENV=${ENV}
+    env_file:
+      - .env
     depends_on:
       - db
       - redis
