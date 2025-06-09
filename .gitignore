@@ -6,7 +6,7 @@ build/
 !**/src/test/**/build/
 
 ###custom###
-application.properties
+# application.properties
 AuthKey.p8
 
 ### STS ###

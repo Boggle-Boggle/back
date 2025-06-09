@@ -1,0 +1,118 @@
+name: Deploy to Staging (RaspberryPi)
+
+on:
+  push:
+    branches: [ staging ]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      # JDK 셋팅
+      - name: Set up JDK 17
+        uses: actions/setup-java@v2
+        with:
+          java-version: '17'
+          distribution: 'adopt'
+
+      # AuthKey.p8 생성
+      - name: Create AuthKey.p8
+        run: |
+          echo "${{ secrets.APPLE_AUTH_KEY }}" > ./src/main/resources/key/AuthKey.p8
+
+      # 빌드
+      - name: Build with Gradle
+        run: |
+          chmod +x ./gradlew
+          ./gradlew build -x test
+
+      # DockerHub 로그인
+      - name: Login to DockerHub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      # Docker 이미지 빌드 & 푸시 (+스테이징용 태그)
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          push: true
+          platforms: linux/arm64
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/bbegok:staging
+
+      # .env 파일 생성
+      - name: Create .env file
+        run: |
+          envsubst < ./configuration/staging/.env.template > ./configuration/staging/.env
+        env:
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+          DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+          DOMAIN_NAME: ${{ secrets.STAGING_DOMAIN_NAME }}
+          ROOT_DOMAIN_NAME: ${{ secrets.ROOT_DOMAIN_NAME }}
+          MYSQL_URL: ${{ secrets.STAGING_MYSQL_URL }}
+          MYSQL_ROOT_PASSWORD: ${{ secrets.STAGING_MYSQL_ROOT_PASSWORD }}
+          MYSQL_USER: ${{ secrets.STAGING_MYSQL_USER }}
+          MYSQL_PASSWORD: ${{ secrets.STAGING_MYSQL_PASSWORD }}
+          REDIS_PREFIX: ${{ secrets.STAGING_REDIS_PREFIX }}
+          REDIS_PORT: ${{ secrets.STAGING_REDIS_PORT }}
+          REDIS_TERMS_KEY: ${{ secrets.STAGING_REDIS_TERMS_KEY }}
+          ALADIN_TTB_KEY: ${{ secrets.ALADIN_TTB_KEY }}
+          ALADIN_SERVER_URL: ${{ secrets.ALADIN_SERVER_URL }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          KAKAO_CLIENT: ${{ secrets.KAKAO_CLIENT }}
+          KAKAO_SECRET: ${{ secrets.KAKAO_SECRET }}
+          GOOGLE_CLIENT: ${{ secrets.GOOGLE_CLIENT }}
+          GOOGLE_SECRET: ${{ secrets.GOOGLE_SECRET }}
+          APPLE_AUD : ${{ secrets.APPLE_AUD }}
+          APPLE_TEAM_ID : ${{ secrets.APPLE_TEAM_ID }}
+          APPLE_KEY_ID : ${{ secrets.APPLE_KEY_ID }}
+
+      # 서버로 파일 복사
+      - name: Copy files to Raspberry Pi (Staging)
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.PI_HOST }}
+          port: ${{ secrets.PI_PORT }}
+          username: ${{ secrets.PI_USERNAME }}
+          password: ${{ secrets.PI_PASSWORD }}
+          source: "./configuration/staging/.env,./configuration/staging/docker-compose.yml,./configuration/staging/nginx.conf"
+          target: "Project/bbaegok/staging/"
+
+      # 스테이징 서버에 배포
+      - name: Deploy to Raspberry Pi (Staging)
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.PI_HOST }}
+          port: ${{ secrets.PI_PORT }}
+          username: ${{ secrets.PI_USERNAME }}
+          password: ${{ secrets.PI_PASSWORD }}
+          script: |
+            cd Project/bbaegok/staging/
+            docker-compose pull
+            docker-compose down
+            docker-compose up -d
+            docker image prune -f
+
+      - name: Discord Webhook when success
+        if: success()
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.STAGING_DISCORD_WEBHOOK }}
+        uses: Ilshidur/action-discord@master
+        with:
+          args: |
+            ## **:rocket: 스테이징 서버 배포 SUCCESS!**
+
+      - name: Discord Webhook when fail
+        if: failure()
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.STAGING_DISCORD_WEBHOOK }}
+        uses: Ilshidur/action-discord@master
+        with:
+          args: |
+            ## **:x: 스테이징 서버 배포 FAIL!**
+            **message**  |   ${{ github.event.head_commit.message }}
+            **go to log** |  ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
