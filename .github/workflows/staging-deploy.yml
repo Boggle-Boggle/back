@@ -80,9 +80,9 @@ jobs:
           username: ${{ secrets.PI_USERNAME }}
           password: ${{ secrets.PI_PASSWORD }}
           source: |
-            configuration/staging/.env
-            configuration/staging/docker-compose.yml
-            configuration/staging/nginx.conf
+            ./configuration/staging/.env
+            ./configuration/staging/docker-compose.yml
+            ./configuration/staging/nginx.conf
           target: Project/bbaegok/staging/
 
       # 스테이징 서버에 배포
