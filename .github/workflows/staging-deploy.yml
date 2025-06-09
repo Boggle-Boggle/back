@@ -79,7 +79,10 @@ jobs:
           port: ${{ secrets.PI_PORT }}
           username: ${{ secrets.PI_USERNAME }}
           password: ${{ secrets.PI_PASSWORD }}
-          source: "./configuration/staging/*"
+          source: |
+            ./configuration/staging/.env
+            ./configuration/staging/docker-compose.yml
+            ./configuration/staging/nginx.conf
           target: "Project/bbaegok/staging/"
 
       # 스테이징 서버에 배포
@@ -100,7 +103,7 @@ jobs:
       - name: Discord Webhook when success
         if: success()
         env:
-          DISCORD_WEBHOOK: ${{ secrets.STAGING_DISCORD_WEBHOOK }}
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
         uses: Ilshidur/action-discord@master
         with:
           args: |
@@ -109,7 +112,7 @@ jobs:
       - name: Discord Webhook when fail
         if: failure()
         env:
-          DISCORD_WEBHOOK: ${{ secrets.STAGING_DISCORD_WEBHOOK }}
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
         uses: Ilshidur/action-discord@master
         with:
           args: |
