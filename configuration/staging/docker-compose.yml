@@ -1,0 +1,82 @@
+services:
+  app:
+    container_name: staging_app
+    image: ${DOCKERHUB_USERNAME}/bbegok:staging
+    platform: linux/arm64
+    ports:
+      - "8090:8080"
+    depends_on:
+      - db
+      - redis
+
+  portainer:
+    image: portainer/portainer-ce
+    volumes:
+      - portainer-data-staging:/data
+
+  db:
+    container_name: staging_db
+    image: mysql:8.0
+    ports:
+      - "3307:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: bbaegok-staging
+      TZ: UTC                         #Linux 컨테이너 타임존 설정
+    command: --default-time-zone='+00:00' #MySQL 컨테이너
+    volumes:
+      - mysql-data-staging:/var/lib/mysql
+
+  nginx:
+    container_name: staging_nginx
+    image: nginx:latest
+    ports:
+      - "444:443"
+      - "81:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ${SSL_CERT_PATH}/fullchain.pem:${SSL_CERTIFICATE}:ro
+      - ${SSL_CERT_PATH}/privkey.pem:${SSL_CERTIFICATE_KEY}:ro
+      - ./html:/var/www/html:rw
+    depends_on:
+      - app
+      - portainer
+
+  redis:
+    container_name: staging_redis
+    image: redis:alpine
+    ports:
+      - "6380:6379"
+    volumes:
+      - redis-data-staging:/data
+    command: ["redis-server", "--appendonly", "yes"]
+
+#  datadog:
+#    image: gcr.io/datadoghq/agent:latest
+#    environment:
+#      - DD_API_KEY=${DD_API_KEY}
+#      - DD_SITE=us5.datadoghq.com
+#      - DD_APM_ENABLED=true
+#      - DD_LOGS_ENABLED=true
+#      - DD_MYSQL_ENABLED=true
+#      - DD_IGNORE_AUTOCONF=redisdb
+#      - DD_CONTAINER_EXCLUDE=name:datadog-agent
+#    ports:
+#      - "8126:8126"  # APM
+#      - "8125:8125/udp"  # Dogstatsd (metrics UDP)
+#    volumes:
+#      - ./datadog-agent/datadog.yaml:/etc/datadog-agent/datadog.yaml:ro #메인설정
+#      - ./datadog-agent/mysql.yaml:/etc/datadog-agent/conf.d/mysql.d/conf.yaml:ro #MySQL 설정
+#      - /var/run/docker.sock:/var/run/docker.sock:ro
+#      - /proc/:/host/proc/:ro
+#      - /sys/fs/cgroup:/host/sys/fs/cgroup:ro
+#    restart: unless-stopped
+
+volumes:
+  mysql-data-staging:
+  redis-data-staging:
+  portainer-data-staging:
+
+x-dockerhub-auth:
+  username: ${DOCKERHUB_USERNAME}
+  password: ${DOCKERHUB_TOKEN}
