@@ -10,11 +10,15 @@ services:
     depends_on:
       - db
       - redis
+    networks:
+      - staging-network
 
   portainer:
     image: portainer/portainer-ce
     volumes:
       - portainer-data-staging:/data
+    networks:
+      - staging-network
 
   db:
     container_name: staging_db
@@ -28,6 +32,8 @@ services:
     command: --default-time-zone='+00:00' #MySQL 컨테이너
     volumes:
       - mysql-data-staging:/var/lib/mysql
+    networks:
+      - staging-network
 
   nginx:
     container_name: staging_nginx
@@ -41,6 +47,9 @@ services:
     depends_on:
       - app
       - portainer
+    networks:
+      - staging-network
+      - proxy-network
 
   redis:
     container_name: staging_redis
@@ -50,6 +59,8 @@ services:
     volumes:
       - redis-data-staging:/data
     command: ["redis-server", "--appendonly", "yes"]
+    networks:
+      - staging-network
 
 volumes:
   mysql-data-staging:
@@ -59,3 +70,8 @@ volumes:
 x-dockerhub-auth:
   username: ${DOCKERHUB_USERNAME}
   password: ${DOCKERHUB_TOKEN}
+
+networks:
+  staging-network:
+  proxy-network:
+    external: true
