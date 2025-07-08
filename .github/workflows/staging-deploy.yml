@@ -7,6 +7,7 @@ on:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    environment: staging
     steps:
       - uses: actions/checkout@v2
 
@@ -102,19 +103,20 @@ jobs:
       - name: Discord Webhook when success
         if: success()
         env:
-          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_SUCCESS_WEBHOOK }}
         uses: Ilshidur/action-discord@master
         with:
           args: |
-            ## **:rocket: 스테이징 서버 배포 SUCCESS!**
+            ## **:rocket: 백엔드 스테이징 서버 배포 성공 **
+            ```
+            message      |   ${{ github.event.head_commit.message }}
+            ```
 
       - name: Discord Webhook when fail
         if: failure()
         env:
-          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_FAILURE_WEBHOOK }}
         uses: Ilshidur/action-discord@master
         with:
           args: |
-            ## **:x: 스테이징 서버 배포 FAIL!**
-            **message**  |   ${{ github.event.head_commit.message }}
-            **go to log** |  ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+            ## **:x: 백엔드 스테이징 서버 배포 실패 **
