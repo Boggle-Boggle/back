@@ -12,11 +12,11 @@ EXPOSE 8080
 COPY dd-java-agent.jar /app/dd-java-agent.jar
 
 # 앱 실행 (Datadog APM 연동 포함)
-ENTRYPOINT ["java", \
-  "-javaagent:/app/dd-java-agent.jar", \
-  "-Ddd.service=bbegok", \
+ENTRYPOINT ["java","-javaagent:/app/dd-java-agent.jar", \
+  "-Ddd.service=bbaegok-service", \
   "-Ddd.env=prod", \
-  "-Ddd.version=1.0", \
+  "-Ddd.version=1.0.0", \
   "-Ddd.agent.host=datadog", \
-  "-Ddd.trace.agent.port=8126", \
+  "-Ddd.agent.port=8126", \
+  "-Ddd.logs.injection=true", \
   "-jar", "app.jar"]
