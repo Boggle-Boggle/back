@@ -1,12 +1,28 @@
 services:
-  app:
-    container_name: staging_app
+  app_blue:
     image: ${DOCKERHUB_USERNAME}/bbegok:staging
     platform: linux/arm64
     ports:
       - "8090:8080"
     env_file:
       - .env
+    environment:
+      - ENV=blue
+    depends_on:
+      - db
+      - redis
+    networks:
+      - staging-network
+
+  app_green:
+    image: ${DOCKERHUB_USERNAME}/bbegok:latest
+    platform: linux/arm64
+    ports:
+      - "8091:8080"
+    env_file:
+      - .env
+    environment:
+      - ENV=green
     depends_on:
       - db
       - redis

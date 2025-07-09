@@ -52,16 +52,16 @@ jobs:
         env:
           DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
           DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
-          DOMAIN_NAME: ${{ secrets.STAGING_DOMAIN_NAME }}
+          DOMAIN_NAME: ${{ secrets.DOMAIN_NAME }}
           ROOT_DOMAIN_NAME: ${{ secrets.ROOT_DOMAIN_NAME }}
           FRONT_DEV_DOMAIN_NAME: ${{ secrets.FRONT_DEV_DOMAIN_NAME }}
-          MYSQL_URL: ${{ secrets.STAGING_MYSQL_URL }}
-          MYSQL_ROOT_PASSWORD: ${{ secrets.STAGING_MYSQL_ROOT_PASSWORD }}
-          MYSQL_USER: ${{ secrets.STAGING_MYSQL_USER }}
-          MYSQL_PASSWORD: ${{ secrets.STAGING_MYSQL_PASSWORD }}
-          REDIS_PREFIX: ${{ secrets.STAGING_REDIS_PREFIX }}
-          REDIS_PORT: ${{ secrets.STAGING_REDIS_PORT }}
-          REDIS_TERMS_KEY: ${{ secrets.STAGING_REDIS_TERMS_KEY }}
+          MYSQL_URL: ${{ secrets.MYSQL_URL }}
+          MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
+          MYSQL_USER: ${{ secrets.MYSQL_USER }}
+          MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
+          REDIS_PREFIX: ${{ secrets.REDIS_PREFIX }}
+          REDIS_PORT: ${{ secrets.REDIS_PORT }}
+          REDIS_TERMS_KEY: ${{ secrets.REDIS_TERMS_KEY }}
           ALADIN_TTB_KEY: ${{ secrets.ALADIN_TTB_KEY }}
           ALADIN_SERVER_URL: ${{ secrets.ALADIN_SERVER_URL }}
           JWT_SECRET: ${{ secrets.JWT_SECRET }}
@@ -95,10 +95,60 @@ jobs:
           password: ${{ secrets.PI_PASSWORD }}
           script: |
             cd Project/bbaegok/staging/
-            docker-compose pull
-            docker-compose down
-            docker-compose up -d
-            docker image prune -f
+
+            # 현재 실행중인 app color와 포트
+            if docker ps --filter "name=app_blue" --filter "status=running" | grep app_blue; then
+              CURRENT="blue"
+              NEXT="green"
+            else
+              CURRENT="green"
+              NEXT="blue"
+            fi
+            
+            if [ "$NEXT" = "blue" ]; then
+              NEXT_PORT=8090
+            else
+              NEXT_PORT=8091
+            fi
+
+
+            echo "Current active app: $CURRENT"
+            echo "Deploying next app: $NEXT : $NEXT_PORT"
+
+            ACTIVE_COLOR=$NEXT envsubst '${ACTIVE_COLOR}' < nginx.conf > nginx_final.conf
+            mv nginx_final.conf nginx.conf
+
+            # 새 버전 pull 및 앱 컨테이너 실행            
+            docker-compose pull app_${NEXT}
+            docker-compose up -d app_${NEXT}
+            
+            # 새 인스턴스에 대한 헬스체크(최대 1분까지 5회 재시도)
+            for i in {1..12}; do
+              sleep 5
+              if curl -fs http://localhost:$NEXT_PORT/actuator/health | grep '"status":"UP"' > /dev/null; then
+              echo "✅ Health check passed"
+              break
+              fi
+              if [ "$i" -eq 12 ]; then
+              echo "❌ Health check failed for app_${NEXT}"
+            
+              # 컨테이너 중지 및 삭제 (optional)
+              docker-compose stop app_${NEXT}
+              docker-compose rm -f app_${NEXT}
+              
+              # 실패 알림용 파일 생성
+              echo "DEPLOY_FAILED" > .deploy_status
+              exit 1
+              fi
+            done
+            
+            # nginx에 새 color 적용
+            ACTIVE_COLOR=$NEXT envsubst '${ACTIVE_COLOR}' < nginx.conf > nginx_final.conf
+            mv nginx_final.conf nginx.conf
+            docker-compose up -d --no-deps --build nginx
+      
+            # 5. 기존 컨테이너 종료
+            docker-compose stop app_${CURRENT}
 
       - name: Discord Webhook when success
         if: success()
