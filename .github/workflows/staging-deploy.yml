@@ -95,10 +95,28 @@ jobs:
           password: ${{ secrets.PI_PASSWORD }}
           script: |
             cd Project/bbaegok/staging/
-            docker-compose pull
-            docker-compose down
-            docker-compose up -d
-            docker image prune -f
+
+            # 현재 실행중인 app color 확인
+            if docker ps --filter "name=app_blue" --filter "status=running" | grep app_blue; then
+              CURRENT="blue"
+              NEXT="green"
+            else
+              CURRENT="green"
+              NEXT="blue"
+            fi
+
+            echo "Current active app: $CURRENT"
+            echo "Deploying next app: $NEXT"
+
+            ACTIVE_COLOR=$NEXT envsubst '${ACTIVE_COLOR}' < nginx.conf > nginx_final.conf
+            mv nginx_final.conf nginx.conf
+            
+            docker-compose pull app_${NEXT}
+
+            docker-compose up -d app_${NEXT}
+            docker-compose up -d --no-deps --build nginx
+
+            docker-compose stop app_${CURRENT}
 
       - name: Discord Webhook when success
         if: success()
