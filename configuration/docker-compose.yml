@@ -10,6 +10,8 @@ services:
       - db
       - redis
       - datadog
+    networks:
+      - prod-network
 
   app_green:
     image: ${DOCKERHUB_USERNAME}/bbegok:latest
@@ -22,6 +24,8 @@ services:
       - db
       - redis
       - datadog
+    networks:
+      - prod-network
 
   portainer:
     image: portainer/portainer-ce
@@ -42,6 +46,8 @@ services:
     command: --default-time-zone='+00:00' #MySQL 컨테이너
     volumes:
       - mysql-data:/var/lib/mysql
+    networks:
+      - prod-network
 
   nginx:
     image: nginx:latest
@@ -57,6 +63,9 @@ services:
       - app_blue
       - app_green
       - portainer
+    networks:
+      - prod-network
+      - proxy-network
 
   redis:
     image: redis:alpine
@@ -65,6 +74,8 @@ services:
     volumes:
       - redis-data:/data
     command: ["redis-server", "--appendonly", "yes"]
+    networks:
+      - prod-network
 
   datadog:
     image: gcr.io/datadoghq/agent:latest
@@ -86,6 +97,8 @@ services:
       - /proc/:/host/proc/:ro
       - /sys/fs/cgroup:/host/sys/fs/cgroup:ro
     restart: unless-stopped
+    networks:
+      - prod-network
 
   metabase:
     image: metabase/metabase:v0.53.16
@@ -100,6 +113,9 @@ services:
       - db
     volumes:
       - metabase-data:/metabase-data
+    networks:
+      - prod-network
+      - proxy-network
 
 volumes:
   mysql-data:
@@ -110,3 +126,8 @@ volumes:
 x-dockerhub-auth:
   username: ${DOCKERHUB_USERNAME}
   password: ${DOCKERHUB_TOKEN}
+
+networks:
+  prod-network:
+  proxy-network:
+    external: true  # 리버스 프록시 nginx에서 만든 네트워크를 사용
