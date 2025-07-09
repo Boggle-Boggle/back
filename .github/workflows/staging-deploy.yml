@@ -96,7 +96,7 @@ jobs:
           script: |
             cd Project/bbaegok/staging/
 
-            # 현재 실행중인 app color 확인
+            # 현재 실행중인 app color와 포트
             if docker ps --filter "name=app_blue" --filter "status=running" | grep app_blue; then
               CURRENT="blue"
               NEXT="green"
@@ -104,18 +104,50 @@ jobs:
               CURRENT="green"
               NEXT="blue"
             fi
+            
+            if [ "$NEXT" = "blue" ]; then
+              NEXT_PORT=8090
+            else
+              NEXT_PORT=8091
+            fi
+
 
             echo "Current active app: $CURRENT"
-            echo "Deploying next app: $NEXT"
+            echo "Deploying next app: $NEXT : $NEXT_PORT"
 
             ACTIVE_COLOR=$NEXT envsubst '${ACTIVE_COLOR}' < nginx.conf > nginx_final.conf
             mv nginx_final.conf nginx.conf
-            
+
+            # 새 버전 pull 및 앱 컨테이너 실행            
             docker-compose pull app_${NEXT}
-
             docker-compose up -d app_${NEXT}
+            
+            # 새 인스턴스에 대한 헬스체크(최대 1분까지 5회 재시도)
+            for i in {1..12}; do
+              sleep 5
+              if curl -fs http://localhost:$NEXT_PORT/actuator/health | grep '"status":"UP"' > /dev/null; then
+              echo "✅ Health check passed"
+              break
+              fi
+              if [ "$i" -eq 12 ]; then
+              echo "❌ Health check failed for app_${NEXT}"
+            
+              # 컨테이너 중지 및 삭제 (optional)
+              docker-compose stop app_${NEXT}
+              docker-compose rm -f app_${NEXT}
+              
+              # 실패 알림용 파일 생성
+              echo "DEPLOY_FAILED" > .deploy_status
+              exit 1
+              fi
+            done
+            
+            # nginx에 새 color 적용
+            ACTIVE_COLOR=$NEXT envsubst '${ACTIVE_COLOR}' < nginx.conf > nginx_final.conf
+            mv nginx_final.conf nginx.conf
             docker-compose up -d --no-deps --build nginx
-
+      
+            # 5. 기존 컨테이너 종료
             docker-compose stop app_${CURRENT}
 
       - name: Discord Webhook when success
