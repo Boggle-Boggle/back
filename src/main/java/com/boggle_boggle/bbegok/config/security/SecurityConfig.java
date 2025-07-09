@@ -73,6 +73,9 @@ public class SecurityConfig {
                         .requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
                         //인증 관련 API는 모든 요청이 허용
                         .requestMatchers("/auth/**").permitAll()
+
+                        //헬스체크 허용
+                        .requestMatchers("/actuator/**").permitAll()
                         
                         //애플로그인 관련 요청 허용
                         .requestMatchers("/oauth2/apple/**").permitAll()
