@@ -15,7 +15,7 @@ services:
       - staging-network
 
   app_green:
-    image: ${DOCKERHUB_USERNAME}/bbegok:latest
+    image: ${DOCKERHUB_USERNAME}/bbegok:staging
     platform: linux/arm64
     ports:
       - "8091:8080"
