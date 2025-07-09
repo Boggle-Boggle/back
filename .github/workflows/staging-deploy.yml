@@ -52,16 +52,16 @@ jobs:
         env:
           DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
           DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
-          DOMAIN_NAME: ${{ secrets.STAGING_DOMAIN_NAME }}
+          DOMAIN_NAME: ${{ secrets.DOMAIN_NAME }}
           ROOT_DOMAIN_NAME: ${{ secrets.ROOT_DOMAIN_NAME }}
           FRONT_DEV_DOMAIN_NAME: ${{ secrets.FRONT_DEV_DOMAIN_NAME }}
-          MYSQL_URL: ${{ secrets.STAGING_MYSQL_URL }}
-          MYSQL_ROOT_PASSWORD: ${{ secrets.STAGING_MYSQL_ROOT_PASSWORD }}
-          MYSQL_USER: ${{ secrets.STAGING_MYSQL_USER }}
-          MYSQL_PASSWORD: ${{ secrets.STAGING_MYSQL_PASSWORD }}
-          REDIS_PREFIX: ${{ secrets.STAGING_REDIS_PREFIX }}
-          REDIS_PORT: ${{ secrets.STAGING_REDIS_PORT }}
-          REDIS_TERMS_KEY: ${{ secrets.STAGING_REDIS_TERMS_KEY }}
+          MYSQL_URL: ${{ secrets.MYSQL_URL }}
+          MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
+          MYSQL_USER: ${{ secrets.MYSQL_USER }}
+          MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
+          REDIS_PREFIX: ${{ secrets.REDIS_PREFIX }}
+          REDIS_PORT: ${{ secrets.REDIS_PORT }}
+          REDIS_TERMS_KEY: ${{ secrets.REDIS_TERMS_KEY }}
           ALADIN_TTB_KEY: ${{ secrets.ALADIN_TTB_KEY }}
           ALADIN_SERVER_URL: ${{ secrets.ALADIN_SERVER_URL }}
           JWT_SECRET: ${{ secrets.JWT_SECRET }}
