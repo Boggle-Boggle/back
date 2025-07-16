@@ -134,7 +134,9 @@ jobs:
             
             docker-compose pull app_${NEXT}
             docker-compose up -d app_${NEXT}
-
+            
+            echo "[(임시) 대기 중 - 3min]"
+            sleep 180
             docker-compose up -d --no-deps --build nginx
 
             docker-compose stop app_${CURRENT}

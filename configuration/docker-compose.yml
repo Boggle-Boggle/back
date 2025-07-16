@@ -27,12 +27,6 @@ services:
     networks:
       - prod-network
 
-  portainer:
-    image: portainer/portainer-ce
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - portainer_data:/data
-
   db:
     image: mysql:8.0
     ports:
@@ -53,7 +47,7 @@ services:
     image: nginx:latest
     ports:
       - "443:443"
-      - "80:80"
+      - "89:80"
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf:ro
       - ${SSL_CERT_PATH}/fullchain.pem:${SSL_CERTIFICATE}:ro
@@ -62,7 +56,6 @@ services:
     depends_on:
       - app_blue
       - app_green
-      - portainer
     networks:
       - prod-network
       - proxy-network
@@ -84,7 +77,6 @@ services:
       - DD_SITE=us5.datadoghq.com
       - DD_APM_ENABLED=true
       - DD_LOGS_ENABLED=true
-      - DD_MYSQL_ENABLED=true
       - DD_IGNORE_AUTOCONF=redisdb
       - DD_CONTAINER_EXCLUDE=name:datadog-agent
     ports:
