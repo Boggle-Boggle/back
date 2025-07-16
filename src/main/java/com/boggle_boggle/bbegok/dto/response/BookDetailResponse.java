@@ -23,6 +23,7 @@ public class BookDetailResponse {
     private String plot;
     private int page;
     private String link;
+    private boolean isAdult;
 
     public static BookDetailResponse fromOriginBookData(OriginBookData origin) {
         return BookDetailResponse.builder()
