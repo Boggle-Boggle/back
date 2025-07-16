@@ -21,23 +21,29 @@ public class SearchBookListResponse {
     @JsonProperty("items")
     private List<BookData> bookList;
 
-    public static SearchBookListResponse fromOriginData(OriginSearchBookList originList){
+    public static SearchBookListResponse fromOriginData(OriginSearchBookList originList, boolean adultVerified){
         return SearchBookListResponse.builder()
                 .pageNum(originList.getStartIndex())
                 .totalResultCnt(Math.min(originList.getTotalResults(), 200))
                 .itemsPerPage(originList.getItemsPerPage())
                 .bookList(
                         originList.getItem().stream()
-                            .map(book -> BookData.builder()
+                            .map(book -> {
+                                BookData.BookDataBuilder builder = BookData.builder()
                                     .title(SpecialCharUtil.convertSpecialChars(book.getTitle()))
-                                    .isbn(book.getIsbn())
                                     .author(SpecialCharUtil.convertSpecialChars(book.getAuthor()))
-                                    .pubDate(LocalDateTimeUtil.StringToLocalDateAndAddTime(book.getPubDate()))
-                                    .cover(book.getCover())
-                                    .publisher(book.getPublisher())
-                                    .build())
-                                .collect(Collectors.toList())
+                                    .adult(book.isAdult());
 
+                                    if (adultVerified || !book.isAdult()) {
+                                        // 성인 인증했거나 성인도서가 아닐 때는 전체 정보를 포함
+                                        builder.isbn(book.getIsbn())
+                                                .pubDate(LocalDateTimeUtil.StringToLocalDateAndAddTime(book.getPubDate()))
+                                                .cover(book.getCover())
+                                                .publisher(book.getPublisher());
+                                    } // 성인 인증 안했는데 성인도서이면 title, author만 제공 (나머지는 null)
+                                    return builder.build();
+                                }
+                            ).collect(Collectors.toList())
                 )
                 .build();
     }

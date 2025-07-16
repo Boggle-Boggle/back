@@ -78,6 +78,8 @@ public class User {
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
 
+    @Column(name = "is_adult", nullable = false)
+    private boolean isAdult;
 
     protected User(){}
 

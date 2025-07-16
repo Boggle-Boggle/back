@@ -33,4 +33,5 @@ public class OriginSearchBookList {
     private String searchCategoryName;
 
     private List<OriginBookData> item;
+
 }

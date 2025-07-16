@@ -23,4 +23,5 @@ public class OriginBookData {
     private String publisher;
     private int customerReviewRank;
     private SubInfo subInfo;
+    private boolean adult;
 }
