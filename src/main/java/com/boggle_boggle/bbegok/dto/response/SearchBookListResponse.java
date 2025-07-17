@@ -21,6 +21,15 @@ public class SearchBookListResponse {
     @JsonProperty("items")
     private List<BookData> bookList;
 
+    public SearchBookListResponse withBookList(List<BookData> newBookList) {
+        return SearchBookListResponse.builder()
+                .pageNum(this.pageNum)
+                .totalResultCnt(this.totalResultCnt)
+                .itemsPerPage(this.itemsPerPage)
+                .bookList(newBookList)
+                .build();
+    }
+
     public static SearchBookListResponse fromOriginData(OriginSearchBookList originList, boolean adultVerified){
         return SearchBookListResponse.builder()
                 .pageNum(originList.getStartIndex())
@@ -30,17 +39,14 @@ public class SearchBookListResponse {
                         originList.getItem().stream()
                             .map(book -> {
                                 BookData.BookDataBuilder builder = BookData.builder()
+                                    .isbn(book.getIsbn())
                                     .title(SpecialCharUtil.convertSpecialChars(book.getTitle()))
                                     .author(SpecialCharUtil.convertSpecialChars(book.getAuthor()))
-                                    .adult(book.isAdult());
+                                    .adult(book.isAdult())
+                                    .publisher(book.getPublisher());;
 
-                                    if (adultVerified || !book.isAdult()) {
-                                        // 성인 인증했거나 성인도서가 아닐 때는 전체 정보를 포함
-                                        builder.isbn(book.getIsbn())
-                                                .pubDate(LocalDateTimeUtil.StringToLocalDateAndAddTime(book.getPubDate()))
-                                                .cover(book.getCover())
-                                                .publisher(book.getPublisher());
-                                    } // 성인 인증 안했는데 성인도서이면 title, author만 제공 (나머지는 null)
+                                    // 성인이거나 성인도서가 아닐때만 커버 추가
+                                    if (adultVerified || !book.isAdult()) builder.cover(book.getCover());
                                     return builder.build();
                                 }
                             ).collect(Collectors.toList())

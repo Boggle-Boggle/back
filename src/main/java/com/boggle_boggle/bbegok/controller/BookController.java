@@ -24,8 +24,9 @@ public class BookController {
     }
 
     @GetMapping("/{isbn}")
-    public DataResponseDto<BookDetailResponse> getBook(@PathVariable(name = "isbn") String isbn) {
-        return DataResponseDto.of(bookService.getBook(isbn));
+    public DataResponseDto<BookDetailResponse> getBook(@PathVariable(name = "isbn") String isbn,
+                                                       @AuthenticationPrincipal UserDetails userDetails) {
+        return DataResponseDto.of(bookService.getBook(isbn, userDetails.getUsername()));
     }
 
 }

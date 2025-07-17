@@ -16,6 +16,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 @Repository
@@ -135,4 +136,13 @@ public interface ReadingRecordRepository extends JpaRepository<ReadingRecord, Lo
             Pageable pageable
     );
 
+    @Query("""
+        select r.book.isbn
+        from ReadingRecord r
+        where r.user.userSeq = :userSeq
+        and r.book.isbn in :isbnList
+    """)
+    List<String> findReadingRecordIsbns(@Param("userSeq") Long userSeq, @Param("isbnList") List<String> isbnList);
+
+    boolean existsByUser_UserSeqAndBook_Isbn(Long userSeq, String isbn);
 }
