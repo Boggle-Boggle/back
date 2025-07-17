@@ -39,7 +39,7 @@ jobs:
           password: ${{ secrets.PI_PASSWORD }}
           source: "./src/main/resources/static/docs/*"
           target: "Project/bbaegok/docs/"
-
+          strip_components: 5
 
         # DockerHub 로그인
       - name: Login to DockerHub
