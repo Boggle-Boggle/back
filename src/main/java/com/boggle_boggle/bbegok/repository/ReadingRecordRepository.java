@@ -132,7 +132,7 @@ public interface ReadingRecordRepository extends JpaRepository<ReadingRecord, Lo
     """)
     Page<ReadingRecord> findBooksWithReadingRecordIdByUserAndKeyword(
             @Param("user") User user,
-            String keyword,
+            @Param("keyword") String keyword,
             Pageable pageable
     );
 
