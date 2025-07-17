@@ -21,23 +21,35 @@ public class SearchBookListResponse {
     @JsonProperty("items")
     private List<BookData> bookList;
 
-    public static SearchBookListResponse fromOriginData(OriginSearchBookList originList){
+    public SearchBookListResponse withBookList(List<BookData> newBookList) {
+        return SearchBookListResponse.builder()
+                .pageNum(this.pageNum)
+                .totalResultCnt(this.totalResultCnt)
+                .itemsPerPage(this.itemsPerPage)
+                .bookList(newBookList)
+                .build();
+    }
+
+    public static SearchBookListResponse fromOriginData(OriginSearchBookList originList, boolean adultVerified){
         return SearchBookListResponse.builder()
                 .pageNum(originList.getStartIndex())
                 .totalResultCnt(Math.min(originList.getTotalResults(), 200))
                 .itemsPerPage(originList.getItemsPerPage())
                 .bookList(
                         originList.getItem().stream()
-                            .map(book -> BookData.builder()
-                                    .title(SpecialCharUtil.convertSpecialChars(book.getTitle()))
+                            .map(book -> {
+                                BookData.BookDataBuilder builder = BookData.builder()
                                     .isbn(book.getIsbn())
+                                    .title(SpecialCharUtil.convertSpecialChars(book.getTitle()))
                                     .author(SpecialCharUtil.convertSpecialChars(book.getAuthor()))
-                                    .pubDate(LocalDateTimeUtil.StringToLocalDateAndAddTime(book.getPubDate()))
-                                    .cover(book.getCover())
-                                    .publisher(book.getPublisher())
-                                    .build())
-                                .collect(Collectors.toList())
+                                    .adult(book.isAdult())
+                                    .publisher(book.getPublisher());;
 
+                                    // 성인이거나 성인도서가 아닐때만 커버 추가
+                                    if (adultVerified || !book.isAdult()) builder.cover(book.getCover());
+                                    return builder.build();
+                                }
+                            ).collect(Collectors.toList())
                 )
                 .build();
     }

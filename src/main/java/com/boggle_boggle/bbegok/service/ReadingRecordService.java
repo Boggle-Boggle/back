@@ -101,7 +101,7 @@ public class ReadingRecordService {
         //이미 해당 isbn이 저장되어있는지 확인 -> 없다면 새로 저장
         Book book = bookRepository.findByIsbn(request.getIsbn());
         if(book == null) {
-            BookDetailResponse newBookData = bookService.getBook(request.getIsbn());
+            BookDetailResponse newBookData = bookService.getBook(request.getIsbn(), userSeq);
             if(newBookData == null) throw new GeneralException(Code.BOOK_NOT_FOUND);
             book = bookRepository.save(Book.createBook(newBookData));
         }

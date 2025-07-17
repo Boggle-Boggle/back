@@ -27,9 +27,21 @@ jobs:
       - name: Build with Gradle
         run: |
           chmod +x ./gradlew
-          ./gradlew build -x test
+          ./gradlew build
 
-      # DockerHub 로그인
+      # 빌드 후 HTML 파일만 따로 Raspberry Pi로 전송
+      - name: Copy API Docs to Raspberry Pi (Staging)
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.PI_HOST }}
+          port: ${{ secrets.PI_PORT }}
+          username: ${{ secrets.PI_USERNAME }}
+          password: ${{ secrets.PI_PASSWORD }}
+          source: "./src/main/resources/static/docs/*"
+          target: "Project/bbaegok/docs/"
+
+
+        # DockerHub 로그인
       - name: Login to DockerHub
         uses: docker/login-action@v1
         with:

@@ -8,6 +8,8 @@ build/
 ###custom###
 # application.properties
 AuthKey.p8
+/static/docs/*.html
+*.html
 
 ### STS ###
 .apt_generated

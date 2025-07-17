@@ -1,0 +1,33 @@
+[[book-api]]
+== 📚 책 API
+책 정보를 검색하고 상세 조회할 수 있습니다.
+
+=== 책 목록 검색 API
+사용자가 입력한 검색어를 기반으로 책 목록을 조회합니다.
+성인인증을 하지 않은 사용자의 검색결과에 성인용 컨텐츠가 있을경우 cover(표지)가 null입니다.
+
+[discrete]
+==== 요청
+include::{snippets}/books/search-list/http-request.adoc[]
+include::{snippets}/books/search-list/query-parameters.adoc[]
+
+[discrete]
+==== 응답
+include::{snippets}/books/search-list/http-response.adoc[]
+include::{snippets}/books/search-list/response-fields-data.adoc[]
+
+---
+
+=== 책 상세 조회 API
+도서 ISBN을 이용해 해당 도서의 상세 정보를 조회합니다.
+성인인증을 하지 않은 사용자의 검색결과에 성인용 컨텐츠가 있을경우 cover(표지)가 null입니다.
+
+[discrete]
+==== 요청
+include::{snippets}/books/detail/http-request.adoc[]
+include::{snippets}/books/detail/path-parameters.adoc[]
+
+[discrete]
+==== 응답
+include::{snippets}/books/detail/http-response.adoc[]
+include::{snippets}/books/detail/response-fields-data.adoc[]

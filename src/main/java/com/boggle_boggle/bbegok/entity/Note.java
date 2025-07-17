@@ -51,9 +51,6 @@ public class Note {
     @Column(name = "selected_date")
     private LocalDateTime selectedDate;
 
-    @OneToMany(mappedBy = "note", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<NoteImage> imageUrlList = new ArrayList<>();
-
     protected Note(){}
 
     private Note(ReadingRecord readingRecord){

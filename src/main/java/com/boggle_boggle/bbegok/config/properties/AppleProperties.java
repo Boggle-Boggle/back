@@ -27,7 +27,6 @@ import java.util.Map;
 
 @Setter
 @Getter
-@Component
 @Slf4j
 @ConfigurationProperties(prefix = "apple")
 public class AppleProperties {
