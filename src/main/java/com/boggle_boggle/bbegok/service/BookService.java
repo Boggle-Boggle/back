@@ -86,9 +86,8 @@ public class BookService {
     public BookDetailResponse getBook(String isbn, String userSeq){
         User user = getUser(userSeq);
 
-        //==내 책들에 포함된건지 확인
-        boolean isMyBook = readingRecordRepository.existsByUser_UserSeqAndBook_Isbn(user.getUserSeq(), isbn)
-                || userFavoriteBookRepository.existsByUser_UserSeqAndBook_Isbn(user.getUserSeq(), isbn);
+        //== 관심도서인지만 확인
+        boolean isMyBook = userFavoriteBookRepository.existsByUser_UserSeqAndBook_Isbn(user.getUserSeq(), isbn);
 
         return BookDetailResponse.fromOriginBookData(
                 aladinClient.getItem(
