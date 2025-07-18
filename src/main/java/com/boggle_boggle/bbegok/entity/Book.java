@@ -1,5 +1,6 @@
 package com.boggle_boggle.bbegok.entity;
 
+import com.boggle_boggle.bbegok.dto.request.CreateCustomBookRequest;
 import com.boggle_boggle.bbegok.dto.response.BookDetailResponse;
 import com.boggle_boggle.bbegok.entity.user.User;
 import jakarta.persistence.*;
@@ -33,8 +34,8 @@ public class Book {
     @Column(name = "plot", length = 1000)
     private String plot;
 
-    @Column(name = "image_url", length = 1000)
-    private String imageUrl;
+    @Column(name = "cover_url", length = 1000)
+    private String coverUrl;
 
     @Column(name = "page")
     private Integer page;
@@ -54,18 +55,26 @@ public class Book {
 
     protected Book(){}
 
-    protected Book(String isbn, String title, String author, String publisher,
-                   String cover, String genre, String plot, LocalDateTime pubDate, int page, boolean isAdult) {
-        this.isbn = isbn;
+    //필수값만 받음
+    private Book(String title, String author) {
         this.title = title;
         this.author = author;
-        this.publisher = publisher;
-        this.imageUrl = cover;
-        this.genre = genre;
-        this.plot = plot;
-        this.publishDate = pubDate;
-        this.page = page;
-        this.isAdult = isAdult;
+    }
+
+    public static Book createBook(BookDetailResponse bookData){
+        Book book = new Book(bookData.getTitle(),bookData.getAuthor());
+        book.applyDetail(bookData.getIsbn(), bookData.getPublisher(), bookData.getCover(), bookData.getPlot(), bookData.getPage());
+        book.publishDate = bookData.getPubDate();
+        book.genre = bookData.getGenre();
+        book.isAdult = bookData.isAdult();
+        return book;
+    }
+
+    public static Book createCustomBook(CreateCustomBookRequest bookData, User user){
+        Book book = new Book(bookData.getTitle(), bookData.getAuthor());
+        book.applyDetail(bookData.getIsbn(), bookData.getPublisher(), bookData.getCoverUrl(), bookData.getPlot(), bookData.getPage());
+        book.markAsCustom(user);
+        return book;
     }
 
     protected void markAsCustom(User user) {
@@ -73,24 +82,21 @@ public class Book {
         this.createdByUser = user;
     }
 
-    public static Book createBook(BookDetailResponse bookData){
-        return new Book(
-                bookData.getIsbn(),
-                bookData.getTitle(),
-                bookData.getAuthor(),
-                bookData.getPublisher(),
-                bookData.getCover(),
-                bookData.getGenre(),
-                bookData.getPlot(),
-                bookData.getPubDate(),
-                bookData.getPage(),
-                bookData.isAdult()
-        );
+    private void applyDetail(String isbn, String publisher, String coverUrl, String plot, int page) {
+        this.isbn = isbn;
+        this.publisher = publisher;
+        this.coverUrl = coverUrl;
+        this.plot = plot;
+        this.page = page;
     }
 
-    public static Book createCustomBook(BookDetailResponse bookData, User user){
-        Book book = createBook(bookData);
-        book.markAsCustom(user);
-        return book;
+    public void update(CreateCustomBookRequest newBookData) {
+        this.title = newBookData.getTitle();
+        this.author = newBookData.getAuthor();
+        this.coverUrl = newBookData.getCoverUrl();
+        this.publisher = newBookData.getPublisher();
+        this.isbn = newBookData.getIsbn();
+        this.page = newBookData.getPage();
+        this.plot = newBookData.getPlot();
     }
 }

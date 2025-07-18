@@ -99,7 +99,7 @@ public class ReadingRecordService {
         validationNewReadingRecordRequest(request);
 
         //이미 해당 isbn이 저장되어있는지 확인 -> 없다면 새로 저장
-        Book book = bookRepository.findByIsbn(request.getIsbn());
+        Book book = bookRepository.findByIsbnAndIsCustomFalse(request.getIsbn());
         if(book == null) {
             BookDetailResponse newBookData = bookService.getBook(request.getIsbn(), userSeq);
             if(newBookData == null) throw new GeneralException(Code.BOOK_NOT_FOUND);
@@ -170,7 +170,7 @@ public class ReadingRecordService {
 
 
     private ReadingRecord findReadingRecord(String isbn, String userSeq){
-        Book book = bookRepository.findByIsbn(isbn);
+        Book book = bookRepository.findByIsbnAndIsCustomFalse(isbn);
         User user = getUser(userSeq);
         return readingRecordRepository.findByUserAndBook(user, book);
     }

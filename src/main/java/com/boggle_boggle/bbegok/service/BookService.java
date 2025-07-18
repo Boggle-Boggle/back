@@ -3,14 +3,14 @@ package com.boggle_boggle.bbegok.service;
 import com.boggle_boggle.bbegok.client.AladinClient;
 import com.boggle_boggle.bbegok.config.openfeign.OpenFeignConfig;
 import com.boggle_boggle.bbegok.dto.BookData;
-import com.boggle_boggle.bbegok.dto.OriginSearchBookList;
+import com.boggle_boggle.bbegok.dto.request.CreateCustomBookRequest;
 import com.boggle_boggle.bbegok.dto.response.BookDetailResponse;
 import com.boggle_boggle.bbegok.dto.response.SearchBookListResponse;
-import com.boggle_boggle.bbegok.entity.ReadingRecord;
-import com.boggle_boggle.bbegok.entity.UserFavoriteBook;
+import com.boggle_boggle.bbegok.entity.Book;
 import com.boggle_boggle.bbegok.entity.user.User;
 import com.boggle_boggle.bbegok.exception.Code;
 import com.boggle_boggle.bbegok.exception.exception.GeneralException;
+import com.boggle_boggle.bbegok.repository.BookRepository;
 import com.boggle_boggle.bbegok.repository.ReadingRecordRepository;
 import com.boggle_boggle.bbegok.repository.UserFavoriteBookRepository;
 import com.boggle_boggle.bbegok.repository.user.UserRepository;
@@ -28,7 +28,9 @@ public class BookService {
     private final UserRepository userRepository;
     private final ReadingRecordRepository readingRecordRepository;
     private final UserFavoriteBookRepository userFavoriteBookRepository;
+    private final BookRepository bookRepository;
 
+    @Transactional(readOnly = true)
     public User getUser(String userSeq) {
         User user = userRepository.findByUserSeqAndIsDeleted(Long.valueOf(userSeq), false);
         if(user == null) {
@@ -39,6 +41,7 @@ public class BookService {
         return user;
     }
 
+    @Transactional(readOnly = true)
     public SearchBookListResponse getSearchBookList(String query, int pageNum, String userSeq){
         if(query == null || query.isEmpty() || query.length()>100) throw new GeneralException(Code.BAD_REQUEST);
         User user = getUser(userSeq);
@@ -83,12 +86,12 @@ public class BookService {
         return response.withBookList(filteredBooks);
     }
 
+    @Transactional(readOnly = true)
     public BookDetailResponse getBook(String isbn, String userSeq){
         User user = getUser(userSeq);
 
-        //==내 책들에 포함된건지 확인
-        boolean isMyBook = readingRecordRepository.existsByUser_UserSeqAndBook_Isbn(user.getUserSeq(), isbn)
-                || userFavoriteBookRepository.existsByUser_UserSeqAndBook_Isbn(user.getUserSeq(), isbn);
+        //== 관심도서인지만 확인
+        boolean isMyBook = userFavoriteBookRepository.existsByUser_UserSeqAndBook_Isbn(user.getUserSeq(), isbn);
 
         return BookDetailResponse.fromOriginBookData(
                 aladinClient.getItem(
@@ -103,4 +106,20 @@ public class BookService {
                 isMyBook
         );
     }
+
+    @Transactional
+    public void saveCustomBooks(CreateCustomBookRequest request, String userSeq) {
+        User user = getUser(userSeq);
+        Book book = Book.createCustomBook(request, user);
+        bookRepository.save(book);
+    }
+
+    @Transactional
+    public void updateCustomBooks(Long bookSeq, CreateCustomBookRequest request, String userSeq) {
+        User user = getUser(userSeq);
+        Book book = bookRepository.findByBookSeqAndCreatedByUser(bookSeq, user)
+                .orElseThrow(() -> new GeneralException(Code.BOOK_NOT_FOUND));
+        book.update(request);
+    }
+
 }

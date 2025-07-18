@@ -24,7 +24,7 @@ public class ReadingRecordBookData {
 
     public static ReadingRecordBookData fromEntity(Book book){
         return ReadingRecordBookData.builder()
-                .cover(book.getImageUrl())
+                .cover(book.getCoverUrl())
                 .title(book.getTitle())
                 .author(book.getAuthor())
                 .publisher(book.getPublisher())
