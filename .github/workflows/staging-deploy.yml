@@ -157,8 +157,8 @@ jobs:
             # nginx에 새 color 적용
             ACTIVE_COLOR=$NEXT envsubst '${ACTIVE_COLOR}' < nginx.conf > nginx_final.conf
             mv nginx_final.conf nginx.conf
-            docker-compose up -d --no-deps --build nginx
-      
+            docker-compose restart nginx
+            
             # 5. 기존 컨테이너 종료
             docker-compose stop app_${CURRENT}
 
