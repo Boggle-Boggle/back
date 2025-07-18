@@ -37,7 +37,7 @@ public class LibraryBook {
                 record.getBook().getTitle(),
                 record.getRating(),
                 record.getReadDateList(),
-                record.getBook().getImageUrl());
+                record.getBook().getCoverUrl());
     }
 
     public LibraryBook(Long readingRecordId, String title, Double rating,
