@@ -59,7 +59,7 @@ public class LibraryBook {
 
     private ReadDateDto calculateRecentReadDate(List<ReadDate> readDateList) {
         if(readDateList.isEmpty()) return null;
-        else if(readDateList.get(0).getStatus() == ReadStatus.pending) return null;
+        //else if(readDateList.get(0).getStatus() == ReadStatus.pending) return null;
         else {
             //오름차순 정렬
             readDateList.sort(Comparator.comparingLong(ReadDate::getReadDateSeq));
