@@ -1,0 +1,49 @@
+[[reading-record-api]]
+== 📒 독서기록 API
+독서기록을 등록합니다.
+일반책과 커스텀 책 둘 다 API URI자체는 동일하며, 내부 데이터만 다르게 전송합니다.
+
+[discrete]
+==== 비즈니스 에러
+
+[cols="2,5,3,5"]
+|===
+|에러 코드 |설명 |HTTP 상태코드 |비고
+
+|12002(READING_RECORD_ALREADY_EXIST)
+|이미 존재하는 독서기록 (같은 책으로 독서기록은 1개만 생성할 수 있습니다)
+|409 Conflict
+|data필드에 {"readingRecordId": 16} 과 같이 기존 독서기록 리턴
+
+|===
+
+---
+
+=== 일반 책 독서기록 저장
+일반 책의 ISBN을 사용하여 독서기록을 저장합니다. +
+
+[discrete]
+==== 요청
+include::{snippets}/reading-record/save-normal/http-request.adoc[]
+include::{snippets}/reading-record/save-normal/request-fields.adoc[]
+
+[discrete]
+==== 응답
+include::{snippets}/reading-record/save-normal/http-response.adoc[]
+include::{snippets}/reading-record/save-normal/response-fields-data.adoc[]
+
+---
+
+=== 커스텀 책 독서기록 저장
+직접 입력한 책 정보를 기반으로 독서기록을 저장합니다.
+
+[discrete]
+==== 요청
+include::{snippets}/reading-record/save-custom/http-request.adoc[]
+include::{snippets}/reading-record/save-custom/request-fields.adoc[]
+
+[discrete]
+==== 응답
+include::{snippets}/reading-record/save-custom/http-response.adoc[]
+include::{snippets}/reading-record/save-custom/response-fields-data.adoc[]
+

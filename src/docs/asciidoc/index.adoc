@@ -16,3 +16,6 @@ include::info.adoc[]
 
 //책
 include::book-api.adoc[]
+
+//독서기록
+include::record-api.adoc[]
