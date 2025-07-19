@@ -1,31 +1,23 @@
 package com.boggle_boggle.bbegok.dto.base;
 
 import com.boggle_boggle.bbegok.exception.Code;
+import lombok.Getter;
 
-public class ErrorResponseDto extends ResponseDto {
+@Getter
+public class ErrorResponseDto<T> extends ResponseDto {
 
-    private ErrorResponseDto(Code errorCode) {
+    private final T data;
+
+    private ErrorResponseDto(Code errorCode, T data) {
         super(false, errorCode.getCode(), errorCode.getMessage());
+        this.data = data;
     }
 
-    private ErrorResponseDto(Code errorCode, Exception e) {
-        super(false, errorCode.getCode(), errorCode.getMessage(e));
+    public static <T> ErrorResponseDto<T> of(Code errorCode) {
+        return new ErrorResponseDto<>(errorCode,(T) null);
     }
 
-    private ErrorResponseDto(Code errorCode, String message) {
-        super(false, errorCode.getCode(), errorCode.getMessage(message));
-    }
-
-
-    public static ErrorResponseDto of(Code errorCode) {
-        return new ErrorResponseDto(errorCode);
-    }
-
-    public static ErrorResponseDto of(Code errorCode, Exception e) {
-        return new ErrorResponseDto(errorCode, e);
-    }
-
-    public static ErrorResponseDto of(Code errorCode, String message) {
-        return new ErrorResponseDto(errorCode, message);
+    public static <T> ErrorResponseDto<T> of(Code errorCode, T data) {
+        return new ErrorResponseDto<>(errorCode, data);
     }
 }
