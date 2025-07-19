@@ -1,6 +1,7 @@
 package com.boggle_boggle.bbegok.dto.request;
 
 import jakarta.validation.constraints.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -8,6 +9,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
+@Builder
 public class CreateCustomBookRequest {
     @NotBlank
     @Size(max=255)

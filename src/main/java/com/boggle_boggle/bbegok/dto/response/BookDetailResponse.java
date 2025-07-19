@@ -49,4 +49,19 @@ public class BookDetailResponse {
         }
         return builder.build();
     }
+
+    public static BookDetailResponse fromOriginBookData(OriginBookData origin) {
+        return BookDetailResponse.builder()
+                .title(SpecialCharUtil.convertSpecialChars(origin.getTitle()))
+                .author(SpecialCharUtil.convertSpecialChars(origin.getAuthor()))
+                .isbn(origin.getIsbn())
+                .pubDate(LocalDateTimeUtil.StringToLocalDateAndAddTime(origin.getPubDate()))
+                .publisher(origin.getPublisher())
+                .genre(origin.getCategoryName())
+                .page(origin.getSubInfo().getItemPage())
+                .link(origin.getLink())
+                .cover(origin.getCover())
+                .plot(SpecialCharUtil.convertSpecialChars(origin.getDescription()))
+                .adult(origin.isAdult()).build();
+    }
 }

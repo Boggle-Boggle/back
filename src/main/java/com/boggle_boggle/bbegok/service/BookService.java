@@ -3,7 +3,12 @@ package com.boggle_boggle.bbegok.service;
 import com.boggle_boggle.bbegok.client.AladinClient;
 import com.boggle_boggle.bbegok.config.openfeign.OpenFeignConfig;
 import com.boggle_boggle.bbegok.dto.BookData;
+import com.boggle_boggle.bbegok.dto.OriginBookData;
+import com.boggle_boggle.bbegok.dto.OriginDetailBook;
 import com.boggle_boggle.bbegok.dto.request.CreateCustomBookRequest;
+import com.boggle_boggle.bbegok.dto.request.CustomBookRecordRequest;
+import com.boggle_boggle.bbegok.dto.request.NewReadingRecordRequest;
+import com.boggle_boggle.bbegok.dto.request.NormalBookRecordRequest;
 import com.boggle_boggle.bbegok.dto.response.BookDetailResponse;
 import com.boggle_boggle.bbegok.dto.response.SearchBookListResponse;
 import com.boggle_boggle.bbegok.entity.Book;
@@ -23,8 +28,7 @@ import java.util.*;
 @Service
 @RequiredArgsConstructor
 public class BookService {
-    private final AladinClient aladinClient;
-    private final OpenFeignConfig openFeignConfig;
+    private final AladinService aladinService;
     private final UserRepository userRepository;
     private final ReadingRecordRepository readingRecordRepository;
     private final UserFavoriteBookRepository userFavoriteBookRepository;
@@ -41,24 +45,13 @@ public class BookService {
         return user;
     }
 
+
     @Transactional(readOnly = true)
     public SearchBookListResponse getSearchBookList(String query, int pageNum, String userSeq){
-        if(query == null || query.isEmpty() || query.length()>100) throw new GeneralException(Code.BAD_REQUEST);
         User user = getUser(userSeq);
 
         SearchBookListResponse response = SearchBookListResponse.fromOriginData(
-                aladinClient.searchItems(
-                        openFeignConfig.getTtbKey(),
-                        query,
-                        "Keyword",
-                        "Book",
-                        pageNum,
-                        10,
-                        "Accuracy",
-                        "Big",
-                        "JS",
-                        "20131101"
-                ),
+                aladinService.getOriginSearchBookList(query, pageNum),
                 user.isAdult()
         );
 
@@ -89,34 +82,44 @@ public class BookService {
     @Transactional(readOnly = true)
     public BookDetailResponse getBook(String isbn, String userSeq){
         User user = getUser(userSeq);
-
-        //== 관심도서인지만 확인
         boolean isMyBook = userFavoriteBookRepository.existsByUser_UserSeqAndBook_Isbn(user.getUserSeq(), isbn);
 
         return BookDetailResponse.fromOriginBookData(
-                aladinClient.getItem(
-                        openFeignConfig.getTtbKey(),
-                        isbn,
-                        "ISBN",
-                        "Big",
-                        "JS",
-                        "20131101"
-                ).getItem().get(0),
+                aladinService.getOriginBookDetail(isbn),
                 user.isAdult(),
                 isMyBook
         );
     }
 
-    @Transactional
-    public void saveCustomBooks(CreateCustomBookRequest request, String userSeq) {
-        User user = getUser(userSeq);
-        Book book = Book.createCustomBook(request, user);
-        bookRepository.save(book);
+
+    public Book saveBookByRequest(NewReadingRecordRequest request, User user) {
+        if (request instanceof NormalBookRecordRequest normalRequest) {
+            return saveBook(normalRequest.getIsbn());
+        } else if (request instanceof CustomBookRecordRequest customRequest) {
+            return saveCustomBook(customRequest.getCustomBook(), user);
+        } else {
+            throw new GeneralException(Code.BAD_REQUEST, "알 수 없는 책 유형");
+        }
+    }
+
+    //책 상세정보에 대해 DB에 존재하면 id를, 존재하지 않으면 저장후 리턴
+    private Book saveBook(String isbn){
+        Optional<Book> optionalBook = bookRepository.findByIsbnAndIsCustomFalse(isbn);
+        if(optionalBook.isPresent()) return optionalBook.get();
+        else {
+            BookDetailResponse newBook = BookDetailResponse.fromOriginBookData(
+                    aladinService.getOriginBookDetail(isbn)
+            );
+            return bookRepository.save(Book.createBook(newBook));
+        }
+    }
+
+    private Book saveCustomBook(CreateCustomBookRequest request, User user) {
+        return bookRepository.save(Book.createCustomBook(request, user));
     }
 
     @Transactional
-    public void updateCustomBooks(Long bookSeq, CreateCustomBookRequest request, String userSeq) {
-        User user = getUser(userSeq);
+    public void updateCustomBook(Long bookSeq, CreateCustomBookRequest request, User user) {
         Book book = bookRepository.findByBookSeqAndCreatedByUser(bookSeq, user)
                 .orElseThrow(() -> new GeneralException(Code.BOOK_NOT_FOUND));
         book.update(request);

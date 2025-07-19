@@ -1,7 +1,8 @@
-package com.boggle_boggle.bbegok.controller;
+package com.boggle_boggle.bbegok.api;
 
 import com.boggle_boggle.bbegok.AbstractRestDocsTests;
 import com.boggle_boggle.bbegok.RestDocsConfiguration;
+import com.boggle_boggle.bbegok.controller.BookController;
 import com.boggle_boggle.bbegok.dto.BookData;
 import com.boggle_boggle.bbegok.dto.response.BookDetailResponse;
 import com.boggle_boggle.bbegok.dto.response.SearchBookListResponse;

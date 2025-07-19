@@ -2,7 +2,8 @@
 == 📚 책 API
 책 정보를 검색하고 상세 조회할 수 있습니다.
 
-=== 책 목록 검색 API
+
+=== 책 목록 검색
 사용자가 입력한 검색어를 기반으로 책 목록을 조회합니다. +
 성인인증을 하지 않은 사용자의 검색결과에 성인용 컨텐츠가 있을경우 cover(표지)가 null입니다.
 
@@ -18,7 +19,7 @@ include::{snippets}/books/search-list/response-fields-data.adoc[]
 
 ---
 
-=== 책 상세 조회 API
+=== 책 상세 조회
 도서 ISBN을 이용해 해당 도서의 상세 정보를 조회합니다. +
 성인인증을 하지 않은 사용자의 검색결과에 성인용 컨텐츠가 있을경우 cover(표지)가 null입니다.
 
@@ -34,32 +35,3 @@ include::{snippets}/books/detail/response-fields-data.adoc[]
 
 ---
 
-=== 커스텀 책 저장 API
-직접 책 정보를 작성해 저장합니다. +
-필수값은 제목과 저자입니다.
-
-[discrete]
-==== 요청
-include::{snippets}/book/save/http-request.adoc[]
-include::{snippets}/book/save/request-fields.adoc[]
-
-[discrete]
-==== 응답
-include::{snippets}/book/save/http-response.adoc[]
-include::{snippets}/book/save/response-body.adoc[]
-
----
-
-=== 커스텀 책 수정 API
-직접 작성했던 책 정보를 수정합니다. +
-put으로 동작하기 때문에, 변경사항을 포함한 모든 정보를 한번에 전송해주세요.
-
-[discrete]
-==== 요청
-include::{snippets}/book/save/http-request.adoc[]
-include::{snippets}/book/save/request-fields.adoc[]
-
-[discrete]
-==== 응답
-include::{snippets}/book/update/http-response.adoc[]
-include::{snippets}/book/update/response-body.adoc[]

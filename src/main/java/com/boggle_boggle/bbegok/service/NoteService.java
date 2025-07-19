@@ -39,7 +39,7 @@ public class NoteService {
 
         //현재 독서기록에 대한 모든 Note를 찾는다. 이때 readDateSeq별로 그룹바이 해야하고, readDateSeq순서대로 정렬(Null이면 제일 앞으로)
         List<Note> notes = noteRepository.findByReadingRecordAndReadingRecord_User(readingRecord, user);
-        List<ReadDate> readDates = readDateRepository.findByReadingRecordAndReadingRecord_UserAndStatusNot(readingRecord, user, ReadStatus.pending);
+        List<ReadDate> readDates = readDateRepository.findByReadingRecordAndReadingRecord_User(readingRecord, user);
         // 그룹화된 결과 생성
         Map<ReadDateAndIdDto, List<NoteDto>> groupedNotes = groupNotesByReadDate(notes, readDates);
 

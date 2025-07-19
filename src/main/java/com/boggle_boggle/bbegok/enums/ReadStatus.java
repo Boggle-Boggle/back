@@ -7,7 +7,7 @@ import org.springframework.http.HttpStatus;
 @Getter
 @RequiredArgsConstructor
 public enum ReadStatus {
-    reading,
-    pending,
-    completed;
+    READING,
+    COMPLETED,
+    DROPPED;
 }

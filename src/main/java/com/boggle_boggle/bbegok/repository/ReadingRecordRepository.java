@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Optional;
 @Repository
 public interface ReadingRecordRepository extends JpaRepository<ReadingRecord, Long> {
-    ReadingRecord findByUserAndBook(User user, Book book);
+    Optional<ReadingRecord> findByUserAndBook(User user, Book book);
 
     Optional<ReadingRecord> findByreadingRecordSeqAndUserOrderByReadingRecordSeq(Long id, User user);
 

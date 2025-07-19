@@ -27,7 +27,7 @@ public class EditReadingRecordResponse {
                 .readingRecordId(entity.getReadingRecordSeq())
                 .rating(entity.getRating())
                 .readDateList(entity.getReadDateList().stream()
-                        .filter(readDate -> !readDate.getStatus().equals(ReadStatus.pending))
+                        //.filter(readDate -> !readDate.getStatus().equals(ReadStatus.pending))
                         .map(ReadDateAndIdDto::new).toList())
                 .libraries(libraryDtos)
                 .isBookVisible(entity.getIsBooksVisible())

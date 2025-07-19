@@ -145,7 +145,7 @@ public class LibraryService {
 
     public BookShelfResponse findBookshelfByEndDate(Integer year, Integer month, String userSeq) {
         User user = getUser(userSeq);
-        List<ReadingRecordAndDateDTO> booksPage = readingRecordRepository.findBooksByUserAndReadDate(user, year, month, ReadStatus.completed);
+        List<ReadingRecordAndDateDTO> booksPage = readingRecordRepository.findBooksByUserAndReadDate(user, year, month, ReadStatus.COMPLETED);
         return BookShelfResponse.fromPage(booksPage);
     }
 }

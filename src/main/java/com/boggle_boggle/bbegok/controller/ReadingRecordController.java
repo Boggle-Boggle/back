@@ -5,13 +5,11 @@ import com.boggle_boggle.bbegok.dto.ReadDateIndexDto;
 import com.boggle_boggle.bbegok.dto.base.DataResponseDto;
 import com.boggle_boggle.bbegok.dto.request.NewReadingRecordRequest;
 import com.boggle_boggle.bbegok.dto.request.UpdateReadingRecordRequest;
-import com.boggle_boggle.bbegok.dto.response.BookDetailResponse;
-import com.boggle_boggle.bbegok.dto.response.EditReadingRecordResponse;
-import com.boggle_boggle.bbegok.dto.response.LibraryResponse;
-import com.boggle_boggle.bbegok.dto.response.ReadingRecordResponse;
+import com.boggle_boggle.bbegok.dto.response.*;
 import com.boggle_boggle.bbegok.entity.Book;
 import com.boggle_boggle.bbegok.service.BookService;
 import com.boggle_boggle.bbegok.service.ReadingRecordService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -41,10 +39,10 @@ public class ReadingRecordController {
 
     //새로운 독서기록 등록
     @PostMapping
-    public DataResponseDto<Long> saveReadingRecord(
-            @RequestBody NewReadingRecordRequest request,
+    public DataResponseDto<ReadingRecordIdResponse> save(
+            @Valid @RequestBody NewReadingRecordRequest request,
             @AuthenticationPrincipal UserDetails userDetails) {
-        return DataResponseDto.of(readingRecordService.saveReadingRecord(request, userDetails.getUsername()));
+        return DataResponseDto.of(readingRecordService.save(request, userDetails.getUsername()));
     }
 
     //독서기록 수정창 조회

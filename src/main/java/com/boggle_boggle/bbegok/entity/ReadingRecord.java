@@ -1,6 +1,7 @@
 package com.boggle_boggle.bbegok.entity;
 
 import com.boggle_boggle.bbegok.dto.ReadDateDto;
+import com.boggle_boggle.bbegok.dto.request.NewReadingRecordRequest;
 import com.boggle_boggle.bbegok.entity.embed.CrudDate;
 import com.boggle_boggle.bbegok.entity.user.User;
 import com.boggle_boggle.bbegok.enums.ReadStatus;
@@ -51,20 +52,24 @@ public class ReadingRecord {
 
     protected ReadingRecord(){}
 
-    private ReadingRecord(User user, Book book, LocalDateTime readStartDate, LocalDateTime readEndDate,
-                          List<Library> libraries, Double rating, Boolean visible, ReadStatus status) {
+    private ReadingRecord(User user, Book book){
         this.user = user;
         this.book = book;
-        this.rating = rating;
-        this.isBooksVisible = visible;
-        addReadDateList(readStartDate, readEndDate, status);
-        addLibraries(libraries);
     }
 
-    public static ReadingRecord createReadingRecord(User user, Book book, LocalDateTime readStartDate, LocalDateTime readEndDate,
-                                                    List<Library> libraries, Double rating, Boolean visible, ReadStatus status) {
-        return new ReadingRecord(user, book, readStartDate, readEndDate, libraries, rating, visible, status);
+    public static ReadingRecord createReadingRecord(User user,
+                                                    Book book,
+                                                    NewReadingRecordRequest record,
+                                                    List<Library> libraries) {
+        ReadingRecord readingRecord = new ReadingRecord(user, book);
+        readingRecord.rating = record.getRating();
+        readingRecord.isBooksVisible = record.getIsVisible();
+        readingRecord.addReadDateList(record.getStartReadDate(), record.getEndReadDate(), record.getReadStatus());
+        readingRecord.addLibraries(libraries);
+
+        return readingRecord;
     }
+
 
     //==수정
     public void update(ReadStatus readStatus,  Double rating, List<ReadDateDto> readDateList,

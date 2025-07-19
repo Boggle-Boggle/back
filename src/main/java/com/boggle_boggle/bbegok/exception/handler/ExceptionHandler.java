@@ -34,9 +34,12 @@ public class ExceptionHandler extends ResponseEntityExceptionHandler {
     }
     /** 사용자 정의 예외 실패 처리
      */
-    @org.springframework.web.bind.annotation.ExceptionHandler
+    @org.springframework.web.bind.annotation.ExceptionHandler(GeneralException.class)
     public ResponseEntity<Object> general(GeneralException e, WebRequest request) {
-        return handleExceptionInternal(e, e.getErrorCode(), request);
+        ErrorResponseDto<?> response = ErrorResponseDto.of(e.getErrorCode(), e.getData());
+        return ResponseEntity
+                .status(e.getErrorCode().getHttpStatus())
+                .body(response);  // ✅ 직접 body로 내려야 함
     }
     /** 그외 모든 Exception 처리
      */
@@ -44,7 +47,6 @@ public class ExceptionHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity<Object> exception(Exception e, WebRequest request) {
         return handleExceptionInternal(e, Code.INTERNAL_ERROR, request);
     }
-
 
     protected ResponseEntity<Object> handleExceptionInternal(Exception ex, Object body,
                                                              HttpHeaders headers, HttpStatus status, WebRequest request) {
@@ -61,7 +63,7 @@ public class ExceptionHandler extends ResponseEntityExceptionHandler {
                                                            HttpHeaders headers, HttpStatus status, WebRequest request) {
         return super.handleExceptionInternal(
                 e,
-                ErrorResponseDto.of(errorCode, errorCode.getMessage(e)),
+                ErrorResponseDto.of(errorCode, (Object) null),
                 headers,
                 status,
                 request

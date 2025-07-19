@@ -36,9 +36,9 @@ public class MyPageService {
     public MyPageResponse getMyPage(String userSeq) {
         User user = getUser(userSeq);
         //총 읽은 권수 - ReadingRecord 갯수
-        int totalReadingCnt = readingRecordRepository.findTotalyReadingCnt(user, ReadStatus.completed);
+        int totalReadingCnt = readingRecordRepository.findTotalyReadingCnt(user, ReadStatus.COMPLETED);
         //이번달 읽은 권수 - 이번달에 다 읽은 ReadingRecord 갯수(상태 상관없이 둘다?)
-        int monthlyReadingCnt = readingRecordRepository.findMonthlyReadingCnt(user, ReadStatus.completed);
+        int monthlyReadingCnt = readingRecordRepository.findMonthlyReadingCnt(user, ReadStatus.COMPLETED);
         //작성한 독서노트 - 작성한 모든 독서노트 갯수
         int totalNote = noteRepository.findByReadingRecord_User(user).size();
 

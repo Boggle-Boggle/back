@@ -19,9 +19,9 @@ public class RecordByStatusDto {
 
     public RecordByStatusDto(ReadStatus readStatus, Long bookCount){
         LibraryByStatus libraryByStatus;
-        if(readStatus == ReadStatus.completed) libraryByStatus = LibraryByStatus.completed;
-        else if(readStatus == ReadStatus.pending) libraryByStatus = LibraryByStatus.pending;
-        else if(readStatus == ReadStatus.reading) libraryByStatus = LibraryByStatus.reading;
+        if(readStatus == ReadStatus.COMPLETED) libraryByStatus = LibraryByStatus.completed;
+        //else if(readStatus == ReadStatus.pending) libraryByStatus = LibraryByStatus.pending;
+        else if(readStatus == ReadStatus.READING) libraryByStatus = LibraryByStatus.reading;
         else libraryByStatus = LibraryByStatus.all;
 
         this.status = libraryByStatus;
