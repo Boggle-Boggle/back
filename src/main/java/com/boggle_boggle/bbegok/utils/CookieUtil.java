@@ -1,5 +1,6 @@
 package com.boggle_boggle.bbegok.utils;
 
+import com.boggle_boggle.bbegok.dto.OAuthLoginResponse;
 import com.boggle_boggle.bbegok.exception.Code;
 import com.boggle_boggle.bbegok.exception.exception.GeneralException;
 import jakarta.servlet.http.Cookie;
@@ -15,6 +16,9 @@ import org.springframework.util.SerializationUtils;
 import java.util.Base64;
 import java.util.Optional;
 
+import static org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames.DEVICE_CODE;
+import static org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames.REFRESH_TOKEN;
+
 @Slf4j
 @Component
 public class CookieUtil {
@@ -29,6 +33,15 @@ public class CookieUtil {
             }
         }
         return Optional.empty();
+    }
+
+    public static void clearAndAddCookie(HttpServletRequest request, HttpServletResponse response, String name, String value, int maxAge, String domain) {
+        deleteCookie(request, response, name, domain);
+        addCookie(response, name, value, maxAge, domain);
+    }
+
+    public static int getMaxAgeByRefreshTokenExpiry(long refreshTokenExpiry) {
+        return (int)(refreshTokenExpiry/1000L);
     }
 
     public static void addCookie(HttpServletResponse response, String name, String value, int maxAge, String domain) {

@@ -1,4 +1,4 @@
-package com.boggle_boggle.bbegok.repository.user;
+package com.boggle_boggle.bbegok.repository;
 
 import com.boggle_boggle.bbegok.entity.user.User;
 import com.boggle_boggle.bbegok.entity.user.UserSettings;

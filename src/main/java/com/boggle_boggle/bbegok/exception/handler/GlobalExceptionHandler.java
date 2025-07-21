@@ -14,10 +14,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-import java.nio.file.AccessDeniedException;
-
-@RestControllerAdvice(annotations = {RestController.class})
-public class ExceptionHandler extends ResponseEntityExceptionHandler {
+@RestControllerAdvice
+public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     /** 유효성 검사 실패 처리 (RequestBody - @Valid) */
     @Override
@@ -39,7 +37,7 @@ public class ExceptionHandler extends ResponseEntityExceptionHandler {
         ErrorResponseDto<?> response = ErrorResponseDto.of(e.getErrorCode(), e.getData());
         return ResponseEntity
                 .status(e.getErrorCode().getHttpStatus())
-                .body(response);  // ✅ 직접 body로 내려야 함
+                .body(response);
     }
     /** 그외 모든 Exception 처리
      */

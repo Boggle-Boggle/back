@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 @RequiredArgsConstructor
-public class TermsRepository {
+public class TermsRedisRepository {
     @Value("${redis.terms.key}")
     private String TERMS_VERSION_KEY;
 

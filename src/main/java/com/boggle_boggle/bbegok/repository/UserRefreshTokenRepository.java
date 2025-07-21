@@ -1,11 +1,8 @@
-package com.boggle_boggle.bbegok.repository.user;
+package com.boggle_boggle.bbegok.repository;
 
 import com.boggle_boggle.bbegok.entity.user.User;
 import com.boggle_boggle.bbegok.entity.user.UserRefreshToken;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;

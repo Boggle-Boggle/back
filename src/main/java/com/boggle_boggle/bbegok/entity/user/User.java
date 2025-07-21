@@ -31,7 +31,7 @@ public class User {
     @Size(max = 64)
     private String userId;
 
-    @Column(name = "user_name", unique = true, length = 12)
+    @Column(name = "user_name", unique = true, length = 15)
     private String userName = null;
 
     @Column(name = "withdraw_user_name", length = 12)
@@ -71,6 +71,9 @@ public class User {
     @Column(name = "modified_at", insertable = false)
     private LocalDateTime modifiedAt = LocalDateTime.now();
 
+    @Column(name = "recent_login_at")
+    private LocalDateTime recentLoginAt = LocalDateTime.now();
+
     @Column(name = "is_deleted")
     @NotNull
     private Boolean isDeleted = false;
@@ -83,50 +86,49 @@ public class User {
 
     protected User(){}
 
-    protected User(
+    private User(
             String userId,
             ProviderType providerType,
             String email,
+            String nickname,
             RoleType roleType) {
         this.userId = userId;
         this.providerType = providerType;
         this.roleType = roleType;
         this.email = email;
-    }
-
-
-    protected User(
-            String userId,
-            ProviderType providerType,
-            String email,
-            RoleType roleType,
-            String accessToken,
-            String refreshToken) {
-        this.userId = userId;
-        this.providerType = providerType;
-        this.email = email;
-        this.roleType = roleType;
-        this.oauth2AccessToken = accessToken;
-        this.oauth2RefreshToken = refreshToken;
+        this.userName = nickname;
     }
 
     public static User createUser(
             @NotNull String userId,
             @NotNull ProviderType providerType,
-            String email,
+            @NotNull String email,
+            @NotNull String nickname,
             @NotNull RoleType roleType){
-        return new User(userId, providerType, email, roleType);
+        return new User(userId, providerType, email, nickname, roleType);
     }
 
     public static User createUser(
             @NotNull String userId,
             @NotNull ProviderType providerType,
-            String email,
+            @NotNull String email,
+            @NotNull String nickname,
             @NotNull RoleType roleType,
             @NotNull String accessToken,
             @NotNull String refreshToken
     ){
-        return new User(userId, providerType, email, roleType, accessToken, refreshToken);
+        User user = new User(userId, providerType, email, nickname, roleType);
+        user.oauth2AccessToken = accessToken;
+        user.oauth2RefreshToken = refreshToken;
+        return user;
+    }
+
+    public static User from(PreSignup preSignup, String nickname){
+        return new User(preSignup.getOauth2Id(),
+                preSignup.getProviderType(),
+                preSignup.getEmail(),
+                nickname,
+                RoleType.USER);
     }
 
     public void updateNickName(String nickName){
@@ -144,11 +146,6 @@ public class User {
         this.deletedAt = LocalDateTime.now();
     }
 
-    public void updateGuestToUser(String latestVersion) {
-        this.roleType = RoleType.USER;
-        this.agreedVersion = latestVersion;
-    }
-
     public void updateToken(String accessToken, String refreshToken) {
         this.oauth2AccessToken = accessToken;
         this.oauth2RefreshToken = refreshToken;
@@ -156,5 +153,9 @@ public class User {
 
     public void updateEmail(String email) {
         this.email = email;
+    }
+
+    public void updateLoginAt(LocalDateTime now) {
+        this.recentLoginAt = now;
     }
 }

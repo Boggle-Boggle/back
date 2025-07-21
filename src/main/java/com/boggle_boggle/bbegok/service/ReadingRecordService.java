@@ -1,25 +1,17 @@
 package com.boggle_boggle.bbegok.service;
 
-import com.boggle_boggle.bbegok.client.AladinClient;
-import com.boggle_boggle.bbegok.config.openfeign.OpenFeignConfig;
 import com.boggle_boggle.bbegok.dto.*;
-import com.boggle_boggle.bbegok.dto.request.CustomBookRecordRequest;
 import com.boggle_boggle.bbegok.dto.request.NewReadingRecordRequest;
-import com.boggle_boggle.bbegok.dto.request.NormalBookRecordRequest;
 import com.boggle_boggle.bbegok.dto.request.UpdateReadingRecordRequest;
-import com.boggle_boggle.bbegok.dto.response.BookDetailResponse;
 import com.boggle_boggle.bbegok.dto.response.EditReadingRecordResponse;
 import com.boggle_boggle.bbegok.dto.response.ReadingRecordIdResponse;
 import com.boggle_boggle.bbegok.dto.response.ReadingRecordResponse;
 import com.boggle_boggle.bbegok.entity.*;
 import com.boggle_boggle.bbegok.entity.user.User;
-import com.boggle_boggle.bbegok.enums.ReadStatus;
 import com.boggle_boggle.bbegok.exception.Code;
 import com.boggle_boggle.bbegok.exception.exception.GeneralException;
 import com.boggle_boggle.bbegok.repository.*;
-import com.boggle_boggle.bbegok.repository.user.UserRepository;
-import com.boggle_boggle.bbegok.utils.LocalDateTimeUtil;
-import lombok.Locked;
+import com.boggle_boggle.bbegok.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

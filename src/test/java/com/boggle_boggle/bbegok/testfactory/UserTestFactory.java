@@ -13,7 +13,7 @@ public class UserTestFactory {
     }
 
     public static User create(Long userSeq) {
-        User user = User.createUser("testUser", ProviderType.GOOGLE,"test@example.com", RoleType.USER);
+        User user = User.createUser("testUser", ProviderType.GOOGLE,"test@example.com", "닉네임", RoleType.USER);
         ReflectionTestUtils.setField(user, "userSeq", userSeq);
         return user;
     }
