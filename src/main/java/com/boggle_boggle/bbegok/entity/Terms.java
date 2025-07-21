@@ -23,7 +23,7 @@ public class Terms {
     private String content;
 
     @Column(name = "version", nullable = false)
-    private String version;
+    private int version;
 
     @Column(name = "isMandatory", nullable = false)
     private Boolean isMandatory;

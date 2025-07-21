@@ -1,19 +1,15 @@
 package com.boggle_boggle.bbegok.service;
 
-import com.boggle_boggle.bbegok.dto.base.DataResponseDto;
 import com.boggle_boggle.bbegok.dto.response.MyPageResponse;
-import com.boggle_boggle.bbegok.entity.ReadingRecord;
 import com.boggle_boggle.bbegok.entity.user.User;
 import com.boggle_boggle.bbegok.enums.ReadStatus;
 import com.boggle_boggle.bbegok.exception.Code;
 import com.boggle_boggle.bbegok.exception.exception.GeneralException;
 import com.boggle_boggle.bbegok.repository.NoteRepository;
 import com.boggle_boggle.bbegok.repository.ReadingRecordRepository;
-import com.boggle_boggle.bbegok.repository.user.UserRepository;
+import com.boggle_boggle.bbegok.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor

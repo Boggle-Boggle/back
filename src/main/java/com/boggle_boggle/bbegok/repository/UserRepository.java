@@ -1,4 +1,4 @@
-package com.boggle_boggle.bbegok.repository.user;
+package com.boggle_boggle.bbegok.repository;
 
 import com.boggle_boggle.bbegok.entity.user.User;
 import jakarta.validation.constraints.NotNull;
@@ -16,4 +16,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
     User findByUserSeqAndIsDeleted(Long userSeq, @NotNull boolean b);
 
     long countByUserSeqAndIsDeleted(Long userSeq, @NotNull Boolean isDeleted);
+
+    boolean existsByUserName(String nickname);
+
+    boolean existsByUserIdAndIsDeletedFalse(String oauth2Id);
 }

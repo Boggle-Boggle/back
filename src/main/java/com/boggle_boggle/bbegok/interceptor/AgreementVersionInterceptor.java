@@ -4,7 +4,6 @@ import com.boggle_boggle.bbegok.exception.Code;
 import com.boggle_boggle.bbegok.exception.exception.GeneralException;
 import com.boggle_boggle.bbegok.oauth.token.AuthToken;
 import com.boggle_boggle.bbegok.oauth.token.AuthTokenProvider;
-import com.boggle_boggle.bbegok.repository.redis.TermsRepository;
 import com.boggle_boggle.bbegok.service.TermsService;
 import com.boggle_boggle.bbegok.utils.HeaderUtil;
 import jakarta.servlet.http.HttpServletRequest;

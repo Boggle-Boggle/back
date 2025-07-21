@@ -30,14 +30,13 @@ public class AgreeToTerms {
     protected AgreeToTerms() {
     }
 
-    public AgreeToTerms(User user, Terms terms) {
+    private AgreeToTerms(User user, Terms terms) {
         this.user = user;
         this.terms = terms;
         this.agreeDate = LocalDateTime.now();
     }
 
-    public static AgreeToTerms createAgreeToTerms(User user, Terms terms) {
+    public static AgreeToTerms of(User user, Terms terms) {
         return new AgreeToTerms(user, terms);
     }
-
 }

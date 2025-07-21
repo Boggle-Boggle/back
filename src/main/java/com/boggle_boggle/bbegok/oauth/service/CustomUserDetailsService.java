@@ -2,7 +2,7 @@ package com.boggle_boggle.bbegok.oauth.service;
 
 import com.boggle_boggle.bbegok.entity.user.User;
 import com.boggle_boggle.bbegok.oauth.entity.UserPrincipal;
-import com.boggle_boggle.bbegok.repository.user.UserRepository;
+import com.boggle_boggle.bbegok.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

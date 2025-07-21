@@ -5,11 +5,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Getter
+@Component
 @ConfigurationProperties(prefix = "app")
 public class AppProperties {
 
@@ -22,7 +24,7 @@ public class AppProperties {
     @AllArgsConstructor
     public static class Auth {
         private String tokenSecret;
-        private long tokenExpiry;
+        private long accessTokenExpiry;
         private long refreshTokenExpiry;
     }
 

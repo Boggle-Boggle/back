@@ -1,10 +1,6 @@
 package com.boggle_boggle.bbegok.service;
 
-import com.boggle_boggle.bbegok.client.AladinClient;
-import com.boggle_boggle.bbegok.config.openfeign.OpenFeignConfig;
 import com.boggle_boggle.bbegok.dto.BookData;
-import com.boggle_boggle.bbegok.dto.OriginBookData;
-import com.boggle_boggle.bbegok.dto.OriginDetailBook;
 import com.boggle_boggle.bbegok.dto.request.CreateCustomBookRequest;
 import com.boggle_boggle.bbegok.dto.request.CustomBookRecordRequest;
 import com.boggle_boggle.bbegok.dto.request.NewReadingRecordRequest;
@@ -18,7 +14,7 @@ import com.boggle_boggle.bbegok.exception.exception.GeneralException;
 import com.boggle_boggle.bbegok.repository.BookRepository;
 import com.boggle_boggle.bbegok.repository.ReadingRecordRepository;
 import com.boggle_boggle.bbegok.repository.UserFavoriteBookRepository;
-import com.boggle_boggle.bbegok.repository.user.UserRepository;
+import com.boggle_boggle.bbegok.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

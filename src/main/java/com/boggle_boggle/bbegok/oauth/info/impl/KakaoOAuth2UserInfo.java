@@ -4,7 +4,7 @@ import com.boggle_boggle.bbegok.oauth.info.OAuth2UserInfo;
 
 import java.util.Map;
 
-/** Kakao OAuth정보로부터 가져올 데이터들을 재정의
+/** 카카오 API 응답(JSON)을 서버 내부 표준 형태로 추상화
  */
 public class KakaoOAuth2UserInfo extends OAuth2UserInfo {
 

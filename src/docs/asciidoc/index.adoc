@@ -14,6 +14,9 @@
 //서버정보
 include::info.adoc[]
 
+//소셜 로그인
+include::oauth2-api.adoc[]
+
 //책
 include::book-api.adoc[]
 

@@ -2,8 +2,7 @@ package com.boggle_boggle.bbegok.oauth.info;
 
 import java.util.Map;
 
-/** 각 OAuth2에서 가져올 데이터들을 정의하는 추상클래스
- * 현재 빼곡의 경우 오직 식별자만 필요로 한다.
+/** 각 OAuth2 Client에서 가져오는 userInfo를 서버 내부 표준으로 추상화
  */
 public abstract class OAuth2UserInfo {
     protected Map<String, Object> attributes;

@@ -43,8 +43,11 @@ public enum Code {
     // 사용자 관련 예외
     USER_NOT_FOUND(13000, HttpStatus.NOT_FOUND, "User not found"),
     USER_ALREADY_WITHDRAWN(13001, HttpStatus.FORBIDDEN, "The user has already withdrawn from the service"),
-    DUPLICATE_USERNAME(13001, HttpStatus.CONFLICT, "Username already exists"),
+    DUPLICATE_USERNAME(13001, HttpStatus.CONFLICT, "이미 존재하는 닉네임 입니다."),
     INVALID_PASSWORD(13002, HttpStatus.BAD_REQUEST, "Invalid password format"),
+    SIGNUP_EXPIRED(13003, HttpStatus.UNAUTHORIZED ,"세션 유효기간이 지났습니다. 처음부터 다시 진행해주세요" ),
+    SIGNUP_NOTFOUND(13005, HttpStatus.UNAUTHORIZED ,"로그인 계정 정보를 찾을 수 없습니다. 처음부터 다시 진행해주세요" ),
+    ALREADY_SIGNEDUP(13006, HttpStatus.CONFLICT, "이미 가입된 유저입니다. 로그인 후 이용해주세요."),
 
     // API 관련 예외
     API_REQUEST_FAILED(14000, HttpStatus.SERVICE_UNAVAILABLE, "Failed to fetch data from external API"),
@@ -57,7 +60,7 @@ public enum Code {
     INVALID_DATE_RANGE(15002, HttpStatus.BAD_REQUEST, "Invalid date range for reading statistics"),
 
     // 권한 관련 예외
-    ACCESS_DENIED(16000, HttpStatus.FORBIDDEN, "Access denied to requested resource"),
+    ACCESS_DENIED(16000, HttpStatus.FORBIDDEN, "자원에 접근할 권한이 없습니다."),
     INSUFFICIENT_PERMISSIONS(16001, HttpStatus.FORBIDDEN, "Insufficient permissions for this action"),
     GUEST_DENIED_ACCESS(16003, HttpStatus.FORBIDDEN, "Guest denied acess user's resource"),
     LIMITED_USER_DENIED_ACCESS(16004, HttpStatus.FORBIDDEN, "Limited User denied acess user's resource, Please check latest agreement"),
@@ -74,7 +77,7 @@ public enum Code {
     REFRESH_COOKIE_NOT_FOUND(50011, HttpStatus.UNAUTHORIZED ,"refresh token not found in cookie" ),
     DEVICE_COOKIE_NOT_FOUND(50014, HttpStatus.UNAUTHORIZED ,"device id not found in cookie" ),
     INVALID_REFRESH_TOKEN(50008,HttpStatus.UNAUTHORIZED ,  "Invalid Refresh Token, Please Re-sign in."),
-    INVALID_ACCESS_TOKEN(50005,HttpStatus.UNAUTHORIZED ,  "Invalid access token"),
+    INVALID_ACCESS_TOKEN(50005,HttpStatus.UNAUTHORIZED ,  "유효하지 않은 accessToken입니다."),
     EMPTY_COOKIE(50009,HttpStatus.UNAUTHORIZED, "Empty COOKIE"),
     EMPTY_ACCESS_TOKEN(50010,HttpStatus.UNAUTHORIZED, "Access token Empty"),
     //TOKEN_TERMS_NOT_FOUND(50012, HttpStatus.NOT_FOUND, "terms agree information is null"),
@@ -85,8 +88,7 @@ public enum Code {
     LIBRARY_NOT_FOUND(600001, HttpStatus.NOT_FOUND, "library not found"),
 
     TERMS_NOT_FOUND(700001, HttpStatus.NOT_FOUND, "terms not found"),
-    REQUIRED_TERMS_NOT_AGREED(700002, HttpStatus.BAD_REQUEST, "Did not agree to the required terms"),
-    LATEST_TERMS_NOT_INCLUDED(700003, HttpStatus.BAD_REQUEST, "Did not Include the required latest terms");
+    REQUIRED_TERMS_NOT_AGREED(700002, HttpStatus.BAD_REQUEST, "필수약관에 동의하지 않았습니다");
 
 
     private final Integer code;

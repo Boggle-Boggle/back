@@ -1,8 +1,6 @@
 package com.boggle_boggle.bbegok.service;
 
 import com.boggle_boggle.bbegok.repository.AgreeToTermsRepository;
-import com.boggle_boggle.bbegok.repository.redis.TermsRepository;
-import com.boggle_boggle.bbegok.repository.user.UserRefreshTokenRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

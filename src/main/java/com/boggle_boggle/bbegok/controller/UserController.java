@@ -1,11 +1,15 @@
 package com.boggle_boggle.bbegok.controller;
 
+import com.boggle_boggle.bbegok.dto.OAuthLoginResponse;
 import com.boggle_boggle.bbegok.dto.TermsAgreement;
 import com.boggle_boggle.bbegok.dto.base.DataResponseDto;
 import com.boggle_boggle.bbegok.dto.request.NickNameRequest;
+import com.boggle_boggle.bbegok.dto.request.SignupRequest;
 import com.boggle_boggle.bbegok.dto.request.WithdrawReasonRequest;
 import com.boggle_boggle.bbegok.dto.response.TermsResponse;
+import com.boggle_boggle.bbegok.enums.SignStatus;
 import com.boggle_boggle.bbegok.oauth.service.RevokeService;
+import com.boggle_boggle.bbegok.service.QueryService;
 import com.boggle_boggle.bbegok.service.UserService;
 import com.boggle_boggle.bbegok.utils.CookieUtil;
 import jakarta.servlet.http.HttpServletRequest;
@@ -28,10 +32,21 @@ import java.util.List;
 public class UserController {
 
     private final RevokeService revokeService;
+    private final QueryService queryService;
     private final UserService userService;
-    @Value("${bbaegok.root-domain}")
-    private String domain;
 
+    @PostMapping()
+    public DataResponseDto<OAuthLoginResponse> signup(@Valid @RequestBody SignupRequest signupRequest,
+                                                      HttpServletRequest request,
+                                                      HttpServletResponse response) {
+        OAuthLoginResponse oauthLoginResponse = userService.signup(signupRequest.getPreSignupId(), signupRequest.getNickname(), signupRequest.getAgreements());
+        if(oauthLoginResponse.getStatus() == SignStatus.EXISTING_USER) {
+            queryService.setLoginCookie(request, response, oauthLoginResponse);
+            oauthLoginResponse.clearLoginData();
+        }
+        return DataResponseDto.of(oauthLoginResponse);
+    }
+/*
     @DeleteMapping
     public DataResponseDto<Void> deleteUser(HttpServletRequest request, HttpServletResponse response,
                                             @Valid @RequestBody WithdrawReasonRequest withdrawReasonRequest,
@@ -76,4 +91,5 @@ public class UserController {
         userService.agreeToTerms(request,userDetails.getUsername());
         return DataResponseDto.empty();
     }
+ */
 }
