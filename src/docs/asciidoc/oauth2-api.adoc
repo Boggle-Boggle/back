@@ -1,32 +1,30 @@
 [[oauth2-api]]
 == 🔑 OAuth2 소셜 로그인 API
-
 소셜 로그인(카카오, 구글, 애플)을 지원합니다. +
 각 제공자별로 인증 URL이 다릅니다.
 
-* 이 API 하나에서 기존회원/신규회원 여부를 판별하여 서로 다른 결과를 응답합니다.
+=== 로그인/회원가입
+이 API 하나에서 기존회원/신규회원 여부를 판별하여 서로 다른 결과를 응답합니다.
 
----
-
-=== OAuth2 로그인/회원가입 콜백
-
-==== 요청 URI
-[cols="2,5,3"]
-|=====
+[discrete]
+[cols="1,9", options="header"]
+|====
 |provider         |uri
 |KAKAO    | https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=${kakao_client}&redirect_uri={kako_redirect}
-|APPLE   | 준비중 |준비중
-|GOOGLE    | 준비중 |준비중
-|=====
+|APPLE   | 준비중
+|GOOGLE    | 준비중
+|====
 
+[discrete]
 ==== 환경변수
-|=====
+[cols="1,2,7", options="header"]
+|====
 |env     | name | value
 | staging  |${kakao_client}     | 797b99b872c1f2e304c816c32c2faa7c
-| staging  |${kako_redirect}     | http://localhost:8080/auth/oauth2/callback/kakao
+| staging  |${kako_redirect}     | ${server}/auth/oauth2/callback/kakao
 | prod  |${kakao_client}     | 797b99b872c1f2e304c816c32c2faa7c
-| prod  |${kako_redirect}     | http://localhost:8080/auth/oauth2/callback/kakao
-|=====
+| prod  |${kako_redirect}     | ${server}/auth/oauth2/callback/kakao
+|====
 
 
 [discrete]
@@ -45,11 +43,11 @@
 .새로운유저 응답(회원가입으로 이동)
 [source,json]
 ----
+# 쿠키에 DEVICE_CODE 및 REFRESH_TOKEN이 셋팅됨(30 Days 영구쿠키)
 {
   "status": "SIGNUP_REQUIRED",
   "preSignupId": 3
 }
-# 쿠키에 DEVICE_CODE 및 REFRESH_TOKEN이 셋팅됨
 ----
 
 
@@ -58,5 +56,3 @@
 
 include::{snippets}/auth/oauth2-callback/http-response.adoc[]
 include::{snippets}/auth/oauth2-callback/response-fields-data.adoc[]
-
-[discrete]

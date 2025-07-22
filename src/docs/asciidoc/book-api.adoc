@@ -33,5 +33,4 @@ include::{snippets}/books/detail/path-parameters.adoc[]
 include::{snippets}/books/detail/http-response.adoc[]
 include::{snippets}/books/detail/response-fields-data.adoc[]
 
----
 

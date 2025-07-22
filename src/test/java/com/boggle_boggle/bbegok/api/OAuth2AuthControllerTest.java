@@ -63,7 +63,8 @@ class OAuth2AuthControllerTest extends AbstractRestDocsTests {
                                 beneathPath("data").withSubsectionId("data"),
                                 fieldWithPath("status")
                                         .description("""
-                                        응답 상태(EXISTING_USER:기존회원/SIGNUP_REQUIRED:신규회원)
+                                        EXISTING_USER:기존회원
+                                        SIGNUP_REQUIRED:신규회원
                                         """)
                                         .type(JsonFieldType.STRING),
                                 fieldWithPath("accessToken")

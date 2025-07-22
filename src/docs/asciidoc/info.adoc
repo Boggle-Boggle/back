@@ -1,10 +1,12 @@
 [[info]]
 ==== API 서버 경로
-[cols="2,5,3"]
+아래 경로들을 *${server}*로 지정합니다.
+
+[cols="2,5,3", options="header"]
 |=====
 |환경         |DNS |비고
-|스테이징(staging)    | link:[https://{staging-domain}/backend] |API 문서 제공
-|운영(prod)   | link:[https://{prod-domain}/backend] |API 문서 미제공
+|스테이징(staging)    | https://{staging-domain}/backend |API 문서 제공
+|운영(prod)   | https://{prod-domain}/backend |API 문서 미제공
 |=====
 
 ==== 응답형식
