@@ -149,7 +149,7 @@ public class AppleService {
     }
 
     protected void saveCookie(HttpServletResponse response, HttpServletRequest request, String cookieName, long tokenExpiry, String tokenValue) {
-        int cookieMaxAge = (int) tokenExpiry / 60;
+        int cookieMaxAge = (int)(tokenExpiry / 1000L);
         CookieUtil.deleteCookie(request, response, cookieName, domain);
         CookieUtil.addCookie(response, cookieName, tokenValue, cookieMaxAge, domain);
     }

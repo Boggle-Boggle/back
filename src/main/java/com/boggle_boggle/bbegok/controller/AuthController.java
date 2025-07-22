@@ -88,7 +88,7 @@ public class AuthController {
             // DB에 refresh 토큰 업데이트
             userRefreshToken.setRefreshToken(authRefreshToken.getToken());
 
-            int cookieMaxAge = (int) refreshTokenExpiry / 60;
+            int cookieMaxAge = (int)(refreshTokenExpiry / 1000L);
             CookieUtil.deleteCookie(request, response, REFRESH_TOKEN, domain);
             CookieUtil.addCookie(response, REFRESH_TOKEN, authRefreshToken.getToken(), cookieMaxAge, domain);
         }
