@@ -1,6 +1,6 @@
 package com.boggle_boggle.bbegok.oauth.service;
 
-import com.boggle_boggle.bbegok.config.properties.AppleProperties;
+import com.boggle_boggle.bbegok.config.properties.oauth.AppleProperties;
 import com.boggle_boggle.bbegok.dto.request.WithdrawReasonRequest;
 import com.boggle_boggle.bbegok.entity.WithdrawReason;
 import com.boggle_boggle.bbegok.entity.user.User;
