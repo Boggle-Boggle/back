@@ -1,34 +1,95 @@
 package com.boggle_boggle.bbegok.oauth.client.impl;
 
-import com.boggle_boggle.bbegok.oauth.client.AppleTokenClient;
-import com.boggle_boggle.bbegok.oauth.client.AppleUserInfoClient;
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.algorithms.Algorithm;
+import com.boggle_boggle.bbegok.config.properties.OAuthProperties;
 import com.boggle_boggle.bbegok.oauth.client.OAuth2ProviderClient;
 import com.boggle_boggle.bbegok.oauth.client.response.AppleTokenResponse;
 import com.boggle_boggle.bbegok.oauth.info.OAuth2UserInfo;
 import com.boggle_boggle.bbegok.oauth.info.impl.AppleOAuth2UserInfo;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
+import org.springframework.web.reactive.function.BodyInserters;
+import org.springframework.web.reactive.function.client.WebClient;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.security.interfaces.ECPrivateKey;
+import java.time.Instant;
+import java.util.Base64;
+import java.util.Date;
 import java.util.Map;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class AppleOAuth2Client implements OAuth2ProviderClient {
 
-    private final AppleTokenClient appleTokenClient;  // 애플은 비동기/JWT 토큰 생성 등 별도 로직 필요
-    private final AppleUserInfoClient appleUserInfoClient;
-    private String cachedIdToken; // id_token 저장
+    private final OAuthProperties oAuthProperties;
+    private final ObjectMapper objectMapper;
+    private final ECPrivateKey privateKey; //p8로 로그인용 JWT(액세스토큰) 개인키 만듦
 
+    private String cachedIdToken;
+
+    //콜백 code를 기반으로 access_token + id_token 발급
     @Override
     public String requestAccessToken(String code) {
-        AppleTokenResponse tokenResponse = appleTokenClient.getToken(code);
+        log.info("[Apple] access_token 요청 시작");
+
+        String clientSecret = generateClientSecret();
+
+        AppleTokenResponse tokenResponse = WebClient.create()
+                .post()
+                .uri(oAuthProperties.getApple().getTokenUri())
+                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+                .body(BodyInserters.fromFormData("grant_type", "authorization_code")
+                        .with("code", code)
+                        .with("client_id", oAuthProperties.getApple().getClientId())
+                        .with("client_secret", clientSecret)
+                        .with("redirect_uri", oAuthProperties.getApple().getRedirectUri()))
+                .retrieve()
+                .bodyToMono(AppleTokenResponse.class)
+                .block();
+
         this.cachedIdToken = tokenResponse.getIdToken();
         return tokenResponse.getAccessToken();
     }
 
+    //id_token 파싱하여 사용자 정보 추출
     @Override
     public OAuth2UserInfo requestUserInfo(String accessToken) {
-        Map<String, Object> attributes = appleUserInfoClient.getUserInfo(cachedIdToken);
+        Map<String, Object> attributes = decodeIdToken(cachedIdToken);
         return new AppleOAuth2UserInfo(attributes);
+    }
+
+    //JWT 기반 client_secret 생성
+    private String generateClientSecret() {
+        Instant now = Instant.now();
+        Instant exp = now.plusSeconds(3600);
+
+        return JWT.create()
+                .withIssuer(oAuthProperties.getApple().getTeamId())
+                .withSubject(oAuthProperties.getApple().getClientId())
+                .withAudience(oAuthProperties.getApple().getIss())
+                .withIssuedAt(Date.from(now))
+                .withExpiresAt(Date.from(exp))
+                .withKeyId(oAuthProperties.getApple().getKeyId())
+                .sign(Algorithm.ECDSA256(null, privateKey));
+    }
+
+    //Base64 + JSON 파싱으로 user info 추출
+    private Map<String, Object> decodeIdToken(String idToken) {
+        try {
+            String[] parts = idToken.split("\\.");
+            String payloadJson = new String(Base64.getUrlDecoder().decode(parts[1]), StandardCharsets.UTF_8);
+            return objectMapper.readValue(payloadJson, new TypeReference<>() {});
+        } catch (IOException e) {
+            throw new RuntimeException("Apple ID Token 디코딩 실패", e);
+        }
     }
 }
