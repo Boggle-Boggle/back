@@ -1,39 +1,27 @@
 [[oauth2-api]]
 == 🔑 OAuth2 소셜 로그인 API
-소셜 로그인(카카오, 구글, 애플)을 지원합니다. +
-각 제공자별로 인증 URL이 다릅니다.
+소셜 로그인(카카오, 구글, 애플)을 지원합니다.
+(1) 인증서버 URI먼저 반환받고, 리디렉션 한 뒤 로그인 진행
+(2) 로그인 완료 후 응답으로 오는 객체에 맞춰 회원가입 or 홈으로 진행해주시면 됩니다.
 
-=== 로그인/회원가입
-이 API 하나에서 기존회원/신규회원 여부를 판별하여 서로 다른 결과를 응답합니다.
-
-[discrete]
-[cols="1,9", options="header"]
-|====
-|provider         |uri
-|KAKAO   | https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=${KAKAO_CIENT_ID}&redirect_uri={KAKAO_REDIRECT}
-|APPLE   | https://appleid.apple.com/auth/authorize?client_id=${APPLE_CLIENT_ID}&redirect_uri=${APPLE_REDIRECT}&response_type=code id_token&scope=name email&response_mode=form_post
-|GOOGLE  | https://accounts.google.com/o/oauth2/v2/auth?response_type=code&client_id=${GOOGLE_CLIENT_ID}&scope=email&redirect_uri=${GOOGLE_REDIRECT}
-|====
+=== 소셜 로그인 인가 요청
+사용자가 로그인 버튼을 누르면 해당 URI로 리다이렉트합니다. +
+provider의 값을 kakao / google / apple로 바꾸어서 요청하면 됩니다.
 
 [discrete]
-==== 환경변수
-[cols="1,2,7", options="header"]
-|====
-| name | value
-|${KAKAO_CIENT_ID}     | 797b99b872c1f2e304c816c32c2faa7c
-|${KAKAO_REDIRECT}     | ${server}/auth/oauth2/callback/kakao
-
-|${APPLE_CLIENT_ID}     | store.bbaegok.website
-|${APPLE_REDIRECT}     | ${server}/auth/oauth2/callback/apple
-
-|${GOOGLE_CLIENT_ID}     | 959213018646-25c9ng0lt07rkpsptr3impq9c37bo8jv.apps.googleusercontent.com
-|${GOOGLE_REDIRECT}     | ${server}/auth/oauth2/callback/google
-
-|====
-
+==== 요청
+include::{snippets}/auth/oauth2-authorize/http-request.adoc[]
+include::{snippets}/auth/oauth2-authorize/query-parameters.adoc[]
 
 [discrete]
+==== 응답
+include::{snippets}/auth/oauth2-authorize/http-response.adoc[]
+include::{snippets}/auth/oauth2-authorize/response-fields.adoc[]
 
+
+=== 소셜 로그인 콜백 처리
+
+[discrete]
 ==== 응답 예시
 
 .기존유저 응답(홈화면으로 이동)
