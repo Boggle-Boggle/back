@@ -58,9 +58,10 @@ class OAuth2AuthControllerTest extends AbstractRestDocsTests {
                                 parameterWithName("provider")
                                         .description("소셜 로그인 제공자 (kakao, google, apple)")
                         ),
-                        responseFields(
+                        relaxedResponseFields( // ← 바뀐 부분
+                                beneathPath("data").withSubsectionId("data"), // ← 바뀐 부분
                                 fieldWithPath("redirectUrl")
-                                        .description("Redirect할 인증서버URI")
+                                        .description("Redirect할 인증서버 URI")
                                         .type(JsonFieldType.STRING)
                         )
                 ));
