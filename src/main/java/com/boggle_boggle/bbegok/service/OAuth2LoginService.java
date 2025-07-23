@@ -33,18 +33,24 @@ public class OAuth2LoginService {
     //리다이렉션된 인가코드 정보를 바탕으로 인증서버에 토큰 요청 -> 토큰으로 정보요청 -> 로그인/회원가입
     @Transactional
     public OAuthLoginResponse processOAuth2Callback(ProviderType providerType, String code, String state) {
+        log.info("[OAuth] Callback 시작 - provider: {}, code: {}", providerType, code);
+
         //0. Provider별 client 세팅
         OAuth2ProviderClient client = providerClients.get(providerType);
+        log.info("[OAuth] Provider client 생성 완료: {}", client.getClass().getSimpleName());
         //1. 인가코드(code)로 액세스토큰 발급
         String oauthAccessToken = client.requestAccessToken(code);
+        log.info("[OAuth] 액세스토큰 발급 성공: {}", oauthAccessToken != null ? "OK" : "NULL");
 
         //2. 토큰(액세스토큰)으로 인증서버에 사용자 정보 요청
         OAuth2UserInfo userInfo = client.requestUserInfo(oauthAccessToken);
+        log.info("[OAuth] 사용자 정보 수신 - id: {}, email: {}", userInfo.getId(), userInfo.getEmail());
         String oauth2Id = userInfo.getId();
         String email = userInfo.getEmail();
 
         //3. 구분ID 기준으로 로그인/회원가입 분기
         User user = userRepository.findByUserIdAndIsDeleted(oauth2Id, false);
+        log.info("[OAuth] 사용자 존재 여부: {}", user != null ? "기존회원" : "신규회원");
         if (user == null) {
             return handleSignup(oauth2Id, email, providerType);
         } else {
