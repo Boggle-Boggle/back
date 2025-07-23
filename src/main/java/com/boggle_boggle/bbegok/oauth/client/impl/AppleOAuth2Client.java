@@ -12,10 +12,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -43,23 +45,52 @@ public class AppleOAuth2Client implements OAuth2ProviderClient {
 
         String clientSecret = generateClientSecret();
 
-        AppleTokenResponse tokenResponse = WebClient.create()
-                .post()
-                .uri(oAuthProperties.getApple().getTokenUri())
-                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-                .body(BodyInserters.fromFormData("grant_type", "authorization_code")
-                        .with("code", code)
-                        .with("client_id", oAuthProperties.getApple().getClientId())
-                        .with("client_secret", clientSecret)
-                        .with("redirect_uri", oAuthProperties.getApple().getRedirectUri()))
-                .retrieve()
-                .bodyToMono(AppleTokenResponse.class)
-                .doOnNext(raw -> log.info("[Apple] 응답 원문: {}", raw))
-                .block();
+        log.info("[Apple] token 요청 파라미터: code={}, client_id={}, redirect_uri={}", code,
+                oAuthProperties.getApple().getClientId(), oAuthProperties.getApple().getRedirectUri());
+        log.debug("[Apple] 생성된 client_secret: {}", clientSecret);
 
-        this.cachedIdToken = tokenResponse.getIdToken();
-        return tokenResponse.getAccessToken();
+        try {
+            String rawResponse = WebClient.create()
+                    .post()
+                    .uri(oAuthProperties.getApple().getTokenUri())
+                    .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+                    .body(BodyInserters.fromFormData("grant_type", "authorization_code")
+                            .with("code", code)
+                            .with("client_id", oAuthProperties.getApple().getClientId())
+                            .with("client_secret", clientSecret)
+                            .with("redirect_uri", oAuthProperties.getApple().getRedirectUri()))
+                    .retrieve()
+                    .onStatus(status -> status.isError(), clientResponse ->
+                            clientResponse.bodyToMono(String.class)
+                                    .flatMap(body -> {
+                                        log.error("[Apple] 오류 응답 발생 - status: {}, headers: {}",
+                                                clientResponse.statusCode(), clientResponse.headers().asHttpHeaders());
+                                        log.error("[Apple] 오류 응답 바디: {}", body);
+                                        return Mono.error(new RuntimeException("Apple 응답 오류"));
+                                    })
+                    )
+                    .bodyToMono(String.class)
+                    .doOnNext(res -> log.info("[Apple] 응답 원문: {}", res))
+                    .doOnError(err -> log.error("[Apple] 응답 처리 중 에러 발생", err))
+                    .block();
+
+            AppleTokenResponse tokenResponse;
+            try {
+                tokenResponse = objectMapper.readValue(rawResponse, AppleTokenResponse.class);
+            } catch (Exception parseEx) {
+                log.error("[Apple] 응답 파싱 실패 - 원문: {}", rawResponse, parseEx);
+                throw new RuntimeException("Apple 응답 파싱 실패", parseEx);
+            }
+
+            this.cachedIdToken = tokenResponse.getIdToken();
+            return tokenResponse.getAccessToken();
+
+        } catch (Exception e) {
+            log.error("[Apple] access_token 요청 중 예외 발생", e);
+            throw new RuntimeException("Apple OAuth 실패", e);
+        }
     }
+
 
     //id_token 파싱하여 사용자 정보 추출
     @Override
