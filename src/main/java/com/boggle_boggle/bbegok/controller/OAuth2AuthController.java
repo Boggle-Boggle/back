@@ -39,4 +39,19 @@ public class OAuth2AuthController {
         }
         return DataResponseDto.of(oauthLoginResponse);
     }
+
+    //APPLE(POST) 전용 콜백 API
+    @PostMapping("/callback/apple")
+    public DataResponseDto<OAuthLoginResponse> oauth2AppkeCallback(
+            @RequestParam("code") String code,
+            @RequestParam(name="state", required = false) String state,
+            HttpServletRequest request,
+            HttpServletResponse response) {
+        OAuthLoginResponse oauthLoginResponse = oauth2LoginService.processOAuth2Callback(ProviderType.APPLE, code, state);
+        if(oauthLoginResponse.getStatus() == SignStatus.EXISTING_USER) {
+            queryService.setLoginCookie(request, response, oauthLoginResponse);
+            oauthLoginResponse.clearLoginData();
+        }
+        return DataResponseDto.of(oauthLoginResponse);
+    }
 }

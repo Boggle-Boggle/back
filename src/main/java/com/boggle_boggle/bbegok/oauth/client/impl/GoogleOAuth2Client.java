@@ -7,6 +7,7 @@ import com.boggle_boggle.bbegok.oauth.info.OAuth2UserInfo;
 import com.boggle_boggle.bbegok.oauth.info.impl.GoogleOAuth2UserInfo;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.BodyInserters;
@@ -20,6 +21,7 @@ import java.util.Objects;
 import com.fasterxml.jackson.core.type.TypeReference;
 
 @Component
+@Slf4j
 @RequiredArgsConstructor
 public class GoogleOAuth2Client implements OAuth2ProviderClient {
 
