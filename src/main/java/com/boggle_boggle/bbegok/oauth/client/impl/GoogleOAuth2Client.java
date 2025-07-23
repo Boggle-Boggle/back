@@ -1,6 +1,6 @@
 package com.boggle_boggle.bbegok.oauth.client.impl;
 
-import com.boggle_boggle.bbegok.config.properties.oauth.GoogleProperties;
+import com.boggle_boggle.bbegok.config.properties.OAuthProperties;
 import com.boggle_boggle.bbegok.oauth.client.OAuth2ProviderClient;
 import com.boggle_boggle.bbegok.oauth.client.response.GoogleTokenResponse;
 import com.boggle_boggle.bbegok.oauth.info.OAuth2UserInfo;
@@ -26,7 +26,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 public class GoogleOAuth2Client implements OAuth2ProviderClient {
 
     private final WebClient.Builder webClientBuilder;
-    private final GoogleProperties googleProperties;
+    private final OAuthProperties oAuthProperties;
     private final ObjectMapper objectMapper;
     private String cachedIdToken;  // id_token 보관
 
@@ -35,12 +35,12 @@ public class GoogleOAuth2Client implements OAuth2ProviderClient {
         //구글은 access_token과 id_token을 한번에 받는다
         GoogleTokenResponse response = Objects.requireNonNull(webClientBuilder.build()
                 .post()
-                .uri(googleProperties.getTokenUri())
+                .uri(oAuthProperties.getGoogle().getTokenUri())
                 .header(HttpHeaders.CONTENT_TYPE, "application/x-www-form-urlencoded")
                 .body(BodyInserters.fromFormData("grant_type", "authorization_code")
-                        .with("client_id", googleProperties.getClientId())
-                        .with("client_secret", googleProperties.getClientSecret())
-                        .with("redirect_uri", googleProperties.getRedirectUri())
+                        .with("client_id", oAuthProperties.getGoogle().getClientId())
+                        .with("client_secret", oAuthProperties.getGoogle().getClientSecret())
+                        .with("redirect_uri", oAuthProperties.getGoogle().getRedirectUri())
                         .with("code", code))
                 .retrieve()
                 .bodyToMono(GoogleTokenResponse.class)

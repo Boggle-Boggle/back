@@ -10,20 +10,25 @@
 [cols="1,9", options="header"]
 |====
 |provider         |uri
-|KAKAO    | https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=${kakao_client}&redirect_uri={kako_redirect}
-|APPLE   | 준비중
-|GOOGLE    | 준비중
+|KAKAO   | https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=${KAKAO_CIENT_ID}&redirect_uri={KAKAO_REDIRECT}
+|APPLE   | https://appleid.apple.com/auth/authorize?client_id=${APPLE_CLIENT_ID}&redirect_uri=${APPLE_REDIRECT}&response_type=code id_token&scope=name email&response_mode=form_post
+|GOOGLE  | https://accounts.google.com/o/oauth2/v2/auth?response_type=code&client_id=${GOOGLE_CLIENT_ID}&scope=email&redirect_uri=${GOOGLE_REDIRECT}
 |====
 
 [discrete]
 ==== 환경변수
 [cols="1,2,7", options="header"]
 |====
-|env     | name | value
-| staging  |${kakao_client}     | 797b99b872c1f2e304c816c32c2faa7c
-| staging  |${kako_redirect}     | ${server}/auth/oauth2/callback/kakao
-| prod  |${kakao_client}     | 797b99b872c1f2e304c816c32c2faa7c
-| prod  |${kako_redirect}     | ${server}/auth/oauth2/callback/kakao
+| name | value
+|${KAKAO_CIENT_ID}     | 797b99b872c1f2e304c816c32c2faa7c
+|${KAKAO_REDIRECT}     | ${server}/auth/oauth2/callback/kakao
+
+|${APPLE_CLIENT_ID}     | store.bbaegok.website
+|${APPLE_REDIRECT}     | ${server}/auth/oauth2/callback/apple
+
+|${GOOGLE_CLIENT_ID}     | 959213018646-25c9ng0lt07rkpsptr3impq9c37bo8jv.apps.googleusercontent.com
+|${GOOGLE_REDIRECT}     | ${server}/auth/oauth2/callback/google
+
 |====
 
 
