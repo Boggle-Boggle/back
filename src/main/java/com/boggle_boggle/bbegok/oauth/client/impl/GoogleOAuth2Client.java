@@ -2,7 +2,6 @@ package com.boggle_boggle.bbegok.oauth.client.impl;
 
 import com.boggle_boggle.bbegok.config.properties.oauth.GoogleProperties;
 import com.boggle_boggle.bbegok.oauth.client.OAuth2ProviderClient;
-import com.boggle_boggle.bbegok.oauth.client.response.GoogleIdTokenPayload;
 import com.boggle_boggle.bbegok.oauth.client.response.GoogleTokenResponse;
 import com.boggle_boggle.bbegok.oauth.info.OAuth2UserInfo;
 import com.boggle_boggle.bbegok.oauth.info.impl.GoogleOAuth2UserInfo;
