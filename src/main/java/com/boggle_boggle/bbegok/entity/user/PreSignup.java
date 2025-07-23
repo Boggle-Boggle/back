@@ -42,9 +42,10 @@ public class PreSignup {
     @NotNull
     private LocalDateTime expiresAt = LocalDateTime.now().plusMinutes(30);
 
-    protected PreSignup() {}
-
+    @Transient
     private final int duration = 30;
+
+    protected PreSignup() {}
     private PreSignup(ProviderType providerType, String oauth2Id, String email, LocalDateTime now) {
         this.providerType = providerType;
         this.oauth2Id = oauth2Id;
