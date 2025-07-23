@@ -54,8 +54,6 @@ public class SecurityConfig {
                         .requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
                         .requestMatchers("/actuator/**").permitAll()
                         .requestMatchers("/auth/**").permitAll()
-                        .requestMatchers("/oauth2/apple/**").permitAll()
-                        .requestMatchers("/oauth2/callback/apple/**").permitAll()
                         .requestMatchers("/user/**").permitAll()
                         .anyRequest().hasAuthority(RoleType.USER.getCode()))
 

@@ -22,6 +22,7 @@ public class OAuthProperties {
         private String authorizeUri;
         private String userInfoUri;
         private String scope;
+        private String revokeUri;
     }
 
 

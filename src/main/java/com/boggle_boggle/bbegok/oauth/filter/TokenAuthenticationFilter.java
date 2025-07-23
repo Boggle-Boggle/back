@@ -26,7 +26,20 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
             HttpServletResponse response,
             FilterChain filterChain)  throws ServletException, IOException {
 
+        // 인증 제외 경로는 그냥 패스
+        String uri = request.getRequestURI();
+        if (uri.startsWith("/auth")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         String tokenStr = HeaderUtil.getAccessToken(request);
+        // 토큰 없으면 인증 시도하지 않음
+        if (tokenStr == null || tokenStr.isBlank()) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         AuthToken token = tokenProvider.convertAuthToken(tokenStr);
         
         if (token.validate()) {
