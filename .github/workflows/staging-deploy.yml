@@ -85,6 +85,8 @@ jobs:
           APPLE_TEAM_ID : ${{ secrets.APPLE_TEAM_ID }}
           APPLE_KEY_ID : ${{ secrets.APPLE_KEY_ID }}
           OAUTH_REDIRECT_URI: ${{ secrets.OAUTH_REDIRECT_URI }}
+          APPLE_AUTH_KEY : ${{ secrets.APPLE_AUTH_KEY  }}
+
 
       # 서버로 파일 복사
       - name: Copy files to Raspberry Pi (Staging)
