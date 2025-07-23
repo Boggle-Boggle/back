@@ -1,6 +1,5 @@
 package com.boggle_boggle.bbegok.oauth.client.impl;
 
-import com.boggle_boggle.bbegok.config.properties.oauth.AppleProperties;
 import com.boggle_boggle.bbegok.oauth.client.AppleTokenClient;
 import com.boggle_boggle.bbegok.oauth.client.AppleUserInfoClient;
 import com.boggle_boggle.bbegok.oauth.client.OAuth2ProviderClient;

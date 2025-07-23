@@ -65,6 +65,9 @@ public enum Code {
     GUEST_DENIED_ACCESS(16003, HttpStatus.FORBIDDEN, "Guest denied acess user's resource"),
     LIMITED_USER_DENIED_ACCESS(16004, HttpStatus.FORBIDDEN, "Limited User denied acess user's resource, Please check latest agreement"),
 
+    //oauth
+    INVALID_STATE(26000, HttpStatus.NOT_FOUND, "잘못된 STATE값 입니다"),
+
     // JWT 관련 예외
     JWT_INVALID_SIGNATURE(40001, HttpStatus.UNAUTHORIZED, "Invalid JWT signature"),
     JWT_INVALID_TOKEN(40002, HttpStatus.UNAUTHORIZED, "Invalid JWT token"),

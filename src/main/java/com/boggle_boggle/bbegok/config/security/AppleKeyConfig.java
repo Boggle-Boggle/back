@@ -1,6 +1,6 @@
 package com.boggle_boggle.bbegok.config.security;
 
-import com.boggle_boggle.bbegok.config.properties.oauth.AppleProperties;
+import com.boggle_boggle.bbegok.config.properties.OAuthProperties;
 import lombok.RequiredArgsConstructor;
 import org.bouncycastle.util.io.pem.PemReader;
 import org.springframework.context.annotation.Bean;
@@ -17,10 +17,11 @@ import java.security.spec.PKCS8EncodedKeySpec;
 @RequiredArgsConstructor
 public class AppleKeyConfig {
 
-    private final AppleProperties appleProperties;
+    private final OAuthProperties oAuthProperties;
+
     @Bean
     public ECPrivateKey applePrivateKey() throws Exception {
-        ClassPathResource resource = new ClassPathResource(appleProperties.getKeyPath()); // classpath:key/AuthKey.p8
+        ClassPathResource resource = new ClassPathResource(oAuthProperties.getApple().getKeyPath()); // classpath:key/AuthKey.p8
 
         try (PemReader pemReader = new PemReader(new InputStreamReader(resource.getInputStream()))) {
             byte[] content = pemReader.readPemObject().getContent();

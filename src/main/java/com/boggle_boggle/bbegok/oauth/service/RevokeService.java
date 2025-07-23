@@ -1,8 +1,6 @@
 package com.boggle_boggle.bbegok.oauth.service;
 
-import com.boggle_boggle.bbegok.config.properties.oauth.AppleProperties;
-import com.boggle_boggle.bbegok.dto.request.WithdrawReasonRequest;
-import com.boggle_boggle.bbegok.entity.WithdrawReason;
+import com.boggle_boggle.bbegok.config.properties.OAuthProperties;
 import com.boggle_boggle.bbegok.entity.user.User;
 import com.boggle_boggle.bbegok.exception.Code;
 import com.boggle_boggle.bbegok.exception.exception.GeneralException;
@@ -26,15 +24,15 @@ import java.io.IOException;
 @Transactional
 public class RevokeService {
     private final UserRepository userRepository;
-    private final AppleProperties appleProperties;
+    private final OAuthProperties oAuthProperties;
     private final UserRefreshTokenRepository userRefreshTokenRepository;
     private final WithdrawReasonRepository WithdrawReasonRepository;
 
-    @Value("${apple.revoke-url}")
+    //@Value("${apple.revoke-url}")
     String appleRevokeUrl;
-    @Value("${google.revoke-url}")
+    //@Value("${google.revoke-url}")
     String googleRevokeUrl;
-    @Value("${kakao.revoke-url}")
+    //@Value("${kakao.revoke-url}")
     String kakaoRevokeUrl;
 
     //(0) 탈퇴사유 저장
@@ -122,3 +120,6 @@ public class RevokeService {
         return user;
     }
 }
+
+
+
