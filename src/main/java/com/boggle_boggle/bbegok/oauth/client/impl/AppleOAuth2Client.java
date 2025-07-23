@@ -54,6 +54,7 @@ public class AppleOAuth2Client implements OAuth2ProviderClient {
                         .with("redirect_uri", oAuthProperties.getApple().getRedirectUri()))
                 .retrieve()
                 .bodyToMono(AppleTokenResponse.class)
+                .doOnNext(raw -> log.info("[Apple] 응답 원문: {}", raw))
                 .block();
 
         this.cachedIdToken = tokenResponse.getIdToken();
