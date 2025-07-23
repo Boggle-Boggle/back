@@ -33,12 +33,12 @@ public class OAuth2AuthController {
     private final OAuth2RedirectUriBuilder oAuth2RedirectUriBuilder;
 
     @GetMapping("/authorize")
-    public Map<String, String> authorize(@RequestParam("provider") ProviderType providerType, HttpSession session) {
+    public DataResponseDto<Map<String, String>> authorize(@RequestParam("provider") ProviderType providerType, HttpSession session) {
         String state = UUID.randomUUID().toString();
         session.setAttribute("oauth2_state", state);
 
         String redirectUrl = oAuth2RedirectUriBuilder.buildRedirectUri(providerType, state);
-        return Map.of("redirectUrl", redirectUrl);
+        return DataResponseDto.of(Map.of("redirectUrl", redirectUrl));
     }
 
     //oauth 인증서버에서 인가코드를 리다이렉트(302)하는 콜백 API
@@ -61,8 +61,8 @@ public class OAuth2AuthController {
     //APPLE(POST) 전용 콜백 API
     @PostMapping("/callback/apple")
     public DataResponseDto<OAuthLoginResponse> oauth2AppkeCallback(
-            @RequestParam("code") String code,
-            @RequestParam(name="state", required = false) String state,
+            @RequestParam(name = "code", required = false) String code,
+            @RequestParam(name = "state", required = false) String state,
             HttpServletRequest request,
             HttpServletResponse response) {
         OauthValidateUtil.validateState(request, state);
