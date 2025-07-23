@@ -79,8 +79,8 @@ jobs:
           JWT_SECRET: ${{ secrets.JWT_SECRET }}
           KAKAO_CLIENT: ${{ secrets.KAKAO_CLIENT }}
           KAKAO_SECRET: ${{ secrets.KAKAO_SECRET }}
-          GOOGLE_CLIENT: ${{ secrets.GOOGLE_CLIENT }}
-          GOOGLE_SECRET: ${{ secrets.GOOGLE_SECRET }}
+          GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
           APPLE_AUD : ${{ secrets.APPLE_AUD }}
           APPLE_TEAM_ID : ${{ secrets.APPLE_TEAM_ID }}
           APPLE_KEY_ID : ${{ secrets.APPLE_KEY_ID }}
