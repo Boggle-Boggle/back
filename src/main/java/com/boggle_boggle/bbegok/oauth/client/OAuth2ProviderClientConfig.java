@@ -1,5 +1,6 @@
 package com.boggle_boggle.bbegok.oauth.client;
 
+import com.boggle_boggle.bbegok.oauth.client.impl.AppleOAuth2Client;
 import com.boggle_boggle.bbegok.oauth.client.impl.GoogleOAuth2Client;
 import com.boggle_boggle.bbegok.oauth.client.impl.KakaoOAuth2Client;
 import com.boggle_boggle.bbegok.oauth.entity.ProviderType;
@@ -17,11 +18,13 @@ public class OAuth2ProviderClientConfig {
     @Bean
     public Map<ProviderType, OAuth2ProviderClient> providerClients(
             KakaoOAuth2Client kakaoClient,
-            GoogleOAuth2Client googleClient
+            GoogleOAuth2Client googleClient,
+            AppleOAuth2Client appleClient
     ) {
         Map<ProviderType, OAuth2ProviderClient> map = new EnumMap<>(ProviderType.class);
         map.put(ProviderType.KAKAO, kakaoClient);
         map.put(ProviderType.GOOGLE, googleClient);
+        map.put(ProviderType.APPLE, appleClient);
 
         return map;
     }

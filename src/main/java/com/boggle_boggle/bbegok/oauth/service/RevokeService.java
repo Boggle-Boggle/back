@@ -1,6 +1,6 @@
 package com.boggle_boggle.bbegok.oauth.service;
 
-import com.boggle_boggle.bbegok.config.properties.AppleProperties;
+import com.boggle_boggle.bbegok.config.properties.oauth.AppleProperties;
 import com.boggle_boggle.bbegok.dto.request.WithdrawReasonRequest;
 import com.boggle_boggle.bbegok.entity.WithdrawReason;
 import com.boggle_boggle.bbegok.entity.user.User;
@@ -42,26 +42,26 @@ public class RevokeService {
     //(2) 인증서버의 액세스토큰 무효화
     //(3) 쿠키제거
 
-    public void deleteAccount(String userSeq, WithdrawReasonRequest request) throws IOException {
-        User user = getUser(userSeq);
-        
-        //탈퇴사유 저장
-        WithdrawReasonRepository.save(new WithdrawReason(user, request.getWithdrawType(), request.getWithdrawText()));
+//    public void deleteAccount(String userSeq, WithdrawReasonRequest request) throws IOException {
+//        User user = getUser(userSeq);
+//
+//        //탈퇴사유 저장
+//        WithdrawReasonRepository.save(new WithdrawReason(user, request.getWithdrawType(), request.getWithdrawText()));
+//
+//        //User삭제
+//        deleteUser(user);
+//
+//        switch (user.getProviderType()) {
+//            case APPLE -> deleteAppleAccount(user);
+//            //case GOOGLE -> deleteGoogleAccount(user);
+//            //case KAKAO -> deleteKakaoAccount(user);
+//        }
+//    }
 
-        //User삭제
-        deleteUser(user);
-
-        switch (user.getProviderType()) {
-            case APPLE -> deleteAppleAccount(user);
-            //case GOOGLE -> deleteGoogleAccount(user);
-            //case KAKAO -> deleteKakaoAccount(user);
-        }
-    }
-
-    public void deleteAppleAccount(User user) throws IOException {
-        String data = appleProperties.getAppleRevokeData(user.getOauth2RefreshToken());
-        sendRevokeRequest(data, ProviderType.APPLE, null);
-    }
+//    public void deleteAppleAccount(User user) throws IOException {
+//        String data = appleProperties.getAppleRevokeData(user.getOauth2RefreshToken());
+//        sendRevokeRequest(data, ProviderType.APPLE, null);
+//    }
 
     public void deleteGoogleAccount(User user) {
         String data = "token=" + user.getOauth2AccessToken();

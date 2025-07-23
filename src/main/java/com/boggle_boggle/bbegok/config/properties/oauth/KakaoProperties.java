@@ -1,12 +1,13 @@
-package com.boggle_boggle.bbegok.config.properties;
+package com.boggle_boggle.bbegok.config.properties.oauth;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.stereotype.Component;
 
 @Setter
 @Getter
+@Component
 @ConfigurationProperties(prefix = "kakao")
 public class KakaoProperties {
     private String redirectUri; //인증서버가 콜백할 백엔드 API

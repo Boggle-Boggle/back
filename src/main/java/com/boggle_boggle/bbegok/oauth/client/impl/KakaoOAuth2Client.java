@@ -1,14 +1,12 @@
 package com.boggle_boggle.bbegok.oauth.client.impl;
 
-import com.boggle_boggle.bbegok.config.properties.AppleProperties;
-import com.boggle_boggle.bbegok.config.properties.KakaoProperties;
+import com.boggle_boggle.bbegok.config.properties.oauth.KakaoProperties;
 import com.boggle_boggle.bbegok.oauth.client.response.KakaoTokenResponse;
 import com.boggle_boggle.bbegok.oauth.client.OAuth2ProviderClient;
 import com.boggle_boggle.bbegok.oauth.info.impl.KakaoOAuth2UserInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
