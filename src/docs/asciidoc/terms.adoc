@@ -17,4 +17,4 @@ include::{snippets}/terms/get-latest-terms/http-request.adoc[]
 ==== 응답
 
 include::{snippets}/terms/get-latest-terms/http-response.adoc[]
-include::{snippets}/terms/get-latest-terms/response-fields-terms.adoc[]
+include::{snippets}/terms/get-latest-terms/response-fields-data.adoc[]
