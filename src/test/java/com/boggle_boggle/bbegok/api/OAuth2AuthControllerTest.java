@@ -8,6 +8,7 @@ import com.boggle_boggle.bbegok.oauth.client.OAuth2RedirectUriBuilder;
 import com.boggle_boggle.bbegok.oauth.entity.ProviderType;
 import com.boggle_boggle.bbegok.service.OAuth2LoginService;
 import com.boggle_boggle.bbegok.service.QueryService;
+import com.boggle_boggle.bbegok.service.UserService;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -35,6 +36,8 @@ class OAuth2AuthControllerTest extends AbstractRestDocsTests {
     private QueryService queryService;
     @MockBean
     private OAuth2RedirectUriBuilder oAuth2RedirectUriBuilder;
+    @MockBean
+    private UserService userService;
 
 
     @Test

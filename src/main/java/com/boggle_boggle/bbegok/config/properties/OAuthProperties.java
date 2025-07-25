@@ -1,8 +1,22 @@
 package com.boggle_boggle.bbegok.config.properties;
 
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.Getter;
 import lombok.Setter;
+import org.bouncycastle.asn1.pkcs.PrivateKeyInfo;
+import org.bouncycastle.openssl.PEMParser;
+import org.bouncycastle.openssl.jcajce.JcaPEMKeyConverter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.core.io.ClassPathResource;
+
+import java.io.IOException;
+import java.io.Reader;
+import java.io.StringReader;
+import java.security.PrivateKey;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 @ConfigurationProperties(prefix = "oauth")
 @Getter
