@@ -12,4 +12,11 @@ public class TermsAgreement {
     private Long id;
     @NotNull
     private Boolean isAgree;
+
+    public static TermsAgreement of(Long id, Boolean isAgree) {
+        TermsAgreement agreement = new TermsAgreement();
+        agreement.id = id;
+        agreement.isAgree = isAgree;
+        return agreement;
+    }
 }
