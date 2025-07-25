@@ -77,7 +77,7 @@ public class OAuth2AuthController {
     }
 
     //APPLE(POST) 전용 콜백 API
-    @PostMapping("/callback/apple")
+    @PostMapping("/oauth2/callback/apple")
     public DataResponseDto<OAuthLoginResponse> oauth2AppkeCallback(
             @RequestParam(name = "code", required = false) String code,
             @RequestParam(name = "state", required = false) String state,
