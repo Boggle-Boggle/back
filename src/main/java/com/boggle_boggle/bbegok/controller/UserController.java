@@ -35,28 +35,18 @@ public class UserController {
     private final QueryService queryService;
     private final UserService userService;
 
-    @PostMapping()
-    public DataResponseDto<OAuthLoginResponse> signup(@Valid @RequestBody SignupRequest signupRequest,
-                                                      HttpServletRequest request,
-                                                      HttpServletResponse response) {
-        OAuthLoginResponse oauthLoginResponse = userService.signup(signupRequest.getPreSignupId(), signupRequest.getNickname(), signupRequest.getAgreements());
-        if(oauthLoginResponse.getStatus() == SignStatus.EXISTING_USER) {
-            queryService.setLoginCookie(request, response, oauthLoginResponse);
-            oauthLoginResponse.clearLoginData();
-        }
-        return DataResponseDto.of(oauthLoginResponse);
-    }
-/*
+
     @DeleteMapping
     public DataResponseDto<Void> deleteUser(HttpServletRequest request, HttpServletResponse response,
                                             @Valid @RequestBody WithdrawReasonRequest withdrawReasonRequest,
                                             @AuthenticationPrincipal UserDetails userDetails) throws IOException {
+        //계정 삭제 및 revoke 처리
         revokeService.deleteAccount(userDetails.getUsername(), withdrawReasonRequest);
-        CookieUtil.deleteCookie(request, response, REFRESH_TOKEN,domain);
-        CookieUtil.deleteCookie(request, response, DEVICE_CODE,domain);
+        //쿠키삭제
+        queryService.clearAllCookie(request, response);
         return DataResponseDto.empty();
     }
-
+/*
     //닉네임 수정
     @PatchMapping("/nickname")
     public DataResponseDto<Void> updateNickname(@AuthenticationPrincipal UserDetails userDetails,
@@ -78,18 +68,5 @@ public class UserController {
         return DataResponseDto.of(userService.getAuthorization(userDetails.getUsername()));
     }
 
-    //약관조회
-    @GetMapping("/terms")
-    public DataResponseDto<TermsResponse> getLatestTerms(@AuthenticationPrincipal UserDetails userDetails) {
-        return DataResponseDto.of(userService.getLatestTerms(userDetails.getUsername()));
-    }
-    
-    //약관동의
-    @PutMapping("/terms")
-    public DataResponseDto<Void> agreeToTerms(@RequestBody @Valid List<TermsAgreement> request,
-                                              @AuthenticationPrincipal UserDetails userDetails) {
-        userService.agreeToTerms(request,userDetails.getUsername());
-        return DataResponseDto.empty();
-    }
  */
 }

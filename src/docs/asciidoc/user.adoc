@@ -1,0 +1,36 @@
+[[user-api]]
+== 👤 사용자 API
+
+회원 정보 관련 기능을 제공합니다.
+
+=== 회원 탈퇴
+
+회원 탈퇴를 수행하고, 관련 쿠키를 삭제합니다.
+
+[discrete]
+==== 요청
+
+include::{snippets}/user/delete-user/http-request.adoc[]
+include::{snippets}/user/delete-user/request-fields.adoc[]
+
+[discrete]
+==== 탈퇴 사유 코드 (WithdrawType)
+
+|===
+|코드 |설명
+
+|PRIVACY_CONCERN |개인정보 및 보안이 우려돼요
+|REJOIN_AFTER_WITHDRAWAL |탈퇴 후 신규가입할 거예요
+|SERVICE_ERROR |서비스 장애와 오류가 있어요
+|LACK_OF_FEATURES |원하는 기능이 부족해요
+|TOO_TEDIOUS |기록하기가 번거롭고 귀찮아요
+|BAD_UI_UX |인터페이스가 불편하거나 직관적이지 않아요
+|NO_LONGER_NEEDED |더 이상 독서기록이 필요하지 않아요
+|ETC |기타
+|===
+
+[discrete]
+==== 응답
+
+include::{snippets}/user/delete-user/http-response.adoc[]
+include::{snippets}/user/delete-user/response-fields.adoc[]

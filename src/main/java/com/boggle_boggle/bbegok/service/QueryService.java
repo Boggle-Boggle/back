@@ -58,4 +58,9 @@ public class QueryService {
         CookieUtil.clearAndAddCookie(request, response, REFRESH_TOKEN, refreshToken, cookieMaxAge, domain);
         CookieUtil.clearAndAddCookie(request, response, DEVICE_CODE, deviceId, cookieMaxAge, domain);
     }
+
+    public void clearAllCookie(HttpServletRequest request, HttpServletResponse response) {
+        CookieUtil.deleteCookie(request, response, REFRESH_TOKEN, domain);
+        CookieUtil.deleteCookie(request, response, DEVICE_CODE, domain);
+    }
 }

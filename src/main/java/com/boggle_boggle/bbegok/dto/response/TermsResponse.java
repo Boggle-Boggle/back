@@ -6,18 +6,17 @@ import lombok.Builder;
 import lombok.Getter;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Getter
 @Builder
 public class TermsResponse {
-    private String version;
     private List<Term> terms;
 
-    public static TermsResponse from(String latestVersion, List<Term> termList) {
+    public static TermsResponse from(List<Terms> termList) {
         return TermsResponse.builder()
-                .version(latestVersion)
-                .terms(termList)
+                .terms(termList.stream()
+                        .map(Term::from)
+                        .toList())
                 .build();
     }
 }

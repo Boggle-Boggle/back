@@ -4,22 +4,34 @@ import com.boggle_boggle.bbegok.AbstractRestDocsTests;
 import com.boggle_boggle.bbegok.RestDocsConfiguration;
 import com.boggle_boggle.bbegok.controller.OAuth2AuthController;
 import com.boggle_boggle.bbegok.dto.OAuthLoginResponse;
+import com.boggle_boggle.bbegok.dto.TermsAgreement;
+import com.boggle_boggle.bbegok.dto.request.SignupRequest;
 import com.boggle_boggle.bbegok.oauth.client.OAuth2RedirectUriBuilder;
 import com.boggle_boggle.bbegok.oauth.entity.ProviderType;
 import com.boggle_boggle.bbegok.service.OAuth2LoginService;
 import com.boggle_boggle.bbegok.service.QueryService;
+import com.boggle_boggle.bbegok.service.UserService;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.restdocs.payload.JsonFieldType;
+import org.springframework.test.util.ReflectionTestUtils;
+
+import java.util.List;
+
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
+import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
+import static org.springframework.restdocs.headers.HeaderDocumentation.responseHeaders;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.*;
@@ -35,6 +47,8 @@ class OAuth2AuthControllerTest extends AbstractRestDocsTests {
     private QueryService queryService;
     @MockBean
     private OAuth2RedirectUriBuilder oAuth2RedirectUriBuilder;
+    @MockBean
+    private UserService userService;
 
 
     @Test
@@ -118,5 +132,52 @@ class OAuth2AuthControllerTest extends AbstractRestDocsTests {
                         )
                 ));
     }
+
+    @Test
+    @WithMockUser
+    void signupDocs() throws Exception {
+        // given
+        SignupRequest signupRequest = new SignupRequest();
+        ReflectionTestUtils.setField(signupRequest, "preSignupId", 1L);
+        ReflectionTestUtils.setField(signupRequest, "nickname", "초코우유");
+        ReflectionTestUtils.setField(signupRequest, "agreements", List.of(
+                TermsAgreement.of(1L, true),
+                TermsAgreement.of(2L, true)
+        ));
+
+        OAuthLoginResponse signupResponse = OAuthLoginResponse.existingUser(
+                "access-token-sample",
+                null,
+                null
+        );
+
+        given(userService.signup(anyLong(), anyString(), any()))
+                .willReturn(signupResponse);
+
+        mockMvc.perform(post("/auth/signup")
+                        .contentType("application/json")
+                        .content(toJson(signupRequest)))
+                .andExpect(status().isOk())
+                .andDo(document("auth/oauth2-signup",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        requestFields(
+                                fieldWithPath("preSignupId").description("사전 발급된 임시 회원가입 ID"),
+                                fieldWithPath("nickname").description("사용자 닉네임 (최대 15자)"),
+                                fieldWithPath("agreements[].id").description("동의한 약관 ID"),
+                                fieldWithPath("agreements[].isAgree").description("해당 약관 동의 여부")
+                        ),
+                        relaxedResponseFields(
+                                beneathPath("data").withSubsectionId("data"),
+                                fieldWithPath("status")
+                                        .description("응답 상태 (EXISTING_USER)")
+                                        .type(JsonFieldType.STRING),
+                                fieldWithPath("accessToken")
+                                        .description("로그인 완료시 발급된 액세스 토큰")
+                                        .type(JsonFieldType.STRING)
+                        )
+                ));
+    }
+
 
 }

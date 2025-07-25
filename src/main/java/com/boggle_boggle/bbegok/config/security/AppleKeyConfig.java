@@ -13,6 +13,7 @@ import java.security.KeyFactory;
 import java.security.interfaces.ECPrivateKey;
 import java.security.spec.PKCS8EncodedKeySpec;
 
+//p8 key 읽어서 ECPrivateKey를 Bean으로 등록
 @Configuration
 @RequiredArgsConstructor
 public class AppleKeyConfig {

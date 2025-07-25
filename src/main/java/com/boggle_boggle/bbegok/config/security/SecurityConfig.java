@@ -54,7 +54,7 @@ public class SecurityConfig {
                         .requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
                         .requestMatchers("/actuator/**").permitAll()
                         .requestMatchers("/auth/**").permitAll()
-                        .requestMatchers("/user/**").permitAll()
+                        .requestMatchers("/terms/**").permitAll()
                         .anyRequest().hasAuthority(RoleType.USER.getCode()))
 
                 //토큰 검증 필터

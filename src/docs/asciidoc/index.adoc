@@ -17,6 +17,12 @@ include::info.adoc[]
 //소셜 로그인
 include::oauth2-api.adoc[]
 
+//약관
+include::terms.adoc[]
+
+//유저
+include::user.adoc[]
+
 //책
 include::book-api.adoc[]
 

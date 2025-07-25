@@ -24,11 +24,16 @@ public class WithdrawReason {
     @Column(length = 400)
     private String withdrawText;
 
-    public WithdrawReason(User user, WithdrawType withdrawType, String withdrawText) {
+    protected WithdrawReason() {}
+
+    private WithdrawReason(User user, WithdrawType withdrawType, String withdrawText) {
         this.withdrawType = withdrawType;
         this.withdrawText = withdrawText;
         this.user = user;
     }
 
-    protected WithdrawReason() {}
+    public static WithdrawReason createWithdrawReason(User user, WithdrawType withdrawType, String withdrawText){
+        return new WithdrawReason(user, withdrawType, withdrawText);
+    }
+
 }

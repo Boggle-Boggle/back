@@ -3,6 +3,7 @@ package com.boggle_boggle.bbegok.oauth.client.impl;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.boggle_boggle.bbegok.config.properties.OAuthProperties;
+import com.boggle_boggle.bbegok.oauth.client.AppleClientSecretGenerator;
 import com.boggle_boggle.bbegok.oauth.client.OAuth2ProviderClient;
 import com.boggle_boggle.bbegok.oauth.client.response.AppleTokenResponse;
 import com.boggle_boggle.bbegok.oauth.info.OAuth2UserInfo;
@@ -35,13 +36,13 @@ public class AppleOAuth2Client implements OAuth2ProviderClient {
     private final OAuthProperties oAuthProperties;
     private final ObjectMapper objectMapper;
     private final ECPrivateKey privateKey; //p8로 로그인용 JWT(액세스토큰) 개인키 만듦
-
+    private final AppleClientSecretGenerator clientSecretGenerator;
     private String cachedIdToken;
 
     //콜백 code를 기반으로 access_token + id_token 발급
     @Override
     public String requestAccessToken(String code) {
-        String clientSecret = generateClientSecret();
+        String clientSecret = clientSecretGenerator.createClientSecret();
 
         try {
             String rawResponse = WebClient.create()
@@ -79,20 +80,6 @@ public class AppleOAuth2Client implements OAuth2ProviderClient {
         return new AppleOAuth2UserInfo(attributes);
     }
 
-    //JWT 기반 client_secret 생성
-    private String generateClientSecret() {
-        Instant now = Instant.now();
-        Instant exp = now.plusSeconds(3600);
-
-        return JWT.create()
-                .withIssuer(oAuthProperties.getApple().getTeamId())
-                .withSubject(oAuthProperties.getApple().getClientId())
-                .withAudience(oAuthProperties.getApple().getIss())
-                .withIssuedAt(Date.from(now))
-                .withExpiresAt(Date.from(exp))
-                .withKeyId(oAuthProperties.getApple().getKeyId())
-                .sign(Algorithm.ECDSA256(null, privateKey));
-    }
 
     //Base64 + JSON 파싱으로 user info 추출
     private Map<String, Object> decodeIdToken(String idToken) {

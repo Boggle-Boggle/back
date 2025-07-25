@@ -1,0 +1,20 @@
+[[terms-api]]
+== 📃 약관 API
+
+앱 회원가입 시 약관 목록을 조회할 수 있습니다.
+항상 최신 버전의 약관이 반환됩니다.
+
+=== 약관 목록 조회
+
+현재 유효한 약관 리스트를 반환합니다.
+회원가입 시 사용자에게 보여줘야 할 약관들입니다.
+
+[discrete]
+==== 요청
+include::{snippets}/terms/get-latest-terms/http-request.adoc[]
+
+[discrete]
+==== 응답
+
+include::{snippets}/terms/get-latest-terms/http-response.adoc[]
+include::{snippets}/terms/get-latest-terms/response-fields-terms.adoc[]
