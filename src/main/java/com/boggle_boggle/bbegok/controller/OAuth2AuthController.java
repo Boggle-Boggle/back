@@ -20,6 +20,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.factory.annotation.Value;
 
+import java.io.IOException;
 import java.util.Map;
 import java.util.UUID;
 
@@ -51,12 +52,14 @@ public class OAuth2AuthController {
 
     //리다이렉트할 인증서버URI를 리턴
     @GetMapping("/oauth2/authorize")
-    public DataResponseDto<Map<String, String>> authorize(@RequestParam("provider") ProviderType providerType, HttpSession session) {
+    public void authorize(@RequestParam("provider") ProviderType providerType, HttpSession session,
+                                                          HttpServletResponse response) throws IOException {
         String state = UUID.randomUUID().toString();
         session.setAttribute("oauth2_state", state);
 
         String redirectUrl = oAuth2RedirectUriBuilder.buildRedirectUri(providerType, state);
-        return DataResponseDto.of(Map.of("redirectUrl", redirectUrl));
+        response.sendRedirect(redirectUrl); // 실제 리디렉션
+        //return DataResponseDto.of(Map.of("redirectUrl", redirectUrl));
     }
 
     //oauth 인증서버에서 인가코드를 리다이렉트(302)하는 콜백 API
