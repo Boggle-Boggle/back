@@ -35,6 +35,7 @@ import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuild
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(controllers = OAuth2AuthController.class)
@@ -62,21 +63,31 @@ class OAuth2AuthControllerTest extends AbstractRestDocsTests {
                 .willReturn(dummyRedirectUrl);
 
         // 수동 주입 (이 테스트에선 controller 생성 필요 없이 mockBean만으로 처리하면 됨)
+//        this.mockMvc.perform(get("/auth/oauth2/authorize")
+//                        .param("provider", "kakao"))
+//                .andExpect(status().isOk())
+//                .andDo(document("auth/oauth2-authorize",
+//                        preprocessRequest(prettyPrint()),
+//                        preprocessResponse(prettyPrint()),
+//                        queryParameters(
+//                                parameterWithName("provider")
+//                                        .description("소셜 로그인 제공자 (kakao, google, apple)")
+//                        ),
+//                        relaxedResponseFields( // ← 바뀐 부분
+//                                beneathPath("data").withSubsectionId("data"), // ← 바뀐 부분
+//                                fieldWithPath("redirectUrl")
+//                                        .description("Redirect할 인증서버 URI")
+//                                        .type(JsonFieldType.STRING)
+//                        )
+//                ));
         this.mockMvc.perform(get("/auth/oauth2/authorize")
                         .param("provider", "kakao"))
-                .andExpect(status().isOk())
+                .andExpect(status().is3xxRedirection()) // 302
+                .andExpect(redirectedUrl(dummyRedirectUrl)) // Location 헤더 검사
                 .andDo(document("auth/oauth2-authorize",
-                        preprocessRequest(prettyPrint()),
-                        preprocessResponse(prettyPrint()),
                         queryParameters(
                                 parameterWithName("provider")
                                         .description("소셜 로그인 제공자 (kakao, google, apple)")
-                        ),
-                        relaxedResponseFields( // ← 바뀐 부분
-                                beneathPath("data").withSubsectionId("data"), // ← 바뀐 부분
-                                fieldWithPath("redirectUrl")
-                                        .description("Redirect할 인증서버 URI")
-                                        .type(JsonFieldType.STRING)
                         )
                 ));
     }
