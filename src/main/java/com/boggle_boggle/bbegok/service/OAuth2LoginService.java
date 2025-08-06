@@ -1,23 +1,34 @@
 package com.boggle_boggle.bbegok.service;
 
 import com.boggle_boggle.bbegok.dto.OAuthLoginResponse;
+import com.boggle_boggle.bbegok.dto.TokenDto;
 import com.boggle_boggle.bbegok.entity.user.PreSignup;
 import com.boggle_boggle.bbegok.entity.user.User;
 import com.boggle_boggle.bbegok.entity.user.UserRefreshToken;
+import com.boggle_boggle.bbegok.exception.Code;
+import com.boggle_boggle.bbegok.exception.exception.GeneralException;
 import com.boggle_boggle.bbegok.oauth.client.OAuth2ProviderClient;
 import com.boggle_boggle.bbegok.oauth.entity.ProviderType;
 import com.boggle_boggle.bbegok.oauth.info.OAuth2UserInfo;
+import com.boggle_boggle.bbegok.oauth.token.AuthToken;
+import com.boggle_boggle.bbegok.oauth.token.AuthTokenProvider;
 import com.boggle_boggle.bbegok.repository.PreSignupRepository;
 import com.boggle_boggle.bbegok.repository.UserRefreshTokenRepository;
 import com.boggle_boggle.bbegok.repository.UserRepository;
+import com.boggle_boggle.bbegok.utils.CookieUtil;
 import com.boggle_boggle.bbegok.utils.UuidUtil;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.Map;
+
+import static org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames.REFRESH_TOKEN;
 
 @Service
 @RequiredArgsConstructor
@@ -29,6 +40,10 @@ public class OAuth2LoginService {
     private final TokenService tokenService;
     private final Map<ProviderType, OAuth2ProviderClient> providerClients;
     private final UserRefreshTokenRepository userRefreshTokenRepository;
+    private final AuthTokenProvider tokenProvider;
+    private final static long THREE_DAYS_MSEC = 259200000;
+    private final QueryService queryService;
+
 
     //리다이렉션된 인가코드 정보를 바탕으로 인증서버에 토큰 요청 -> 토큰으로 정보요청 -> 로그인/회원가입
     @Transactional
@@ -58,6 +73,39 @@ public class OAuth2LoginService {
         }
     }
 
+    @Transactional
+    //refreshToken을 기반으로 AccessToken을 생성하여 리턴
+    public TokenDto refresh(String refreshToken) {
+        AuthToken authRefreshToken = tokenProvider.convertAuthToken(refreshToken);
+        if (!authRefreshToken.validate()) throw new GeneralException(Code.INVALID_REFRESH_TOKEN);
+        long validTime = authRefreshToken.getTokenClaims().getExpiration().getTime() - new Date().getTime();
+
+        //DB에서 해당 refresh Token 주인 찾아 액세스토큰 재발급
+        UserRefreshToken userRefreshToken = userRefreshTokenRepository.findByRefreshToken(refreshToken)
+                .orElseThrow(() -> new GeneralException(Code.INVALID_REFRESH_TOKEN));
+        User user = userRefreshToken.getUser();
+        String accessToken = tokenService.createAccessToken(user).getToken();
+
+        //refresh토큰의 기간이 3일 이하로 남았을 경우 토큰 갱신
+        boolean isRefreshUpdated = false;
+        if (validTime <= THREE_DAYS_MSEC) {
+            refreshToken = updateRefreshToken(user, userRefreshToken).toString();
+            isRefreshUpdated = true;
+        }
+
+        return TokenDto.builder()
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .isRefreshUpdated(isRefreshUpdated)
+                .build();
+    }
+
+    private AuthToken updateRefreshToken(User user, UserRefreshToken userRefreshToken) {
+        AuthToken newRefreshToken = tokenService.createRefreshToken(user);
+        userRefreshToken.setRefreshToken(newRefreshToken.getToken());
+        return newRefreshToken;
+    }
+
     //PreSignUp에 정보 임시저장 후 pk만 리턴
     private OAuthLoginResponse handleSignup(String oauth2Id, String email, ProviderType providerType) {
         PreSignup preSignup = preSignupRepository.saveAndFlush(
@@ -66,9 +114,8 @@ public class OAuth2LoginService {
         return OAuthLoginResponse.signupRequired(preSignup.getPreSignupSeq());
     }
 
-    //액세스토큰, 리프레쉬토큰, 디바이스코드 생성하여 리턴(재사용됨)
+    //리프레쉬토큰, 디바이스코드 생성하여 리턴(재사용됨)
     public OAuthLoginResponse handleLogin(User user) {
-        String accessToken = tokenService.createAccessToken(user).getToken();
         String refreshToken = tokenService.createRefreshToken(user).getToken();
         String deviceCode = UuidUtil.createUUID().toString();
 
@@ -77,6 +124,7 @@ public class OAuth2LoginService {
                 UserRefreshToken.createUserRefreshToken(user, refreshToken, deviceCode)
         );
 
-        return OAuthLoginResponse.existingUser(accessToken, refreshToken, deviceCode);
+        return OAuthLoginResponse.existingUser(refreshToken, deviceCode);
     }
+
 }

@@ -25,7 +25,7 @@ public class CookieUtil {
 
     public static Optional<Cookie> getCookie(HttpServletRequest request, String name) {
         Cookie[] cookies = request.getCookies();
-        if (cookies != null && cookies.length > 0) {
+        if (cookies != null) {
             for (Cookie cookie : cookies) {
                 if (name.equals(cookie.getName()))  {
                     return Optional.of(cookie);
@@ -47,11 +47,12 @@ public class CookieUtil {
     public static void addCookie(HttpServletResponse response, String name, String value, int maxAge, String domain) {
         ResponseCookie cookie = ResponseCookie.from(name, value)
                 .path("/")
-                .domain(domain) // 루트도메인: bbaegok.store
-                .sameSite("Lax")
+                //.domain(domain) - staging에선 도메인 제거
+                //.sameSite("Lax") - staging에선 None사용
+                .sameSite("None")
                 .httpOnly(true)
                 .maxAge(maxAge)
-                .secure(true)      // Secure 속성 추가 (HTTPS 필요)
+                .secure(true)
                 .build();
 
         response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
@@ -64,8 +65,9 @@ public class CookieUtil {
                 if (name.equals(cookie.getName())) {
                     ResponseCookie deleteCookie = ResponseCookie.from(name, "")
                             .path("/")
-                            .domain(domain)
-                            .sameSite("Lax")
+                            //.domain(domain)
+                            //.sameSite("Lax")
+                            .sameSite("None")
                             .httpOnly(true)
                             .secure(true)
                             .maxAge(0)

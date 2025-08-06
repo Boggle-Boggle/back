@@ -1,12 +1,20 @@
 [[oauth2-api]]
 == 🔑 OAuth2 소셜 로그인 API
 소셜 로그인(카카오, 구글, 애플)을 지원합니다.
-(1) 인증서버 URI먼저 반환받고, 리디렉션 한 뒤 로그인 진행
-(2) 로그인 완료 후 응답으로 오는 객체에 맞춰 회원가입 or 홈으로 진행해주시면 됩니다.
+
+OAuth2 로그인은 다음과 같은 흐름으로 진행됩니다:
+
+. 인가 요청 → 인증서버 리다이렉트
+. 로그인 완료 후 콜백 수신 → 기존 유저 여부 판별
+- (3-a) 기존 유저: refresh_token(30일), device_code(30일)이 쿠키에 설정됨 -> /refresh호출해서 accesss-token 획득
+- (3-b) 신규 유저: `preSignupId(15분)` 쿠키 설정 → 별도 회원가입 API 호출하여 (3-a)흐름 따라감
+
+---
 
 === 소셜 로그인 인가 요청
-사용자가 로그인 버튼을 누르면 해당 URI로 리다이렉트합니다. +
-provider의 값을 kakao / google / apple로 바꾸어서 요청하면 됩니다.
+
+소셜 로그인 버튼 클릭 시 해당 URI로 리디렉션합니다. +
+provider는 `kakao`, `google`, `apple` 중 선택 가능합니다.
 
 [discrete]
 ==== 요청
@@ -15,45 +23,42 @@ include::{snippets}/auth/oauth2-authorize/query-parameters.adoc[]
 
 [discrete]
 ==== 응답
+해당 provider의 인증 서버 URI(로그인화면)로 자동 리다이렉트(302)됩니다.
 include::{snippets}/auth/oauth2-authorize/http-response.adoc[]
-include::{snippets}/auth/oauth2-authorize/response-fields-data.adoc[]
 
 
-=== 소셜 로그인 콜백
+---
 
-[discrete]
-==== 응답 예시
+=== 소셜 로그인 콜백 (기존/신규 유저 분기)
 
-.기존유저 응답(홈화면으로 이동)
-[source,json]
-----
-{
-  "status": "EXISTING_USER",
-  "accessToken": "..."
-}
-----
-
-.새로운유저 응답(회원가입으로 이동)
-[source,json]
-----
-# 쿠키에 DEVICE_CODE 및 REFRESH_TOKEN이 셋팅됨(30 Days 영구쿠키)
-{
-  "status": "SIGNUP_REQUIRED",
-  "preSignupId": 3
-}
-----
-
+로그인 인증을 마치면 인증서버가 자동으로 백엔드 콜백으로 리다이렉트합니다. +
+따라서 응답만 확인하시면 됩니다.
 
 [discrete]
-==== 실제 응답
+==== 요청
+include::{snippets}/auth/oauth2-callback/http-request.adoc[]
+include::{snippets}/auth/oauth2-callback/query-parameters.adoc[]
+include::{snippets}/auth/oauth2-callback/path-parameters.adoc[]
 
+[discrete]
+==== 응답 방식
+
+리다이렉트 형태로 응답되며, 다음 중 하나의 쿠키와 함께 프론트엔드로 이동합니다.
 include::{snippets}/auth/oauth2-callback/http-response.adoc[]
-include::{snippets}/auth/oauth2-callback/response-fields-data.adoc[]
 
+.기존유저 응답
+- 302 리다이렉트 to `https://{front-uri}/auth?status=EXISTING_USER`
+- 쿠키: `refresh_token(30일)`, `device_code(30일)` 포함
+
+.신규유저 응답
+- 302 리다이렉트 to `https://{front-uri}//auth?status=SIGNUP_REQUIRED`
+- 쿠키: `pre_signup_id(15분)` 포함
+
+---
 
 === 회원가입 요청
 
-소셜 로그인 후 `SIGNUP_REQUIRED` 상태로 받은 `preSignupId`를 활용해 회원가입을 진행합니다.
+신규유저인 경우 `preSignupId`가 쿠키로 전달되며, 이 값을 기반으로 회원가입 요청을 합니다.
 
 [discrete]
 ==== 요청
@@ -62,8 +67,25 @@ include::{snippets}/auth/oauth2-signup/request-fields.adoc[]
 
 [discrete]
 ==== 응답
----
-쿠키에 DEVICE_CODE 및 REFRESH_TOKEN이 셋팅됨(30 Days 영구쿠키)
+
+쿠키에 `refresh_token(30일)`, `device_code(30일)`가 설정되며, 별도 응답 본문은 없습니다.
 
 include::{snippets}/auth/oauth2-signup/http-response.adoc[]
-include::{snippets}/auth/oauth2-signup/response-fields-data.adoc[]
+include::{snippets}/auth/oauth2-signup/response-fields-headers.adoc[]
+
+---
+
+=== 액세스 토큰 재발급
+
+쿠키에 저장된 `refresh_token`을 기반으로 새로운 `accessToken`을 발급받습니다. +
+만약 refresh_token의 기한이 3일 미만이라면 자동 갱신됩니다.
+
+[discrete]
+==== 요청
+include::{snippets}/auth/refresh/http-request.adoc[]
+
+[discrete]
+==== 응답
+
+include::{snippets}/auth/refresh/http-response.adoc[]
+include::{snippets}/auth/refresh/response-fields-data.adoc[]

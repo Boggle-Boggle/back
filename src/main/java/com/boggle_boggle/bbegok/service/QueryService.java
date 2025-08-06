@@ -6,6 +6,7 @@ import com.boggle_boggle.bbegok.entity.Library;
 import com.boggle_boggle.bbegok.entity.user.User;
 import com.boggle_boggle.bbegok.exception.Code;
 import com.boggle_boggle.bbegok.exception.exception.GeneralException;
+import com.boggle_boggle.bbegok.oauth.token.AuthToken;
 import com.boggle_boggle.bbegok.repository.LibraryRepository;
 import com.boggle_boggle.bbegok.repository.UserRepository;
 import com.boggle_boggle.bbegok.utils.CookieUtil;
@@ -29,6 +30,7 @@ public class QueryService {
     private final AppProperties appProperties;
     @Value("${bbaegok.root-domain}")
     private String domain;
+    private static final String preSignupIdCookieName = "pre_signup_id";
 
     @Transactional(readOnly = true)
     public User getUser(String userSeq) {
@@ -55,12 +57,25 @@ public class QueryService {
         String refreshToken = oauthLoginResponse.getRefreshToken();
         String deviceId = oauthLoginResponse.getDeviceCode();
 
+        //preSignUp쿠키가 있다면 삭제하기
+        CookieUtil.deleteCookie(request, response, preSignupIdCookieName, domain);
         CookieUtil.clearAndAddCookie(request, response, REFRESH_TOKEN, refreshToken, cookieMaxAge, domain);
         CookieUtil.clearAndAddCookie(request, response, DEVICE_CODE, deviceId, cookieMaxAge, domain);
+    }
+
+    public void setPreSignupCookie(HttpServletRequest request, HttpServletResponse response,Long preSignupId) {
+        int cookieMaxAge = 15 * 60; // 15분
+        String preSignupIdStr = preSignupId.toString();
+        CookieUtil.clearAndAddCookie(request, response, preSignupIdCookieName, preSignupIdStr, cookieMaxAge, domain);
     }
 
     public void clearAllCookie(HttpServletRequest request, HttpServletResponse response) {
         CookieUtil.deleteCookie(request, response, REFRESH_TOKEN, domain);
         CookieUtil.deleteCookie(request, response, DEVICE_CODE, domain);
+    }
+
+    public void updateRefreshCookie(HttpServletRequest request, HttpServletResponse response, String refreshToken) {
+        int cookieMaxAge = CookieUtil.getMaxAgeByRefreshTokenExpiry(appProperties.getAuth().getRefreshTokenExpiry());
+        CookieUtil.clearAndAddCookie(request, response, REFRESH_TOKEN, refreshToken, cookieMaxAge, domain);
     }
 }
