@@ -79,7 +79,7 @@ public enum Code {
     TOKEN_NOT_EXPIRED(50006, HttpStatus.UNPROCESSABLE_ENTITY ,"Access token is not expired yet" ),
     REFRESH_COOKIE_NOT_FOUND(50011, HttpStatus.UNAUTHORIZED ,"refresh token not found in cookie" ),
     DEVICE_COOKIE_NOT_FOUND(50014, HttpStatus.UNAUTHORIZED ,"device id not found in cookie" ),
-    INVALID_REFRESH_TOKEN(50008,HttpStatus.UNAUTHORIZED ,  "Invalid Refresh Token, Please Re-sign in."),
+    INVALID_REFRESH_TOKEN(50008,HttpStatus.UNAUTHORIZED ,  "로그인이 만료되었습니다. 재로그인 하세요"),
     INVALID_ACCESS_TOKEN(50005,HttpStatus.UNAUTHORIZED ,  "유효하지 않은 accessToken입니다."),
     EMPTY_COOKIE(50009,HttpStatus.UNAUTHORIZED, "Empty COOKIE"),
     EMPTY_ACCESS_TOKEN(50010,HttpStatus.UNAUTHORIZED, "Access token Empty"),

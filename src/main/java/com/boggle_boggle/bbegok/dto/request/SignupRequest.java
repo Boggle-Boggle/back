@@ -13,9 +13,6 @@ import java.util.List;
 @Getter
 @NoArgsConstructor
 public class SignupRequest {
-    @NotNull
-    private Long preSignupId;
-
     @NotBlank
     @Size(max = 15)
     private String nickname;

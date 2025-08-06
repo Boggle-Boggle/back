@@ -10,10 +10,10 @@ import net.minidev.json.annotate.JsonIgnore;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @AllArgsConstructor(staticName = "of")
 @Getter
+@Builder
 public class OAuthLoginResponse  {
     private SignStatus status;           // SIGNUP_REQUIRED or EXISTING_USER
     private Long preSignupId;  // 회원가입 필요한 경우 발급된 세션 ID
-    //private String accessToken;      // 기존회원이면 발급
 
     private String refreshToken;
     private String deviceCode;
@@ -23,7 +23,7 @@ public class OAuthLoginResponse  {
     }
 
 
-    public static OAuthLoginResponse existingUser(String accessToken, String refreshToken, String deviceCode) {
+    public static OAuthLoginResponse existingUser(String refreshToken, String deviceCode) {
         return of(SignStatus.EXISTING_USER, null, refreshToken, deviceCode);
     }
 

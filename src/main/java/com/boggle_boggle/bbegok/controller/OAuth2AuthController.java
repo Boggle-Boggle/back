@@ -3,16 +3,26 @@ package com.boggle_boggle.bbegok.controller;
 import com.boggle_boggle.bbegok.config.properties.AppProperties;
 import com.boggle_boggle.bbegok.config.properties.CorsProperties;
 import com.boggle_boggle.bbegok.dto.OAuthLoginResponse;
+import com.boggle_boggle.bbegok.dto.TokenDto;
 import com.boggle_boggle.bbegok.dto.base.DataResponseDto;
 import com.boggle_boggle.bbegok.dto.request.SignupRequest;
+import com.boggle_boggle.bbegok.dto.response.AccessTokenResponse;
+import com.boggle_boggle.bbegok.entity.user.UserRefreshToken;
 import com.boggle_boggle.bbegok.enums.SignStatus;
+import com.boggle_boggle.bbegok.exception.Code;
+import com.boggle_boggle.bbegok.exception.exception.GeneralException;
 import com.boggle_boggle.bbegok.oauth.client.OAuth2RedirectUriBuilder;
 import com.boggle_boggle.bbegok.oauth.entity.ProviderType;
+import com.boggle_boggle.bbegok.oauth.token.AuthToken;
+import com.boggle_boggle.bbegok.oauth.token.AuthTokenProvider;
+import com.boggle_boggle.bbegok.repository.UserRefreshTokenRepository;
 import com.boggle_boggle.bbegok.service.OAuth2LoginService;
 import com.boggle_boggle.bbegok.service.QueryService;
 import com.boggle_boggle.bbegok.service.UserService;
 import com.boggle_boggle.bbegok.utils.CookieUtil;
 import com.boggle_boggle.bbegok.utils.OauthValidateUtil;
+import jakarta.persistence.Access;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
@@ -35,27 +45,48 @@ import static org.springframework.security.oauth2.core.endpoint.OAuth2ParameterN
 @RequestMapping("/auth")
 @RequiredArgsConstructor
 public class OAuth2AuthController {
-
+    private static final String preSignupIdCookieName = "pre_signup_id";
     private final OAuth2LoginService oauth2LoginService;
     private final QueryService queryService;
     private final UserService userService;
     private final OAuth2RedirectUriBuilder oAuth2RedirectUriBuilder;
     private final CorsProperties corsProperties;
 
+    //refresh token을 바탕으로 accessToken응답
+    @GetMapping("/refresh")
+    public DataResponseDto<AccessTokenResponse> refresh(HttpServletRequest request,
+                                                        HttpServletResponse response) {
+        String refreshToken = CookieUtil.getCookie(request, REFRESH_TOKEN)
+                .map(Cookie::getValue).orElseThrow( () -> new GeneralException(Code.REFRESH_COOKIE_NOT_FOUND));
+        TokenDto dto = oauth2LoginService.refresh(refreshToken);
+
+        if(dto.isRefreshUpdated()) queryService.updateRefreshCookie(request, response, dto.getRefreshToken());
+
+        AccessTokenResponse resp = AccessTokenResponse.builder().accessToken(dto.getAccessToken()).build();
+        return DataResponseDto.of(resp);
+    }
+
+
     //회원가입
     @PostMapping("/signup")
-    public DataResponseDto<OAuthLoginResponse> signup(@Valid @RequestBody SignupRequest signupRequest,
+    public DataResponseDto<Void> signup(@Valid @RequestBody SignupRequest signupRequest,
                                                       HttpServletRequest request,
                                                       HttpServletResponse response) {
-        OAuthLoginResponse oauthLoginResponse = userService.signup(signupRequest.getPreSignupId(), signupRequest.getNickname(), signupRequest.getAgreements());
+        Long preSignupId = CookieUtil.getCookie(request, preSignupIdCookieName)
+                .map(Cookie::getValue)
+                .map(Long::parseLong)
+                .orElseThrow(() -> new GeneralException(Code.SIGNUP_NOTFOUND));
+
+        OAuthLoginResponse oauthLoginResponse = userService.signup(preSignupId, signupRequest.getNickname(), signupRequest.getAgreements());
         if(oauthLoginResponse.getStatus() == SignStatus.EXISTING_USER) {
             queryService.setLoginCookie(request, response, oauthLoginResponse);
             oauthLoginResponse.clearLoginData();
         }
-        return DataResponseDto.of(oauthLoginResponse);
+
+        return DataResponseDto.empty();
     }
 
-    //리다이렉트할 인증서버URI를 리턴
+    //각 인증서버로 리다이렉트
     @GetMapping("/oauth2/authorize")
     public void authorize(@RequestParam("provider") ProviderType providerType,
                           @RequestParam("redirect") String redirectFront, HttpSession session,
@@ -81,7 +112,7 @@ public class OAuth2AuthController {
 
     //oauth 인증서버의 콜백 API
     @GetMapping("/oauth2/callback/{provider}")
-    public DataResponseDto<OAuthLoginResponse> oauth2Callback(
+    public void oauth2Callback(
             @PathVariable("provider") ProviderType providerType,
             @RequestParam("code") String code,
             @RequestParam(name="state", required = false) String state,
@@ -89,36 +120,33 @@ public class OAuth2AuthController {
             HttpServletResponse response) throws IOException {
         OauthValidateUtil.validateState(request, state);
         OAuthLoginResponse oauthLoginResponse = oauth2LoginService.processOAuth2Callback(providerType, code, state);
-        if(oauthLoginResponse.getStatus() == SignStatus.EXISTING_USER) {
+
+        if(oauthLoginResponse.getStatus() == SignStatus.EXISTING_USER) { //기존유저 - RefreshToken 및 DiviceId만 쿠키에 포함해서 리다이렉트
             queryService.setLoginCookie(request, response, oauthLoginResponse);
-            oauthLoginResponse.clearLoginData();
-        }
-        //return DataResponseDto.of(oauthLoginResponse);
-
-        //'auth'페이지로 리디렉션한다.
-        HttpSession session = request.getSession(false);
-        String redirectFront = (session != null)
-                ? (String) session.getAttribute("redirect_front")
-                : null;
-
-        if (redirectFront == null ||
-                corsProperties.getAllowedOrigins().lines().noneMatch(redirectFront::startsWith)) {
-            response.sendError(400, "invalid front url");
+        } else if(oauthLoginResponse.getStatus() == SignStatus.SIGNUP_REQUIRED) { //신규유저 - preSignupUd를 쿠키에 포함해서 리다이렉트
+            queryService.setPreSignupCookie(request, response, oauthLoginResponse.getPreSignupId());
+        } else {
+            throw new GeneralException(Code.BAD_REQUEST);
         }
 
-        if (session != null) session.removeAttribute("redirect_front");
-
-        if(oauthLoginResponse.getStatus() == SignStatus.EXISTING_USER) {
-            String frontUrl = UriComponentsBuilder
-                    .fromUriString(redirectFront)   // https://app.bbaegok.store
-                    .path("/auth")                    // /auth
-                    .queryParam("status", r.isNew())     // ?new=true
-                    .queryParam("preSignup", r.isNew())     // ?new=true
-                    .build()
-                    .toUriString();
+        //https://{프론트}/auth?status={}'으로 redirect
+        HttpSession session = request.getSession();
+        String redirectFront = (String) session.getAttribute("redirect_front");
+        if (redirectFront == null || corsProperties.getAllowedOrigins().lines().noneMatch(redirectFront::startsWith)) {
+            response.sendError(400, "invalid redirect front url");
+            return;
         }
 
-           // 인코딩까지 완료
+        session.removeAttribute("redirect_front");
+        session.removeAttribute("oauth2_state");
+
+        String frontUrl = UriComponentsBuilder
+                .fromUriString(redirectFront)
+                .path("/auth")
+                .queryParam("status", oauthLoginResponse.getStatus())
+                .build()
+                .toUriString();
+
         response.sendRedirect(frontUrl);
     }
 
