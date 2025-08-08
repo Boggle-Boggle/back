@@ -28,6 +28,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -44,6 +45,7 @@ import static org.springframework.security.oauth2.core.endpoint.OAuth2ParameterN
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
+@Slf4j
 public class OAuth2AuthController {
     private static final String preSignupIdCookieName = "pre_signup_id";
     private final OAuth2LoginService oauth2LoginService;
@@ -91,10 +93,7 @@ public class OAuth2AuthController {
     public void authorize(@RequestParam("provider") ProviderType providerType,
                           @RequestParam("redirect") String redirectFront, HttpSession session,
                                                           HttpServletResponse response) throws IOException {
-        List<String> origins = Arrays.stream(corsProperties.getAllowedOrigins().split(","))
-                .map(String::trim)
-                .filter(s -> !s.isBlank())
-                .toList();
+        List<String> origins = corsProperties.getAllowedOrigins();
 
         if (origins.stream().noneMatch(redirectFront::startsWith)) {
             response.sendError(400, "invalid front url");
@@ -121,6 +120,8 @@ public class OAuth2AuthController {
         OauthValidateUtil.validateState(request, state);
         OAuthLoginResponse oauthLoginResponse = oauth2LoginService.processOAuth2Callback(providerType, code, state);
 
+        log.info("[OAuth Controller] Callback Service 정상 실행 - status: {}", oauthLoginResponse.getStatus());
+
         if(oauthLoginResponse.getStatus() == SignStatus.EXISTING_USER) { //기존유저 - RefreshToken 및 DiviceId만 쿠키에 포함해서 리다이렉트
             queryService.setLoginCookie(request, response, oauthLoginResponse);
         } else if(oauthLoginResponse.getStatus() == SignStatus.SIGNUP_REQUIRED) { //신규유저 - preSignupUd를 쿠키에 포함해서 리다이렉트
@@ -129,13 +130,23 @@ public class OAuth2AuthController {
             throw new GeneralException(Code.BAD_REQUEST);
         }
 
+        log.info("[OAuth Controller] 쿠키 셋팅 완료");
+
         //https://{프론트}/auth?status={}'으로 redirect
         HttpSession session = request.getSession();
         String redirectFront = (String) session.getAttribute("redirect_front");
-        if (redirectFront == null || corsProperties.getAllowedOrigins().lines().noneMatch(redirectFront::startsWith)) {
+        log.info("[OAuth Controller] redirectFront : {}", redirectFront);
+        log.info("Allowed origins list:");
+        List<String> origins = corsProperties.getAllowedOrigins();
+        for(String str : origins) log.info("-> {}",str);
+
+        log.info("true or false : {}, {}",redirectFront == null, !origins.contains(redirectFront));
+        if (redirectFront == null || !origins.contains(redirectFront)) {
             response.sendError(400, "invalid redirect front url");
             return;
         }
+
+        log.info("[OAuth Controller] 리다이렉트 셋팅하기");
 
         session.removeAttribute("redirect_front");
         session.removeAttribute("oauth2_state");
@@ -147,6 +158,7 @@ public class OAuth2AuthController {
                 .build()
                 .toUriString();
 
+        log.info("[OAuth Controller] 리다이렉트 꼬");
         response.sendRedirect(frontUrl);
     }
 
