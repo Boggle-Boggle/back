@@ -135,25 +135,18 @@ public class OAuth2AuthController {
         //https://{프론트}/auth?status={}'으로 redirect
         HttpSession session = request.getSession();
         String redirectFront = (String) session.getAttribute("redirect_front");
-        log.info("[OAuth Controller] redirectFront : {}", redirectFront);
-        log.info("Allowed origins list:");
         List<String> origins = corsProperties.getAllowedOrigins();
-        for(String str : origins) log.info("-> {}",str);
-
-        log.info("true or false : {}, {}",redirectFront == null, !origins.contains(redirectFront));
         if (redirectFront == null || !origins.contains(redirectFront)) {
             response.sendError(400, "invalid redirect front url");
             return;
         }
-
-        log.info("[OAuth Controller] 리다이렉트 셋팅하기");
 
         session.removeAttribute("redirect_front");
         session.removeAttribute("oauth2_state");
 
         String frontUrl = UriComponentsBuilder
                 .fromUriString(redirectFront)
-                .path("/auth")
+                .path("/oauth")
                 .queryParam("status", oauthLoginResponse.getStatus())
                 .build()
                 .toUriString();
