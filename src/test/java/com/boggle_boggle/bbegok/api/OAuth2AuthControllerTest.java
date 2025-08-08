@@ -137,7 +137,7 @@ class OAuth2AuthControllerTest extends AbstractRestDocsTests {
                         .session(session))
                 .andDo(print())
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("https://front-uri/auth?status=EXISTING_USER"))
+                .andExpect(redirectedUrl("https://front-uri/oauth?status=EXISTING_USER"))
                 .andDo(document("auth/oauth2-callback",
                         preprocessRequest(prettyPrint()),
                         preprocessResponse(prettyPrint()),
