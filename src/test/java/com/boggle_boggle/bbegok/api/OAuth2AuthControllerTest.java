@@ -28,6 +28,7 @@ import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MvcResult;
 
+import java.util.Collections;
 import java.util.List;
 
 import static org.hamcrest.Matchers.*;
@@ -90,7 +91,7 @@ class OAuth2AuthControllerTest extends AbstractRestDocsTests {
     @WithMockUser
     void oauth2AuthorizeDocs() throws Exception {
         // given
-        given(corsProperties.getAllowedOrigins()).willReturn("https://front-uri");
+        given(corsProperties.getAllowedOrigins()).willReturn(Collections.singletonList("https://front-uri"));
         // OAuth2RedirectUriBuilder가 리턴할 값 mocking
         given(oAuth2RedirectUriBuilder.buildRedirectUri(any(), anyString()))
                 .willReturn("https://authorization-uri");
@@ -115,7 +116,7 @@ class OAuth2AuthControllerTest extends AbstractRestDocsTests {
     @WithMockUser
     void oauth2CallbackDocs() throws Exception {
         given(corsProperties.getAllowedOrigins())
-                .willReturn("https://front-uri\nhttps://another.com");
+                .willReturn(Collections.singletonList("https://front-uri"));
 
         OAuthLoginResponse dummyResponse = OAuthLoginResponse.builder()
                 .status(SignStatus.EXISTING_USER)
