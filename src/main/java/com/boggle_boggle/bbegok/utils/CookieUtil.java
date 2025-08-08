@@ -47,8 +47,8 @@ public class CookieUtil {
     public static void addCookie(HttpServletResponse response, String name, String value, int maxAge, String domain) {
         ResponseCookie cookie = ResponseCookie.from(name, value)
                 .path("/")
-                //.domain(domain) - staging에선 도메인 제거
-                //.sameSite("Lax") - staging에선 None사용
+                .domain(domain) //staging에선 도메인 제거
+                //.sameSite("Lax") //- staging에선 None사용
                 .sameSite("None")
                 .httpOnly(true)
                 .maxAge(maxAge)
