@@ -133,12 +133,13 @@ public class OAuth2AuthController {
         log.info("[OAuth Controller] 쿠키 셋팅 완료");
 
         //https://{프론트}/auth?status={}'으로 redirect
+        List<String> origins = corsProperties.getAllowedOrigins();
         HttpSession session = request.getSession();
         String redirectFront = (String) session.getAttribute("redirect_front");
-        List<String> origins = corsProperties.getAllowedOrigins();
-        if (redirectFront == null || !origins.contains(redirectFront)) {
-            response.sendError(400, "invalid redirect front url");
-            return;
+
+        if (origins.stream().noneMatch(redirectFront::startsWith)) {
+            log.error("redirect Front 문제 발생");
+            throw new GeneralException(Code.BAD_REQUEST, "허용되지 않는 redirect uri입니다.");
         }
 
         session.removeAttribute("redirect_front");
