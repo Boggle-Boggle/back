@@ -65,7 +65,7 @@ public class CookieUtil {
                 if (name.equals(cookie.getName())) {
                     ResponseCookie deleteCookie = ResponseCookie.from(name, "")
                             .path("/")
-                            //.domain(domain)
+                            .domain(domain)
                             //.sameSite("Lax")
                             .sameSite("None")
                             .httpOnly(true)
