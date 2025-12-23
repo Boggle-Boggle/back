@@ -27,6 +27,7 @@ jobs:
           JWT_SECRET: ${{ secrets.JWT_SECRET }}
           ROOT_DOMAIN_NAME: ${{ secrets.ROOT_DOMAIN_NAME }}
           DOMAIN_NAME: ${{ secrets.DOMAIN_NAME }}
+          FRONT_LOCAL_DOMAIN_NAME: ${{ secrets.FRONT_LOCAL_DOMAIN_NAME }}
           KAKAO_CLIENT: ${{ secrets.KAKAO_CLIENT }}
           KAKAO_SECRET: ${{ secrets.KAKAO_SECRET }}
           ALADIN_TTB_KEY: ${{ secrets.ALADIN_TTB_KEY }}
