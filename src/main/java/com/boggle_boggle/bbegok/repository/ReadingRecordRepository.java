@@ -135,4 +135,22 @@ public interface ReadingRecordRepository extends JpaRepository<ReadingRecord, Lo
             Pageable pageable
     );
 
+    // === 크리스마스 프로모션 API 쿼리들 ===
+
+    @Query("SELECT COUNT(r) FROM ReadingRecord r WHERE r.user = :user")
+    int countTotalBooks(@Param("user") User user);
+
+    @Query("""
+    SELECT COUNT(DISTINCT r) FROM ReadingRecord r
+    JOIN r.readDateList rd
+    WHERE r.user = :user AND rd.status <> 'pending'
+    """)
+    int countBooksExcludePending(@Param("user") User user);
+
+    @Query("SELECT AVG(r.rating) FROM ReadingRecord r WHERE r.user = :user AND r.rating IS NOT NULL")
+    Double getAverageRating(@Param("user") User user);
+
+    @Query("SELECT r FROM ReadingRecord r WHERE r.user = :user")
+    List<ReadingRecord> findAllByUser(@Param("user") User user);
+
 }

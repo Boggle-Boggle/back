@@ -20,4 +20,7 @@ public interface NoteRepository extends JpaRepository<Note, Long> {
     Optional<Note> findByNoteSeqAndReadingRecord(Long noteId, ReadingRecord readingRecord);
     List<Note> findByReadingRecordAndReadingRecord_User(ReadingRecord readingRecord, User user);
     List<Note> findByReadingRecord_User(User user);
+
+    @Query("SELECT COUNT(n) FROM Note n WHERE n.readingRecord.user = :user")
+    int countByUser(@Param("user") User user);
 }

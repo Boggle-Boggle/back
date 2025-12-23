@@ -80,7 +80,6 @@ public class SecurityConfig {
 
                         //guest : 약관동의, 닉네임 수정 API에만 접근 가능
                         .requestMatchers("/user/**").hasAnyAuthority(RoleType.GUEST.getCode(),RoleType.USER.getCode(),RoleType.LIMITED_USER.getCode())
-                        //임시로 게스트에게 허용
                         .requestMatchers("/books/**").hasAnyAuthority(RoleType.USER.getCode())
                         .requestMatchers("/libraries/**").hasAnyAuthority(RoleType.USER.getCode())
                         .requestMatchers("/recent-searches/**").hasAnyAuthority(RoleType.USER.getCode())
@@ -88,6 +87,7 @@ public class SecurityConfig {
                         .requestMatchers("/library/**").hasAnyAuthority(RoleType.USER.getCode())
                         .requestMatchers("/bookshelf/**").hasAnyAuthority(RoleType.USER.getCode())
                         .requestMatchers("/mypage/**").hasAnyAuthority(RoleType.USER.getCode())
+                        .requestMatchers("/promo/**").hasAnyAuthority(RoleType.USER.getCode())
                         .anyRequest().hasAuthority(RoleType.USER.getCode()))
 
                 //토큰 검증 필터
