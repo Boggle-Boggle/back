@@ -102,7 +102,7 @@ public class ChristmasPromoService {
 
     private RankingData buildRankingData(User user) {
         List<ReadingRecord> allRecords = readingRecordRepository.findAllByUser(user);
-        int currentYear = LocalDateTime.now().getYear();
+        int currentYear = 2025;
 
         List<BestBook> bestBooks = allRecords.stream()
                 .filter(record -> hasReadDateThisYear(record, currentYear))
