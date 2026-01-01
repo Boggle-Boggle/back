@@ -23,4 +23,7 @@ public interface NoteRepository extends JpaRepository<Note, Long> {
 
     @Query("SELECT COUNT(n) FROM Note n WHERE n.readingRecord.user = :user")
     int countByUser(@Param("user") User user);
+
+    @Query("SELECT COUNT(n) FROM Note n WHERE n.readingRecord.user = :user AND YEAR(n.crudDate.createAt) = :year")
+    int countByUserAndYear(@Param("user") User user, @Param("year") int year);
 }

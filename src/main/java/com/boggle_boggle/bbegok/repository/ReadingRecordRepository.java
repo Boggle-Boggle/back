@@ -153,4 +153,22 @@ public interface ReadingRecordRepository extends JpaRepository<ReadingRecord, Lo
     @Query("SELECT r FROM ReadingRecord r WHERE r.user = :user")
     List<ReadingRecord> findAllByUser(@Param("user") User user);
 
+    // === 크리스마스 프로모션 API 쿼리들 (2025년 필터링) ===
+
+    @Query("SELECT COUNT(r) FROM ReadingRecord r WHERE r.user = :user AND YEAR(r.crudDate.createAt) = :year")
+    int countTotalBooksByYear(@Param("user") User user, @Param("year") int year);
+
+    @Query("""
+    SELECT COUNT(DISTINCT r) FROM ReadingRecord r
+    JOIN r.readDateList rd
+    WHERE r.user = :user AND rd.status <> 'pending' AND YEAR(r.crudDate.createAt) = :year
+    """)
+    int countBooksExcludePendingByYear(@Param("user") User user, @Param("year") int year);
+
+    @Query("SELECT AVG(r.rating) FROM ReadingRecord r WHERE r.user = :user AND r.rating IS NOT NULL AND YEAR(r.crudDate.createAt) = :year")
+    Double getAverageRatingByYear(@Param("user") User user, @Param("year") int year);
+
+    @Query("SELECT r FROM ReadingRecord r WHERE r.user = :user AND YEAR(r.crudDate.createAt) = :year")
+    List<ReadingRecord> findAllByUserAndYear(@Param("user") User user, @Param("year") int year);
+
 }

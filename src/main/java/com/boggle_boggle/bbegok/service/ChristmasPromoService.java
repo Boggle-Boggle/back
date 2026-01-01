@@ -87,10 +87,11 @@ public class ChristmasPromoService {
     }
 
     private SummaryData buildSummaryData(User user) {
-        int totalBookCount = readingRecordRepository.countTotalBooks(user);
-        int excludePendingCount = readingRecordRepository.countBooksExcludePending(user);
-        int totalNoteCount = noteRepository.countByUser(user);
-        Double averageRating = readingRecordRepository.getAverageRating(user);
+        int targetYear = 2025;
+        int totalBookCount = readingRecordRepository.countTotalBooksByYear(user, targetYear);
+        int excludePendingCount = readingRecordRepository.countBooksExcludePendingByYear(user, targetYear);
+        int totalNoteCount = noteRepository.countByUserAndYear(user, targetYear);
+        Double averageRating = readingRecordRepository.getAverageRatingByYear(user, targetYear);
 
         return SummaryData.builder()
                 .totalBookCount(totalBookCount)
@@ -176,7 +177,8 @@ public class ChristmasPromoService {
     }
 
     private ReadingStyleData buildReadingStyleData(User user) {
-        List<ReadingRecord> allRecords = readingRecordRepository.findAllByUser(user);
+        int targetYear = 2025;
+        List<ReadingRecord> allRecords = readingRecordRepository.findAllByUserAndYear(user, targetYear);
 
         if (allRecords.isEmpty()) {
             return ReadingStyleData.of(ReadingStyleType.STARTER);
