@@ -14,10 +14,10 @@ public class Book {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long bookSeq;
 
-    @Column(name = "title", length = 255, nullable = false)
+    @Column(name = "title", length = 1000, nullable = false)
     private String title;
 
-    @Column(name = "author", length = 255, nullable = false)
+    @Column(name = "author", length = 1000, nullable = false)
     private String author;
 
     @Column(name = "publisher", length = 255, nullable = false)
